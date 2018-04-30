@@ -1,0 +1,18 @@
+#!/bin/bash
+
+OUTPUT="${1}.bin"
+shift
+MAIN="$1"
+shift
+ARGS="$@"
+
+rm -f "${OUTPUT}"
+gcc -o "${OUTPUT}" "${MAIN}" ${ARGS} \
+	-DOUTPUT="\"${OUTPUT}\"" -DMAIN="\"${MAIN}\"" -DARGS="\"${ARGS}\"" \
+	-lgmp \
+	-std=c99 -pedantic -Wall -Werror \
+	-march=native -O3
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+exit 0

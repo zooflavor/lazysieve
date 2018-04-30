@@ -1,0 +1,24 @@
+#!/bin/bash
+./compile-all
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+
+function testSimple() {
+	START=$1
+	SIZE=$2
+	echo -e "\t*** simple $TART $SIZE ***"
+	rm -f out.map
+	./simple.bin ../primes.map $START $SIZE out.map
+	java -jar ../tools/dist/tools.jar compare ../primes.map out.map
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+	rm -f out.map
+}
+
+testSimple 101 128
+testSimple 1001 128
+testSimple 1001 65536
+testSimple 10001 65536
+testSimple 1000001 65536

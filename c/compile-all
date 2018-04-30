@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function compile {
+	./compile $@
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+	return 0
+}
+
+compile simple simple.c
+exit 0

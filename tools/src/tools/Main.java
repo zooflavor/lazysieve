@@ -55,6 +55,41 @@ public class Main {
 		}
 	}
 	
+	public static void compare(Path referenceFile, Path testFile)
+			throws Throwable {
+		try (RandomAccessFile reference
+					=new RandomAccessFile(referenceFile.toFile(), "r");
+				RandomAccessFile test
+					=new RandomAccessFile(testFile.toFile(), "r")) {
+			Info referenceInfo=Info.read(reference);
+			Info testInfo=Info.read(test);
+			MapReader referenceReader=MapReader
+					.create(referenceInfo, reference, testInfo.start);
+			MapReader testReader=MapReader
+					.create(testInfo, test, testInfo.start);
+			BigInteger position=testInfo.start;
+			for (int rr, tr;
+					(0<=(rr=referenceReader.read()))
+							&& (0<=(tr=testReader.read())); ) {
+				if (rr==tr) {
+					position=position.add(STEPS.get(8));
+				}
+				else {
+					int diff=rr^tr;
+					diff=Integer.lowestOneBit(diff);
+					boolean referencePrime=0==(rr&diff);
+					diff=Integer.numberOfTrailingZeros(diff);
+					position=position.add(STEPS.get(diff));
+					throw new RuntimeException(String.format(
+							referencePrime
+									?"%1$d should be a prime"
+									:"%1$d shouldn't be a prime",
+							position));
+				}
+			}
+		}
+	}
+	
 	public static void info(Path inputFile, boolean machine) throws Throwable {
 		try (RandomAccessFile file
 				=new RandomAccessFile(inputFile.toFile(), "r");
@@ -116,6 +151,9 @@ public class Main {
 						case "append":
 							append(Paths.get(args[1]), Paths.get(args[2]));
 							break;
+						case "compare":
+							compare(Paths.get(args[1]), Paths.get(args[2]));
+							break;
 						default:
 							ok=false;
 							break;
@@ -131,6 +169,8 @@ public class Main {
 				System.out.println("usage:");
 				System.out.println(
 						"\ttools.Main append output-file input-file");
+				System.out.println(
+						"\ttools.Main compare reference-file test-file");
 				System.out.println("\ttools.Main info input-file");
 				System.out.println("\ttools.Main list input-file");
 				System.out.println("\ttools.Main machine-info input-file");
