@@ -6,7 +6,6 @@ size_t primesListCount;
 size_t primesListLength;
 
 void initBuild() {
-	memset(primes, ~0l, length*sizeof(uint64_t));
 	primesListCount=0;
 	primesListLength=32*1024*1024;
 	primesList0=CMALLOC(primesListLength*sizeof(size_t));

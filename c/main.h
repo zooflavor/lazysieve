@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 	mpz_init(start);
 	AZ(mpz_set_str(start, argv[2], 10));
 	
-	size=atoi(argv[3]);
+	size=atol(argv[3]);
 	
 	mpz_add_ui(end, start, size);
 	mpz_sqrt(endSqrt, end);
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 	composites=CMALLOC(length*sizeof(uint64_t));
 	primes=CMALLOC(length*sizeof(uint64_t));
 	memset(composites, 0l, length*sizeof(uint64_t));
-	memset(primes, 0l, length*sizeof(uint64_t));
+	memset(primes, ~0l, length*sizeof(uint64_t));
 	initBuild();
 	readPrimes(argv[1]);
 	finishBuild();

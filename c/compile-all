@@ -8,5 +8,9 @@ function compile {
 	return 0
 }
 
+compile cols-8 cols.c -DSEGMENT_BYTES=8
+compile cols-1k cols.c -DSEGMENT_BYTES=1024
+compile cols-8k cols.c -DSEGMENT_BYTES=8192
+compile cols-64k cols.c -DSEGMENT_BYTES=65536
 compile simple simple.c
 exit 0

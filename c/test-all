@@ -4,21 +4,48 @@ if [ "0" != "$?" ]; then
 	exit 1
 fi
 
-function testSimple() {
-	START=$1
-	SIZE=$2
-	echo -e "\t*** simple $TART $SIZE ***"
+function test() {
+	COMMAND=$1
+	START=$2
+	SIZE=$3
+	echo -e "$COMMAND $START $SIZE"
 	rm -f out.map
-	./simple.bin ../primes.map $START $SIZE out.map
+	./${COMMAND}.bin ../primes.map $START $SIZE out.map >> /dev/null
+	if [ "0" != "$?" ]; then
+		./${COMMAND}.bin ../primes.map $START $SIZE out.map
+		exit 1
+	fi
 	java -jar ../tools/dist/tools.jar compare ../primes.map out.map
 	if [ "0" != "$?" ]; then
+		./${COMMAND}.bin ../primes.map $START $SIZE out.map
+		java -jar ../tools/dist/tools.jar compare ../primes.map out.map
 		exit 1
 	fi
 	rm -f out.map
 }
 
-testSimple 101 128
-testSimple 1001 128
-testSimple 1001 65536
-testSimple 10001 65536
-testSimple 1000001 65536
+function testCols() {
+	test cols-$3 $1 $2
+}
+
+function testSimple() {
+	test simple $1 $2
+}
+
+#testSimple 101 128
+#for SIZE in 128 65536
+#do
+#	for START in 1001 10001 100001 10000001
+#	do
+#		testSimple $START $SIZE
+#	done
+#done
+testCols 3501 1024 8
+#testCols 101 128 8
+#testCols 1001 128 8
+#testCols 10001 128 8
+#testCols 100001 128 8
+#testCols 100001 1024 8
+#testCols 100001 4096 8
+#testCols 100001 131072 1k
+#testCols 10000001 1048576 1k
