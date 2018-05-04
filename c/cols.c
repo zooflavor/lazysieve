@@ -10,6 +10,7 @@ struct Offset {
 	size_t prime;
 };
 
+size_t *brokenBuckets;
 size_t *buckets;
 size_t *circles;
 size_t circlesMax;
@@ -18,7 +19,7 @@ struct Offset *offsets;
 size_t offsetsCount;
 size_t offsetsLength;
 
-void printBuckets();
+void printBuckets(size_t segmentOffset);
 void setBuckets(size_t circle, size_t lowerBucket, size_t lowerIndex,
 		size_t upperBucket, size_t upperIndex);
 void setCircles(size_t lower, size_t upper);
@@ -57,6 +58,7 @@ void finishBuild() {
 	}
 	AZ(offsets[0].prime/SEGMENT_BITS);
 	circlesMax=offsets[offsetsCount-1].prime/SEGMENT_BITS;
+	brokenBuckets=CMALLOC((circlesMax+1)*sizeof(size_t));
 	buckets=CMALLOC((BUCKET_START(circlesMax+1)+1)*sizeof(size_t));
 	circles=CMALLOC((circlesMax+2)*sizeof(size_t));
 	currentBuckets=CMALLOC((circlesMax+1)*sizeof(size_t));
@@ -68,6 +70,11 @@ void finishBuild() {
 		buckets[BUCKET_START(cc)]=circles[cc];
 		currentBuckets[cc]=0;
 		setBuckets(cc, 0, circles[cc], cc+1, circles[cc+1]);
+		brokenBuckets[cc]=cc;
+		while (buckets[BUCKET_START(cc)+brokenBuckets[cc]]==circles[cc+1]) {
+			buckets[BUCKET_START(cc)+brokenBuckets[cc]]=circles[cc];
+			--brokenBuckets[cc];
+		}
 	}
 }
 
@@ -81,7 +88,7 @@ void nextPrime(size_t prime, size_t offset) {
 	++offsetsCount;
 }
 
-void printBuckets() {
+void printBuckets(size_t segmentOffset) {
 	printf("circlesMax %ld\n", circlesMax);
 	for (size_t cc=0; circlesMax>=cc; ++cc) {
 		printf("circle %4ld\t\tstart %6ld\tend %6ld\t%6ld primes\n",
@@ -92,16 +99,17 @@ void printBuckets() {
 		for (size_t bb=0; cc>=bb; ++bb) {
 			size_t indices[4];
 			indices[0]=buckets[BUCKET_START(cc)+bb];
-			indices[3]=(0==cc)?circles[1]:buckets[BUCKET_START(cc)+(bb+1)%(cc+1)];
-			if (indices[0]<=indices[3]) {
-				indices[1]=indices[3];
-				indices[2]=indices[3];
-			}
-			else {
+			indices[3]=buckets[BUCKET_START(cc)+(bb+1)%(cc+1)];
+			if (bb==brokenBuckets[cc]) {
 				indices[1]=circles[cc+1];
 				indices[2]=circles[cc];
 			}
-			printf("\tbucket %4ld\tstart %6ld\tend %6ld\t%6ld primes\n",
+			else {
+				indices[1]=indices[3];
+				indices[2]=indices[3];
+			}
+			printf("\tbucket%s %4ld\tstart %6ld\tend %6ld\t%6ld primes\n",
+					(bb==brokenBuckets[cc])?"*":" ",
 					bb,
 					indices[0],
 					indices[3],
@@ -112,7 +120,7 @@ void printBuckets() {
 							offsets[oo].prime,
 							offsets[oo].offset,
 							offsets[oo].prime/SEGMENT_BITS,
-							offsets[oo].offset/SEGMENT_BITS);
+							(offsets[oo].offset-segmentOffset)/SEGMENT_BITS);
 				}
 			}
 		}
@@ -166,8 +174,6 @@ void setCircles(size_t lower, size_t upper) {
 void sieve() {
 	for (size_t segmentStart=0, segmentEnd=SEGMENT_BITS;
 			size2>segmentStart; ) {
-		printf("*** segment start %ld\n", segmentStart);
-		printBuckets();
 		for (size_t oo=circles[0], ee=circles[1]; ee>oo; ++oo) {
 			size_t prime=offsets[oo].prime;
 			size_t offset=offsets[oo].offset;
@@ -178,80 +184,62 @@ void sieve() {
 			offsets[oo].offset=offset;
 		}
 		for (size_t cc=1; circlesMax>=cc; ++cc) {
-			/*for (size_t oo=circles[cc], ee=circles[cc+1]; ee>oo; ++oo) {
-				size_t prime=offsets[oo].prime;
-				size_t offset=offsets[oo].offset;
-				if (segmentEnd>offset) {
-					composites[offset/64]|=1l<<(offset%64);
-					offset+=prime;
-					offsets[oo].offset=offset;
-				}
-			}*/
-			size_t circleOffset=segmentStart+(cc+1)*SEGMENT_BITS;
-			size_t circleBucket=BUCKET_START(cc);
+			size_t brokenBucket=brokenBuckets[cc];
 			size_t bucket0=currentBuckets[cc];
 			size_t bucket1=(bucket0+1)%(cc+1);
 			currentBuckets[cc]=bucket1;
-			size_t start=buckets[circleBucket+bucket0];
-			size_t end=buckets[circleBucket+bucket1];
-			if (start<=end) {
-				for (size_t ii=start; end>ii; ++ii) {
-					size_t prime=offsets[ii].prime;
-					size_t offset=offsets[ii].offset;
-					composites[offset/64]|=1l<<(offset%64);
-					offset+=prime;
-					if (offset>=circleOffset) {
-						offsets[ii].offset=offset;
-					}
-					else {
-						offsets[ii]=offsets[start];
-						offsets[start].prime=prime;
-						offsets[start].offset=offset;
-						++start;
-					}
-				}
-			}
-			else {
-				size_t limit0=circles[cc];
-				size_t limit1=circles[cc+1];
-				for (size_t ii=start; limit1>ii; ++ii) {
-					size_t prime=offsets[ii].prime;
-					size_t offset=offsets[ii].offset;
-					composites[offset/64]|=1l<<(offset%64);
-					offset+=prime;
-					if (offset>=circleOffset) {
-						offsets[ii].offset=offset;
-					}
-					else {
-						offsets[ii]=offsets[start];
-						offsets[start].prime=prime;
-						offsets[start].offset=offset;
-						++start;
-					}
-				}
-				for (size_t ii=limit0; end>ii; ++ii) {
-					size_t prime=offsets[ii].prime;
-					size_t offset=offsets[ii].offset;
-					composites[offset/64]|=1l<<(offset%64);
-					offset+=prime;
-					if (offset>=circleOffset) {
-						offsets[ii].offset=offset;
-					}
-					else {
-						offsets[ii]=offsets[start];
-						offsets[start].prime=prime;
-						offsets[start].offset=offset;
-						++start;
-						if (start>=limit1) {
-							start=limit0;
+			size_t circleBucket=BUCKET_START(cc);
+			size_t circleOffset=segmentStart+(cc+1)*SEGMENT_BITS;
+			size_t indices[4];
+			indices[0]=buckets[circleBucket+bucket0];
+			indices[3]=buckets[circleBucket+bucket1];
+			if (bucket0==brokenBucket) {
+				indices[1]=circles[cc+1];
+				indices[2]=circles[cc];
+				for (int jj=0; 4>jj; jj+=2) {
+					for (size_t ii=indices[jj], end=indices[jj+1];
+							end>ii; ++ii) {
+						size_t prime=offsets[ii].prime;
+						size_t offset=offsets[ii].offset;
+						composites[offset/64]|=1l<<(offset%64);
+						offset+=prime;
+						if (offset>=circleOffset) {
+							offsets[ii].offset=offset;
+						}
+						else {
+							offsets[ii]=offsets[indices[0]];
+							offsets[indices[0]].prime=prime;
+							offsets[indices[0]].offset=offset;
+							++indices[0];
+							if (indices[0]==indices[1]) {
+								indices[0]=indices[2];
+								brokenBuckets[cc]
+										=(brokenBuckets[cc]+cc)%(cc+1);
+							}
 						}
 					}
 				}
 			}
-			buckets[circleBucket+bucket0]=start;
+			else {
+				for (size_t ii=indices[0], end=indices[3]; end>ii; ++ii) {
+					size_t prime=offsets[ii].prime;
+					size_t offset=offsets[ii].offset;
+					composites[offset/64]|=1l<<(offset%64);
+					offset+=prime;
+					if (offset>=circleOffset) {
+						offsets[ii].offset=offset;
+					}
+					else {
+						offsets[ii]=offsets[indices[0]];
+						offsets[indices[0]].prime=prime;
+						offsets[indices[0]].offset=offset;
+						++indices[0];
+					}
+				}
+			}
+			buckets[circleBucket+bucket0]=indices[0];
 		}
 		segmentStart=segmentEnd;
 		segmentEnd+=SEGMENT_BITS;
 	}
-	printBuckets();
 }

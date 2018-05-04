@@ -32,20 +32,20 @@ function testSimple() {
 	test simple $1 $2
 }
 
-#testSimple 101 128
-#for SIZE in 128 65536
-#do
-#	for START in 1001 10001 100001 10000001
-#	do
-#		testSimple $START $SIZE
-#	done
-#done
+testSimple 101 128
+for SIZE in 128 65536
+do
+	for START in 1001 10001 100001 10000001
+	do
+		testSimple $START $SIZE
+	done
+done
 testCols 3501 1024 8
-#testCols 101 128 8
-#testCols 1001 128 8
-#testCols 10001 128 8
-#testCols 100001 128 8
-#testCols 100001 1024 8
-#testCols 100001 4096 8
-#testCols 100001 131072 1k
-#testCols 10000001 1048576 1k
+testCols 101 128 8
+testCols 1001 128 8
+testCols 10001 128 8
+testCols 100001 128 8
+testCols 100001 1024 8
+testCols 100001 4096 8
+testCols 100001 131072 1k
+testCols 10000001 1048576 1k
