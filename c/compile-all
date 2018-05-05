@@ -7,13 +7,16 @@ function compile {
 	fi
 	return 0
 }
+rm -f *.bin
 
-compile cols-8 cols.c -DSEGMENT_BYTES=8
-compile cols-1k cols.c -DSEGMENT_BYTES=1024
-compile cols-8k cols.c -DSEGMENT_BYTES=8192
-compile cols-64k cols.c -DSEGMENT_BYTES=65536
-compile cols-128k cols.c -DSEGMENT_BYTES=131072
-compile cols-256k cols.c -DSEGMENT_BYTES=262144
-compile cols-512k cols.c -DSEGMENT_BYTES=524288
+for SEGMENT_BYTES in 8 128 1024 65536 131072 262144 524288
+do
+	compile cols-${SEGMENT_BYTES}-0 cols.c -DSEGMENT_BYTES=${SEGMENT_BYTES}
+	for MIDDLE_PRIMES in 1 2 3 4 6 8
+	do
+		compile cols-${SEGMENT_BYTES}-${MIDDLE_PRIMES} cols.c \
+			-DSEGMENT_BYTES=${SEGMENT_BYTES} -DMIDDLE_PRIMES=${MIDDLE_PRIMES}
+	done
+done
 compile simple simple.c
 exit 0

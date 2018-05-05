@@ -6,6 +6,7 @@ MAIN="$1"
 shift
 ARGS="$@"
 
+echo "compile: $OUTPUT $MAIN $ARGS"
 rm -f "${OUTPUT}"
 gcc -o "${OUTPUT}" "${MAIN}" ${ARGS} \
 	-DOUTPUT="\"${OUTPUT}\"" -DMAIN="\"${MAIN}\"" -DARGS="\"${ARGS}\"" \

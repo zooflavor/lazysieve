@@ -5,7 +5,6 @@
 #define AZ(vv) assertZero(__FILE__, __LINE__, vv)
 #define CNN(vv) checkNonNegative(__FILE__, __LINE__, vv)
 #define CP(vv) checkPositive(__FILE__, __LINE__, vv)
-#define LEFT_CHILD(ii) ((ii<<1)+1)
 
 int assertEquals(char*, int, int, int);
 int assertNonZero(char*, int, int);

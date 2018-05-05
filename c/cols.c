@@ -19,6 +19,10 @@ struct Offset *offsets;
 size_t offsetsCount;
 size_t offsetsLength;
 
+#ifdef MIDDLE_PRIMES
+#include "middle.h"
+#endif
+
 void printBuckets(size_t segmentOffset);
 void setBuckets(size_t circle, size_t lowerBucket, size_t lowerIndex,
 		size_t upperBucket, size_t upperIndex);
@@ -36,6 +40,9 @@ void initBuild() {
 	offsetsCount=0;
 	offsetsLength=32*1024*1024;
 	offsets=CMALLOC(offsetsLength*sizeof(struct Offset));
+#ifdef MIDDLE_PRIMES
+	initMiddle();
+#endif
 }
 
 size_t findCircle(size_t lower, size_t upper, size_t min) {
@@ -76,16 +83,24 @@ void finishBuild() {
 			--brokenBuckets[cc];
 		}
 	}
+#ifdef MIDDLE_PRIMES
+	finishMiddle();
+#endif
 }
 
 void nextPrime(size_t prime, size_t offset) {
-	if (offsetsCount>=offsetsLength) {
-		offsetsLength*=2;
-		offsets=CREALLOC(offsets, offsetsLength*sizeof(struct Offset));
+#ifdef MIDDLE_PRIMES
+	if (addMiddle(prime, offset))
+#endif
+	{
+		if (offsetsCount>=offsetsLength) {
+			offsetsLength*=2;
+			offsets=CREALLOC(offsets, offsetsLength*sizeof(struct Offset));
+		}
+		offsets[offsetsCount].offset=offset;
+		offsets[offsetsCount].prime=prime;
+		++offsetsCount;
 	}
-	offsets[offsetsCount].offset=offset;
-	offsets[offsetsCount].prime=prime;
-	++offsetsCount;
 }
 
 void printBuckets(size_t segmentOffset) {
@@ -183,6 +198,9 @@ void sieve() {
 			}
 			offsets[oo].offset=offset;
 		}
+#ifdef MIDDLE_PRIMES
+		sieveMiddle(segmentEnd);
+#endif
 		for (size_t cc=1; circlesMax>=cc; ++cc) {
 			size_t brokenBucket=brokenBuckets[cc];
 			size_t bucket0=currentBuckets[cc];
