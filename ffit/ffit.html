@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ffit</title>
+</head>
+
+<body>
+<table>
+	<tr>
+		<td style="height: 100%;">
+			<table border="1" style="height: 100%;">
+				<tr>
+					<td style="height: 100%;">
+						<textarea id="input" rows="8" cols="40" style="height: 100%;">6,20790528571.3333
+7,20857644083.6667
+8,20905314032.6667
+9,22271482925.3333
+10,23943109530.3333
+11,27200492365
+12,30632296636
+13,34475696550
+14,41573424106.3333
+15,47848016150.3333
+16,57574537939.3333
+17,68610071858
+18,78042282552
+19,92087908197.3333
+20,133659290234.333
+21,255464136860.667
+</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input id="button" type="button" value="fit">
+					</td>
+				</tr>
+			</table>
+		</td>
+		<td>
+			<table border="1">
+				<thead><tr id="table-head-record-funcs"></tr></thead>
+				<tbody id="table-body-funcs"></tbody>
+			</table>
+		</td>
+	</tr>
+</table>
+<div id="divCanvas">
+</div>
+<script type="text/javascript" src="math.js"></script>
+<script type="text/javascript" src="funcs.js"></script>
+<script type="text/javascript" src="ffit.js"></script>
+</body>
+</html>
