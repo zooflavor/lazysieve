@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function compile {
+	rm -f ${1}.bin
+	gcc -o ${1}.bin ${1}.c \
+		-lz \
+		-std=c99 -pedantic -Wall -Werror \
+		-march=native -O3
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+}
+
+rm -f generator.bin
+rm -f init.bin
+compile init
+compile generator
+
+#./init.bin ../db
+#./generator.bin ../db start 0x0000000100000001 segments 0x10
+#./generator.bin ../db start 0x0000001000000001 segments 0x10
+#./generator.bin ../db start 0x0000010000000001 segments 0x10
+#./generator.bin ../db start 0x0000100000000001 segments 0x10
+#./generator.bin ../db start 0x0001000000000001 segments 0x10
+#./generator.bin ../db start 0x0010000000000001 segments 0x10
+#./generator.bin ../db start 0x0100000000000001 segments 0x10
+#./generator.bin ../db start 0x1000000000000001 segments 0x10
+#./generator.bin ../db start 0x0000000100000001 reserve-space 0x100000000
+exit 0

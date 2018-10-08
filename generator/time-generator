@@ -1,0 +1,53 @@
+#!/bin/bash
+
+./c
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+rm -rf tmp
+mkdir tmp
+./init.bin tmp
+rm -f time-generator.out
+rm -f time-generator2.out
+BUCKET_BITS=1
+echo "bucket bits,small size,segment start,sieve nanos" > time-generator.out
+while [ "8" -ge "$BUCKET_BITS" ]; do
+	SMALL_SIZE=16
+	while [ "24" -ge "$SMALL_SIZE" ]; do
+		rm -f tmp/generator.bin
+		gcc -o tmp/generator.bin generator.c \
+			-DBUCKET_BITS=$BUCKET_BITS \
+			-DSEGMENT_SMALL_SIZE_BITS_LOG2=$SMALL_SIZE \
+			-lz \
+			-std=c99 -pedantic -Wall -Werror \
+			-march=native -O3
+		if [ "0" != "$?" ]; then
+			exit 1
+		fi
+		
+		for SEGMENT_START in "0x0000000200000001" "0x0000001000000001" "0x0000008000000001" "0x0000040000000001" "0x0000200000000001" "0x0001000000000001" "0x0008000000000001" "0x0040000000000001" "0x0200000000000001" "0x1000000000000001" "0x8000000000000001"
+		do
+			echo bucket bits $BUCKET_BITS small size $SMALL_SIZE start $SEGMENT_START
+			echo -n "${BUCKET_BITS},${SMALL_SIZE},${SEGMENT_START}," >> time-generator.out
+			tmp/generator.bin tmp start $SEGMENT_START segments 16 | \
+					grep "all sieve nanos" | \
+					sed "s/[^0-9]//g" >> time-generator.out
+		done
+		
+		let SMALL_SIZE=$SMALL_SIZE+1
+	done
+	let BUCKET_BITS=$BUCKET_BITS+1
+done
+cat time-generator.out | \
+		sed "s/0x0000000200000001/33/g" | \
+		sed "s/0x0000001000000001/36/g" | \
+		sed "s/0x0000008000000001/39/g" | \
+		sed "s/0x0000040000000001/42/g" | \
+		sed "s/0x0000200000000001/45/g" | \
+		sed "s/0x0001000000000001/48/g" | \
+		sed "s/0x0008000000000001/51/g" | \
+		sed "s/0x0040000000000001/54/g" | \
+		sed "s/0x0200000000000001/57/g" | \
+		sed "s/0x1000000000000001/60/g" | \
+		sed "s/0x8000000000000001/63/g" | \
+		cat > time-generator2.out
