@@ -19,7 +19,9 @@ public interface GuiParent<C extends Component> {
 	
 	C component();
 	
-	void setAllEnabled(boolean enabled);
+	default void setAllEnabled(boolean enabled) {
+		component().setEnabled(enabled);
+	}
 	
 	default void showMessage(String message) {
 		JOptionPane.showMessageDialog(component(), message);

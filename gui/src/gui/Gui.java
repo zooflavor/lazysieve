@@ -1,6 +1,7 @@
 package gui;
 
 import gui.check.CheckSegments;
+import gui.check.CheckSieves;
 import gui.io.Database;
 import gui.plotter.Plotter;
 import gui.ui.CloseButton;
@@ -98,6 +99,12 @@ public class Gui implements GuiParent<JFrame> {
 				actionListener((event)->CheckSegments.start(this)));
 		frame.getContentPane().add(checkSegmentsButton);
 		
+		JButton checkSievesButton=new JButton(CheckSieves.TITLE);
+		checkSievesButton.setMnemonic(CheckSieves.MNEMONIC);
+		checkSievesButton.addActionListener(
+				actionListener((event)->CheckSieves.start(this)));
+		frame.getContentPane().add(checkSievesButton);
+		
 		JButton plotterButton=new JButton(Plotter.TITLE);
 		plotterButton.setMnemonic(Plotter.MNEMONIC);
 		plotterButton.addActionListener(
@@ -130,11 +137,6 @@ public class Gui implements GuiParent<JFrame> {
 				executor.shutdown();
 			}
 		}
-	}
-	
-	@Override
-	public void setAllEnabled(boolean enabled) {
-		frame.setEnabled(enabled);
 	}
 	
 	private void show() throws Throwable {

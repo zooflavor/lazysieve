@@ -2,22 +2,22 @@ package gui.util;
 
 import java.util.Arrays;
 
-public class LongList {
+public class IntList {
 	private int size;
-	private long[] values;
+	private int[] values;
 	
-	public LongList(int expectedSize) {
+	public IntList(int expectedSize) {
 		if (0>=expectedSize) {
 			expectedSize=1;
 		}
-		values=new long[expectedSize];
+		values=new int[expectedSize];
 	}
 	
-	public LongList() {
+	public IntList() {
 		this(16);
 	}
 	
-	public void add(long value) {
+	public void add(int value) {
 		if (values.length<=size) {
 			values=Arrays.copyOf(values, 2*values.length);
 		}
@@ -36,7 +36,7 @@ public class LongList {
 		size=0;
 	}
 	
-	public void foreach(LongConsumer consumer) throws Throwable {
+	public void foreach(IntConsumer consumer) throws Throwable {
 		for (int ii=0, ss=size; ss>ii; ++ii) {
 			if (!consumer.next(values[ii])) {
 				return;
@@ -44,7 +44,7 @@ public class LongList {
 		}
 	}
 	
-	public long get(int index) {
+	public int get(int index) {
 		check(index);
 		return values[index];
 	}
@@ -53,9 +53,9 @@ public class LongList {
 		return 0>=size;
 	}
 	
-	public long set(int index, long value) {
+	public int set(int index, int value) {
 		check(index);
-		long result=values[index];
+		int result=values[index];
 		values[index]=value;
 		return result;
 	}

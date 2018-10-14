@@ -49,11 +49,16 @@ public class Regression {
 		}
 		subProgress.finished();
 		double[][] xxt=Matrix.transpose(xx);
+		Sum sum=regressionSumFactory.get();
+		double[][] xxtxx=Matrix.multiply(xxt, xx,
+				progress.subProgress(0.5, null,
+						0.5+0.45*(functions.size()-1)/functions.size()),
+				sum);
+		double[][] xxtyy=Matrix.multiply(xxt, yy,
+				progress.subProgress(0.95-0.45/functions.size(), null, 0.95),
+				sum);
 		double[][] coefficients=Matrix.gaussianElimination(
-				Matrix.multiply(xxt, xx, regressionSumFactory),
-				Matrix.multiply(xxt, yy, regressionSumFactory),
-				progress.subProgress(0.5, null, 1.0),
-				true);
+				xxtxx, xxtyy, progress.subProgress(0.95, null, 1.0), true);
 		List<Double> coefficients2=new ArrayList<>(coefficients.length);
 		for (int ii=0; coefficients.length>ii; ++ii) {
 			coefficients2.add(coefficients[ii][0]);

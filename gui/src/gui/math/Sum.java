@@ -1,6 +1,6 @@
 package gui.math;
 
-import java.util.PriorityQueue;
+import gui.util.DoubleMinQueue;
 
 public interface Sum {
 	abstract class AbstractSum implements Sum {
@@ -22,10 +22,15 @@ public interface Sum {
 	}
 	
 	class PrioritySum extends AbstractSum {
-		private final PriorityQueue<Double> queue
-				=new PriorityQueue<>(
-						(v0, v1)->Double.compare(Math.abs(v0), Math.abs(v1)));
-
+		private final DoubleMinQueue queue=new DoubleMinQueue(16) {
+			@Override
+			protected int compare(int index0, int index1) {
+				return Double.compare(
+						Math.abs(heap[index0]),
+						Math.abs(heap[index1]));
+			}
+		};
+		
 		@Override
 		protected void addImpl(double value) {
 			queue.add(value);
@@ -39,9 +44,12 @@ public interface Sum {
 		@Override
 		public double sum() {
 			while (1<queue.size()) {
-				double sum=queue.poll()+queue.poll();
-				if (0.0!=sum) {
-					queue.add(sum);
+				double sum=queue.remove()+queue.peek();
+				if (0.0==sum) {
+					queue.remove();
+				}
+				else {
+					queue.replace(sum);
 				}
 			}
 			if (queue.isEmpty()) {

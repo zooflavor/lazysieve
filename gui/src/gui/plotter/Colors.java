@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class Colors {
 	public static final Color BACKGROUND=Color.LIGHT_GRAY;
 	public static final List<Color> GRAPHS;
-	public static final Color INTERPOLATION=Color.DARK_GRAY;
+	public static final Color INTERPOLATION=Color.GRAY;
 	public static final Color RULER=Color.WHITE;
 	public static final Color TOOLTIP_BACKGROUND=Color.LIGHT_GRAY;
 	public static final Color TOOLTIP_TEXT=Color.DARK_GRAY;

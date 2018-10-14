@@ -15,7 +15,7 @@ public abstract class AddSampleProcess extends GuiProcess<JFrame, Plotter> {
 	
 	@Override
 	protected void background() throws Throwable {
-		sample=sample(parent.selectNewColor(), new Object(), progress);
+		sample=sample(parent.selectNewColor(), progress);
 	}
 	
 	@Override
@@ -23,6 +23,6 @@ public abstract class AddSampleProcess extends GuiProcess<JFrame, Plotter> {
 		parent.addSample(sample);
 	}
 	
-	protected abstract Sample2D sample(Color color, Object id,
-			Progress progress) throws Throwable;
+	protected abstract Sample2D sample(Color color, Progress progress)
+			throws Throwable;
 }

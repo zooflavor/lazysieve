@@ -35,7 +35,7 @@ public class UnsignedLongMathTest {
 				numbers((mm)->{
 					if (0l==mm) {
 						try {
-							UnsignedLongMath.moduloAddition(mm, aa, bb);
+							UnsignedLong.moduloAddition(mm, aa, bb);
 							fail();
 						}
 						catch (ArithmeticException ex) {
@@ -43,9 +43,9 @@ public class UnsignedLongMathTest {
 						return;
 					}
 					BigInteger m2=new BigInteger(Long.toUnsignedString(mm));
-					long result=UnsignedLongMath.moduloAddition(mm, aa, bb);
+					long result=UnsignedLong.moduloAddition(mm, aa, bb);
 					assertEquals(result,
-							UnsignedLongMath.moduloAddition(mm, bb, aa));
+							UnsignedLong.moduloAddition(mm, bb, aa));
 					assertEquals(
 							new BigInteger(Long.toUnsignedString(result)),
 							a2.add(b2).remainder(m2));
@@ -63,7 +63,7 @@ public class UnsignedLongMathTest {
 				numbers((mm)->{
 					if (0l==mm) {
 						try {
-							UnsignedLongMath.moduloExponentiation(bb, ee, mm);
+							UnsignedLong.moduloExponentiation(bb, ee, mm);
 							fail();
 						}
 						catch (ArithmeticException ex) {
@@ -72,7 +72,7 @@ public class UnsignedLongMathTest {
 					}
 					BigInteger m2=new BigInteger(Long.toUnsignedString(mm));
 					long result
-							=UnsignedLongMath.moduloExponentiation(bb, ee, mm);
+							=UnsignedLong.moduloExponentiation(bb, ee, mm);
 					assertEquals(
 							new BigInteger(Long.toUnsignedString(result)),
 							b2.modPow(e2, m2));
@@ -93,7 +93,7 @@ public class UnsignedLongMathTest {
 				numbers((mm)->{
 					if (0l==mm) {
 						try {
-							UnsignedLongMath.moduloMultiplication(mm, aa, bb);
+							UnsignedLong.moduloMultiplication(mm, aa, bb);
 							fail();
 						}
 						catch (ArithmeticException ex) {
@@ -102,9 +102,9 @@ public class UnsignedLongMathTest {
 					}
 					BigInteger m2=new BigInteger(Long.toUnsignedString(mm));
 					long result
-							=UnsignedLongMath.moduloMultiplication(mm, aa, bb);
+							=UnsignedLong.moduloMultiplication(mm, aa, bb);
 					assertEquals(result,
-							UnsignedLongMath.moduloMultiplication(mm, bb, aa));
+							UnsignedLong.moduloMultiplication(mm, bb, aa));
 					assertEquals(
 							new BigInteger(Long.toUnsignedString(result)),
 							a2.multiply(b2).remainder(m2));
@@ -116,11 +116,11 @@ public class UnsignedLongMathTest {
 	@Test
 	public void testSquare() throws Throwable {
 		for (long ii=0; 128>ii; ++ii) {
-			assertEquals(ii*ii, UnsignedLongMath.square(ii));
+			assertEquals(ii*ii, UnsignedLong.square(ii));
 		}
-		assertFalse(UnsignedLongMath.squareExists(1l<<32));
+		assertFalse(UnsignedLong.squareExists(1l<<32));
 		try {
-			UnsignedLongMath.square(1l<<32);
+			UnsignedLong.square(1l<<32);
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -130,15 +130,15 @@ public class UnsignedLongMathTest {
 	@Test
 	public void testSquareRootFloor() throws Throwable {
 		numbers((ii)->{
-			long sqrt=UnsignedLongMath.squareRootFloor(ii);
+			long sqrt=UnsignedLong.squareRootFloor(ii);
 			assertEquals(sqrt,
-					UnsignedLongMath.squareRootFloor(
-							UnsignedLongMath.square(sqrt)));
+					UnsignedLong.squareRootFloor(
+							UnsignedLong.square(sqrt)));
 			assertTrue(0>=Long.compareUnsigned(
-					UnsignedLongMath.square(sqrt), ii));
-			if (UnsignedLongMath.squareExists(sqrt+1)) {
+					UnsignedLong.square(sqrt), ii));
+			if (UnsignedLong.squareExists(sqrt+1)) {
 				assertTrue(0<Long.compareUnsigned(
-						UnsignedLongMath.square(sqrt+1), ii));
+						UnsignedLong.square(sqrt+1), ii));
 			}
 		});
 	}

@@ -1,5 +1,7 @@
 package gui.io;
 
+import gui.math.UnsignedLong;
+import gui.sieve.SieveTable;
 import gui.ui.MessageException;
 import gui.ui.progress.Progress;
 import gui.util.LongIterator;
@@ -14,7 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class Segment {
+public class Segment implements SieveTable {
+	public static final int BITS=1<<29;
+	public static final int BYTES=BITS>>3;
+	public static final int LONGS=BITS>>6;
+	public static final long MAX=-(1l<<33)-1l;
+	public static final long MIN=3l;
+	public static final long NUMBERS=BITS<<1;
+	
 	public static class Info {
 		public final long lastModification;
 		public final Path path;
@@ -69,11 +78,6 @@ public class Segment {
 			return prime;
 		}
 	}
-	
-	public static final int BITS=1<<29;
-	public static final int BYTES=BITS>>3;
-	public static final int LONGS=BITS>>6;
-	public static final long NUMBERS=BITS<<1;
 	
 	public long gunzipNanos;
 	public long gzipBytes;
@@ -184,17 +188,49 @@ public class Segment {
 	
 	public void compare(Segment reference, Progress progress)
 			throws Throwable {
+		compare(segmentEnd, reference, progress, segmentStart);
+	}
+	
+	public void compare(long end, Segment reference, Progress progress,
+			long start) throws Throwable {
 		check();
 		reference.check();
 		if (this.segmentStart!=reference.segmentStart) {
 			throw new IllegalStateException(String.format(
-					"%1$,d!=%2$,d",
-					this.segmentStart, reference.segmentStart));
+					"%1$s!=%2$s",
+					UnsignedLong.format(this.segmentStart),
+					UnsignedLong.format(reference.segmentStart)));
 		}
-		for (int ii=0; Segment.BYTES>ii; ++ii) {
-			progress.progress(1.0*ii/Segment.BYTES);
-			byte thisByte=this.segment[ii];
-			byte referenceByte=reference.segment[ii];
+		if (0<Long.compareUnsigned(segmentStart, start)) {
+			throw new IllegalStateException(String.format(
+					"%1$s>%2$s",
+					UnsignedLong.format(segmentStart),
+					UnsignedLong.format(start)));
+		}
+		if (0>Long.compareUnsigned(segmentEnd, end)) {
+			throw new IllegalStateException(String.format(
+					"%1$s<%2$s",
+					UnsignedLong.format(segmentEnd),
+					UnsignedLong.format(end)));
+		}
+		int bitIndex=bitIndex(start);
+		int bits=(int)((end-start)>>>1);
+		int maxBits=bits;
+		for (; (0<bits) && (0!=(bitIndex&7)); ++bitIndex, --bits) {
+			progress.progress(1.0*(maxBits-bits)/maxBits);
+			if (isPrime(bitIndex)!=reference.isPrime(bitIndex)) {
+				throw new MessageException(String.format(
+						"segments differ at %1$,d"
+								+"; this: %2$s, reference: %3$s",
+						number(bitIndex),
+						isPrime(bitIndex),
+						reference.isPrime(bitIndex)));
+			}
+		}
+		for (; 8<=bits; bitIndex+=8, bits-=8) {
+			progress.progress(1.0*(maxBits-bits)/maxBits);
+			byte thisByte=this.segment[bitIndex>>3];
+			byte referenceByte=reference.segment[bitIndex>>3];
 			if (thisByte!=referenceByte) {
 				int diff=(thisByte&0xff)^(referenceByte&0xff);
 				int bit=0;
@@ -202,7 +238,18 @@ public class Segment {
 					diff>>>=1;
 					++bit;
 				}
-				int bitIndex=ii*8+bit;
+				bitIndex=(bitIndex&(~7))+bit;
+				throw new MessageException(String.format(
+						"segments differ at %1$,d"
+								+"; this: %2$s, reference: %3$s",
+						number(bitIndex),
+						isPrime(bitIndex),
+						reference.isPrime(bitIndex)));
+			}
+		}
+		for (; 0<bits; ++bitIndex, --bits) {
+			progress.progress(1.0*(maxBits-bits)/maxBits);
+			if (isPrime(bitIndex)!=reference.isPrime(bitIndex)) {
 				throw new MessageException(String.format(
 						"segments differ at %1$,d"
 								+"; this: %2$s, reference: %3$s",
@@ -216,6 +263,12 @@ public class Segment {
 	
 	public boolean isPrime(int bitIndex) {
 		return 0==(segment[bitIndex>>3]&(1<<(bitIndex&0x7)));
+	}
+	
+	@Override
+	public boolean isPrime(long number) throws Throwable {
+		number-=segmentStart;
+		return 0==(segment[(int)(number>>4)]&(1<<((number>>>1)&0x7)));
 	}
 	
 	public LongIterator iteratePrimes() {
@@ -290,7 +343,13 @@ public class Segment {
 		return result;
 	}
 	
-	public void setNotPrime(int bitIndex) {
+	public void setComposite(int bitIndex) {
 		segment[bitIndex>>3]|=1<<(bitIndex&0x7);
+	}
+	
+	@Override
+	public void setComposite(long number) throws Throwable {
+		number-=segmentStart;
+		segment[(int)(number>>>4)]|=1<<((number>>>1)&0x7);
 	}
 }

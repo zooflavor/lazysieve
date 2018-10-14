@@ -78,11 +78,6 @@ public class FunctionSelector implements GuiParent<JDialog> {
 		handler.handle(functions2);
 	}
 	
-	@Override
-	public void setAllEnabled(boolean enabled) {
-		dialog.setEnabled(enabled);
-	}
-	
     public void start() throws Throwable {
 		SwingUtils.show(dialog);
 	}

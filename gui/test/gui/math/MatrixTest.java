@@ -145,7 +145,7 @@ public class MatrixTest {
 	public void testIdentity() throws Throwable {
 		assertEquals(
 				new double[][]{
-					{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}},
+						{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}},
 				Matrix.identity(3));
 	}
 	
@@ -154,9 +154,9 @@ public class MatrixTest {
 		assertEquals(
 				new double[][]{{-0.125, 0.375}, {0.375, -0.125}},
 				Matrix.invert(
-					new double[][]{{1, 3}, {3, 1}},
-					Progress.NULL,
-					true));
+						new double[][]{{1, 3}, {3, 1}},
+						Progress.NULL,
+						true));
 	}
 	
 	@Test
@@ -165,7 +165,8 @@ public class MatrixTest {
 			Matrix.multiply(
 					Matrix.identity(1),
 					Matrix.identity(2),
-					Sum::priority);
+					Progress.NULL,
+					Sum.priority());
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -173,9 +174,10 @@ public class MatrixTest {
 		assertEquals(
 				new double[][]{{10, 13}, {22, 29}, {34, 45}},
 				Matrix.multiply(
-					new double[][]{{1, 2}, {3, 4}, {5, 6}},
-					new double[][]{{2, 3}, {4, 5}},
-					Sum::priority));
+						new double[][]{{1, 2}, {3, 4}, {5, 6}},
+						new double[][]{{2, 3}, {4, 5}},
+						Progress.NULL,
+						Sum.priority()));
 	}
 	
 	@Test

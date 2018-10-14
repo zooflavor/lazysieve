@@ -2,7 +2,6 @@ package gui.math;
 
 import gui.ui.progress.Progress;
 import java.util.Arrays;
-import java.util.function.Supplier;
 
 public class Matrix {
 	private Matrix() {
@@ -134,7 +133,7 @@ public class Matrix {
 	}
 	
 	public static double[][] multiply(double[][] matrix0, double[][] matrix1,
-			Supplier<Sum> sumFactory) {
+			Progress progress, Sum sum) throws Throwable {
 		if (matrix0[0].length!=matrix1.length) {
 			throw new ArithmeticException("matrix[0].length!==matrix1.length");
 		}
@@ -142,8 +141,8 @@ public class Matrix {
 		int columns=matrix1[0].length;
 		int common=matrix1.length;
 		double[][] result=create(rows, columns);
-		Sum sum=sumFactory.get();
-		for (int rr=rows-1; 0<=rr; --rr) {
+		for (int rr=0; rows>rr; ++rr) {
+			progress.progress(1.0*rr/rows);
 			for (int cc=columns-1; 0<=cc; --cc) {
 				sum.clear();
 				for (int dd=common-1; 0<=dd; --dd) {
@@ -152,6 +151,7 @@ public class Matrix {
 				result[rr][cc]=sum.sum();
 			}
 		}
+		sum.clear();
 		return result;
 	}
 	

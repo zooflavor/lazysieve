@@ -1,8 +1,8 @@
 package gui.io;
 
-import gui.math.UnsignedLongMath;
+import gui.math.UnsignedLong;
 import gui.ui.progress.Progress;
-import gui.util.LongList;
+import gui.util.IntList;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -21,11 +21,13 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class Database {
+public class Database implements PrimesProducer {
 	public static final String AGGREGATES="aggregates";
 	public static final String AGGREGATES_TEMP="aggregates.tmp";
 	public static final Pattern SEGMENT_PATTERN
 			=Pattern.compile("([0-9a-f]{8}[048c]0000001).gz");
+	public static final long SMALL_PRIMES_MAX
+			=UnsignedLong.squareRootFloor(Segment.NUMBERS+1l);
 	
 	public static class Info {
 		public final TypeInfo aggregates;
@@ -115,6 +117,39 @@ public class Database {
 				segments.info());
 	}
 	
+	@Override
+	public void primes(PrimeConsumer consumer, long max, Progress progress)
+			throws Throwable {
+		if (0>Long.compareUnsigned(UnsignedLong.MAX_PRIME, max)) {
+			throw new IllegalArgumentException();
+		}
+		if (3l>max) {
+			return;
+		}
+		long lastPrime=1l;
+		Segment segment=new Segment();
+		for (long ss=0; 4>ss; ++ss) {
+			long segmentStart=ss*Segment.NUMBERS+1l;
+			if (0<Long.compareUnsigned(segmentStart, max)) {
+				return;
+			}
+			segment.read(this, segmentStart);
+			for (int bitIndex=0; Segment.BITS>bitIndex; ++bitIndex) {
+				if (0==(bitIndex&1023)) {
+					progress.progress(1.0*lastPrime/max);
+				}
+				if (!segment.isPrime(bitIndex)) {
+					continue;
+				}
+				lastPrime=segment.number(bitIndex);
+				if (0<Long.compareUnsigned(lastPrime, max)) {
+					return;
+				}
+				consumer.prime(lastPrime);
+			}
+		}
+	}
+	
 	public Aggregates readAggregates(Progress progress) throws Throwable {
 		return readAggregates(rootDirectory.resolve(AGGREGATES), progress);
 	}
@@ -137,27 +172,11 @@ public class Database {
 		return new Aggregates(new ArrayList<>(0));
 	}
 	
-	public LongList readPrimes(long max, Progress progress)
-			throws Throwable {
-		LongList result=new LongList();
-		long lastPrime=1l;
-		long segmentStart=1l;
-		Segment segment=new Segment();
-		while (0<=Long.compareUnsigned(max, segmentStart)) {
-			progress.progress(1.0*lastPrime/max);
-			segment.read(this, segmentStart);
-			for (int bitIndex=0; Segment.BITS>bitIndex; ++bitIndex) {
-				if (!segment.isPrime(bitIndex)) {
-					continue;
-				}
-				lastPrime=segment.number(bitIndex);
-				if (0>Long.compareUnsigned(max, lastPrime)) {
-					break;
-				}
-				result.add(lastPrime);
-			}
-			segmentStart+=Segment.NUMBERS;
-		}
+	public IntList readPrimes(Progress progress) throws Throwable {
+		IntList result=new IntList(UnsignedLong.MAX_PRIME_COUNT);
+		primes((prime)->result.add((int)prime),
+				UnsignedLong.MAX_PRIME,
+				progress);
 		return result;
 	}
 	
@@ -247,11 +266,10 @@ public class Database {
 				.resolve(String.format("%1$016x.gz", segmentStart));
 	}
 	
-	public static LongList smallPrimes(Progress progress) throws Throwable {
-		LongList primes=new LongList(4096);
-		long sqrt=UnsignedLongMath.squareRootFloor(Segment.NUMBERS+1);
-		for (long ii=3l; Segment.NUMBERS>=ii*ii; ii+=2l) {
-			progress.progress(1.0*ii/sqrt);
+	public static IntList smallPrimes(Progress progress) throws Throwable {
+		IntList primes=new IntList(4096);
+		for (long ii=3l; SMALL_PRIMES_MAX>=ii; ii+=2l) {
+			progress.progress(1.0*ii/SMALL_PRIMES_MAX);
 			boolean prime=true;
 			for (int jj=0; primes.size()>jj; ++jj) {
 				long prime2=primes.get(jj);
@@ -264,7 +282,7 @@ public class Database {
 				}
 			}
 			if (prime) {
-				primes.add(ii);
+				primes.add((int)ii);
 			}
 		}
 		return primes;
