@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class TrialDivision implements Sieve {
+public class TrialDivision extends AbstractSieve {
 	public static List<SieveCheckFactory> CHECKS
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveCheckFactory.create(
@@ -23,31 +23,33 @@ public class TrialDivision implements Sieve {
 							TrialDivision::new,
 							20, 1, 16)));
 	
-	private long start=3l;
 	private final IntList primes=new IntList(UnsignedLong.MAX_PRIME_COUNT);
 	
 	@Override
-	public void reset() throws Throwable {
-		primes.clear();
-		start=3l;
+	public boolean defaultPrime() {
+		return true;
 	}
 	
 	@Override
-	public void reset(PrimesProducer primesProducer, Progress progress,
-			long start) throws Throwable {
-		checkOdd(start);
-		this.start=start;
+	protected void reset(PrimesProducer primesProducer, Progress progress)
+			throws Throwable {
 		primes.clear();
+		if (0l==startSegment) {
+			return;
+		}
 		primesProducer.primes(
 				(prime)->primes.add((int)prime),
-				UnsignedLong.min(UnsignedLong.MAX_PRIME, start-1),
+				UnsignedLong.min(UnsignedLong.MAX_PRIME,
+						segmentSize*startSegment),
 				progress);
 	}
 	
 	@Override
-	public void sieve(long end, OperationCounter operationCounter,
-			SieveTable sieveTable) throws Throwable {
-		checkOdd(end);
+	protected void sieve(long end, OperationCounter operationCounter,
+			SieveTable sieveTable, long start) throws Throwable {
+		if (0l==startSegment) {
+			start=3l;
+		}
 		for (; 0<Long.compareUnsigned(end, start); start+=2) {
 			boolean prime=true;
 			for (int ii=0; primes.size()>ii; ++ii) {
@@ -68,10 +70,5 @@ public class TrialDivision implements Sieve {
 				sieveTable.setComposite(start);
 			}
 		}
-	}
-	
-	@Override
-	public long start() {
-		return start;
 	}
 }

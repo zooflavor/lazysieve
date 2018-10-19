@@ -11,13 +11,13 @@ public interface Sieve {
 		}
 	}
 	
-	void reset() throws Throwable;
+	boolean defaultPrime();
 	
 	void reset(PrimesProducer primesProducer, Progress progress,
-			long start) throws Throwable;
+			long segmentSize, long start) throws Throwable;
 	
-	void sieve(long end, OperationCounter operationCounter,
-			SieveTable sieveTable) throws Throwable;
+	void sieve(OperationCounter operationCounter, SieveTable sieveTable)
+			throws Throwable;
 	
 	long start();
 }

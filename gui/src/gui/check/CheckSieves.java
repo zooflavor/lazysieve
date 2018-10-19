@@ -21,6 +21,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
@@ -59,6 +60,7 @@ public class CheckSieves implements GuiParent<JFrame> {
 			sieve.reset(
 					gui.database,
 					progress.subProgress(0.0, "init sieve", 0.05),
+					1l<<sieveFactory.smallSegmentSizeLog2(),
 					start);
 			Progress subProgress=progress.subProgress(0.05, null, 1.0);
 			for (long ss=startSegment; endSegment>ss; ++ss) {
@@ -68,8 +70,9 @@ public class CheckSieves implements GuiParent<JFrame> {
 						1.0*(ss-startSegment+1l)/(endSegment-startSegment));
 				subProgress2.progress(0.0);
 				long segmentStart=ss*Segment.NUMBERS+1l;
-				referenceSegment.clear(0l, 0l, 0l, segmentStart);
-				sieveSegment.clear(0l, 0l, 0l, segmentStart);
+				referenceSegment.clear(0l, 0l, 0l, true, segmentStart);
+				sieveSegment.clear(
+						0l, 0l, 0l, sieve.defaultPrime(), segmentStart);
 				SieveProcess.generateReference(
 						gui.database,
 						subProgress2.subProgress(0.0, "reference", 0.3333),
@@ -78,17 +81,11 @@ public class CheckSieves implements GuiParent<JFrame> {
 				long sieveEnd=UnsignedLong.min(end, sieveSegment.segmentEnd);
 				Progress subProgress3
 						=subProgress2.subProgress(0.3333, "sieve", 0.6667);
-				long smallSegmentSize=1l<<sieveFactory.smallSegmentSizeLog2();
 				while (0<Long.compareUnsigned(sieveEnd, sieve.start())) {
 					subProgress3.progress(
 							1.0*(sieve.start()-sieveStart)
 									/(sieveEnd-sieveStart));
-					sieve.sieve(
-							UnsignedLong.min(
-									sieveEnd,
-									sieve.start()+smallSegmentSize),
-							OperationCounter.NOOP,
-							sieveSegment);
+					sieve.sieve(OperationCounter.NOOP, sieveSegment);
 				}
 				sieveSegment.compare(
 						sieveEnd,
@@ -193,6 +190,8 @@ public class CheckSieves implements GuiParent<JFrame> {
 		
 		JPanel startPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(startPanel);
+		JLabel startLabel=new JLabel("Start:");
+		startPanel.add(startLabel);
 		startSpinner=new UnsignedLongSpinner(
 				Segment.MAX, Segment.MIN, Segment.MIN, 2l);
 		startSpinner.addListener(new StartListener());
@@ -200,6 +199,8 @@ public class CheckSieves implements GuiParent<JFrame> {
 		
 		JPanel endPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(endPanel);
+		JLabel endLabel=new JLabel("End:");
+		endPanel.add(endLabel);
 		endSpinner=new UnsignedLongSpinner(
 				Segment.MAX, Segment.MIN, Segment.NUMBERS+1, 2l);
 		endSpinner.addListener(new EndListener());

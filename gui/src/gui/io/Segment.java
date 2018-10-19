@@ -4,7 +4,6 @@ import gui.math.UnsignedLong;
 import gui.sieve.SieveTable;
 import gui.ui.MessageException;
 import gui.ui.progress.Progress;
-import gui.util.LongIterator;
 import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 public class Segment implements SieveTable {
 	public static final int BITS=1<<29;
@@ -36,49 +34,6 @@ public class Segment implements SieveTable {
 		}
 	}
 	
-	private class PrimeIterator implements LongIterator {
-		private int bitIndex=8;
-		private int byteIndex=-1;
-		private int byteValue;
-		
-		@Override
-		public boolean hasNext() {
-			if (Segment.BYTES<=byteIndex) {
-				return false;
-			}
-			while (true) {
-				if (8<=bitIndex) {
-					++byteIndex;
-					if (Segment.BYTES<=byteIndex) {
-						return false;
-					}
-					bitIndex=0;
-					byteValue=(segment[byteIndex]&0xff)^0xff;
-				}
-				if (0==byteValue) {
-					bitIndex=8;
-					continue;
-				}
-				while (0==(byteValue&1)) {
-					++bitIndex;
-					byteValue>>>=1;
-				}
-				return true;
-			}
-		}
-		
-		@Override
-		public long next() throws NoSuchElementException {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			long prime=number((byteIndex<<3)|bitIndex);
-			++bitIndex;
-			byteValue>>>=1;
-			return prime;
-		}
-	}
-	
 	public long gunzipNanos;
 	public long gzipBytes;
 	public long gzipNanos;
@@ -90,52 +45,56 @@ public class Segment implements SieveTable {
 	public long segmentStart;
 	public long sieveNanos;
 	
-	public Aggregate aggregate() {
+	public Aggregate aggregate() throws Throwable {
 		check();
 		long aggregateStart=System.nanoTime();
-		long maxPrime=0l;
-		long minPrime=0l;
-		long primeCount12Z11=0l;
-		long primeCount4Z1=0l;
-		long primeCount4Z3=0l;
-		long primeCount6Z1=0l;
+		class Aa {
+			long maxPrime=0l;
+			long minPrime=0l;
+			long primeCount12Z11=0l;
+			long primeCount4Z1=0l;
+			long primeCount4Z3=0l;
+			long primeCount6Z1=0l;
+		}
+		Aa aa=new Aa();
 		Map<Long, Long> primeGapStarts=new HashMap<>();
 		Map<Long, Long> primeGapFrequencies=new HashMap<>();
-		for (LongIterator iterator=iteratePrimes(); iterator.hasNext(); ) {
-			long prime=iterator.next();
-			if (0==((prime>>>1)&1)) {
-				++primeCount4Z1;
-			}
-			else {
-				++primeCount4Z3;
-			}
-			if (1l==Long.remainderUnsigned(prime, 6)) {
-				++primeCount6Z1;
-			}
-			if (11l==Long.remainderUnsigned(prime, 12)) {
-				++primeCount12Z11;
-			}
-			if (0==minPrime) {
-				minPrime=prime;
-			}
-			else {
-				Long gap=prime-maxPrime;
-				Long frequency=primeGapFrequencies.get(gap);
-				primeGapFrequencies.put(gap,
-						(null==frequency)?1l:(frequency+1l));
-				Long start=primeGapStarts.get(gap);
-				if (null==start) {
-					primeGapStarts.put(gap, maxPrime);
-				}
-			}
-			maxPrime=prime;
-		}
+		listPrimes(segmentEnd,
+				(prime)->{
+					if (0==((prime>>>1)&1)) {
+						++aa.primeCount4Z1;
+					}
+					else {
+						++aa.primeCount4Z3;
+					}
+					if (1l==Long.remainderUnsigned(prime, 6)) {
+						++aa.primeCount6Z1;
+					}
+					if (11l==Long.remainderUnsigned(prime, 12)) {
+						++aa.primeCount12Z11;
+					}
+					if (0==aa.minPrime) {
+						aa.minPrime=prime;
+					}
+					else {
+						Long gap=prime-aa.maxPrime;
+						Long frequency=primeGapFrequencies.get(gap);
+						primeGapFrequencies.put(gap,
+								(null==frequency)?1l:(frequency+1l));
+						Long start=primeGapStarts.get(gap);
+						if (null==start) {
+							primeGapStarts.put(gap, aa.maxPrime);
+						}
+					}
+					aa.maxPrime=prime;
+				},
+				segmentStart);
 		long aggregateEnd=System.nanoTime();
 		long aggregateNanos=aggregateEnd-aggregateStart;
 		return new Aggregate(aggregateNanos, gunzipNanos, gzipBytes, gzipNanos,
-				initNanos, lastModification, maxPrime, minPrime,
-				primeCount12Z11, primeCount4Z1, primeCount4Z3, primeCount6Z1,
-				primeGapFrequencies, primeGapStarts,
+				initNanos, lastModification, aa.maxPrime, aa.minPrime,
+				aa.primeCount12Z11, aa.primeCount4Z1, aa.primeCount4Z3,
+				aa.primeCount6Z1, primeGapFrequencies, primeGapStarts,
 				segmentStart/Segment.NUMBERS, segmentEnd, segmentStart,
 				sieveNanos);
 	}
@@ -145,9 +104,9 @@ public class Segment implements SieveTable {
 			throw new IllegalArgumentException(String.format(
 					"%1$,d>%2$,d", segmentStart, number));
 		}
-		if (segmentStart+NUMBERS<=number) {
+		if (segmentStart+NUMBERS<number) {
 			throw new IllegalArgumentException(String.format(
-					"%1$,d<=%2$,d", segmentStart+NUMBERS, number));
+					"%1$,d<%2$,d", segmentStart+NUMBERS, number));
 		}
 		if (0==(number%2)) {
 			throw new IllegalArgumentException(String.format(
@@ -173,13 +132,13 @@ public class Segment implements SieveTable {
 	}
 	
 	public void clear(long gunzipNanos, long gzipBytes, long lastModification,
-			long segmentStart) {
+			boolean prime, long segmentStart) {
 		checkSegmentStart(segmentStart);
 		this.gunzipNanos=gunzipNanos;
 		this.gzipBytes=gzipBytes;
 		this.lastModification=lastModification;
 		this.segmentStart=segmentStart;
-		Arrays.fill(segment, (byte)0);
+		Arrays.fill(segment, (byte)(prime?0:-1));
 		segmentEnd=segmentStart+NUMBERS;
 		gzipNanos=0l;
 		initNanos=0l;
@@ -261,18 +220,55 @@ public class Segment implements SieveTable {
 		progress.finished();
 	}
 	
+	@Override
+	public void flip(long number) throws Throwable {
+		number-=segmentStart;
+		segment[(int)(number>>>4)]^=1<<((number>>>1)&0x7);
+	}
+	
 	public boolean isPrime(int bitIndex) {
 		return 0==(segment[bitIndex>>3]&(1<<(bitIndex&0x7)));
 	}
 	
 	@Override
 	public boolean isPrime(long number) throws Throwable {
-		number-=segmentStart;
-		return 0==(segment[(int)(number>>4)]&(1<<((number>>>1)&0x7)));
+		number=(number-segmentStart)>>>1;
+		return 0==(segment[(int)(number>>3)]&(1<<(number&0x7)));
 	}
 	
-	public LongIterator iteratePrimes() {
-		return new PrimeIterator();
+	@Override
+	public void listPrimes(long end, PrimeConsumer primeConsumer, long start)
+			throws Throwable {
+		if (0l==(end&1l)) {
+			--end;
+		}
+		if (0l==(start&1l)) {
+			++start;
+		}
+		int ei=bitIndex(end);
+		int si=bitIndex(start);
+		for (; (ei>si) && (0!=(si&7)); ++si) {
+			if (isPrime(si)) {
+				primeConsumer.prime(number(si));
+			}
+		}
+		for (; ei>si; si+=8) {
+			int bb=(~segment[si>>>3])&0xff;
+			int bi=si;
+			while (0!=bb) {
+				int nz=Integer.numberOfTrailingZeros(bb);
+				bi+=nz;
+				bb>>>=nz;
+				primeConsumer.prime(number(bi));
+				++bi;
+				bb>>>=1;
+			}
+		}
+		for (; ei>si; ++si) {
+			if (isPrime(si)) {
+				primeConsumer.prime(number(si));
+			}
+		}
 	}
 	
 	public long number(int bitIndex) {
@@ -351,5 +347,11 @@ public class Segment implements SieveTable {
 	public void setComposite(long number) throws Throwable {
 		number-=segmentStart;
 		segment[(int)(number>>>4)]|=1<<((number>>>1)&0x7);
+	}
+	
+	@Override
+	public void setPrime(long number) throws Throwable {
+		number-=segmentStart;
+		segment[(int)(number>>>4)]&=~(1<<((number>>>1)&0x7));
 	}
 }

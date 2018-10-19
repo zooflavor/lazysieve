@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 public interface SieveMeasureFactory {
 	SieveMeasure create(Color color, Measure measure,
 			PrimesProducer primes, long segments, long segmentSize,
-			long startSegment) throws Throwable;
+			long startSegment, boolean sum) throws Throwable;
 	
 	static SieveMeasureFactory create(String label, boolean restart,
 			Supplier<Sieve> sieveFactory, int smallSegmentSizeMaxLog2,
@@ -16,14 +16,14 @@ public interface SieveMeasureFactory {
 			@Override
 			public SieveMeasure create(Color color, Measure measure,
 					PrimesProducer primes, long segments, long segmentSize,
-					long startSegment) throws Throwable {
+					long startSegment, boolean sum) throws Throwable {
 				return restart
 						?new RestartSieveMeasure(color, label, measure, primes,
 								segments, segmentSize, sieveFactory,
-								startSegment)
+								startSegment, sum)
 						:new SegmentedSieveMeasure(color, label, measure,
 								primes, segments, segmentSize, sieveFactory,
-								startSegment);
+								startSegment, sum);
 			}
 			
 			@Override

@@ -1,97 +1,103 @@
-package gui.sieve;
+package gui.sieve.eratosthenes;
 
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
+import gui.sieve.OperationCounter;
+import gui.sieve.SieveCheckFactory;
+import gui.sieve.SieveMeasureFactory;
+import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
+import gui.util.IntList;
+import gui.util.LongList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BucketSieve extends SegmentedSieve {
+public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 	private static final int BUCKET_SIZE=1000;
 	
 	public static final List<SieveCheckFactory> CHECKS
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveCheckFactory.create(
-							"Bucket sieve",
+							"Sieve of Eratosthenes-buckets",
 							Bucket1Sieve::new,
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^1",
+							"Sieve of Eratosthenes-buckets-2^1",
 							()->new BucketNSieve(1),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^2",
+							"Sieve of Eratosthenes-buckets-2^2",
 							()->new BucketNSieve(2),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^3",
+							"Sieve of Eratosthenes-buckets-2^3",
 							()->new BucketNSieve(3),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^4",
+							"Sieve of Eratosthenes-buckets-2^4",
 							()->new BucketNSieve(4),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^5",
+							"Sieve of Eratosthenes-buckets-2^5",
 							()->new BucketNSieve(5),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^6",
+							"Sieve of Eratosthenes-buckets-2^6",
 							()->new BucketNSieve(6),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^7",
+							"Sieve of Eratosthenes-buckets-2^7",
 							()->new BucketNSieve(7),
 							24),
 					SieveCheckFactory.create(
-							"Bucket sieve-2^8",
+							"Sieve of Eratosthenes-buckets-2^8",
 							()->new BucketNSieve(8),
 							24)));
 	public static final List<SieveMeasureFactory> MEASURES
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveMeasureFactory.create(
-							"Bucket sieve",
+							"Sieve of Eratosthenes-buckets",
 							false,
 							Bucket1Sieve::new,
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^1",
+							"Sieve of Eratosthenes-buckets-2^1",
 							false,
 							()->new BucketNSieve(1),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^2",
+							"Sieve of Eratosthenes-buckets-2^2",
 							false,
 							()->new BucketNSieve(2),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^3",
+							"Sieve of Eratosthenes-buckets-2^3",
 							false,
 							()->new BucketNSieve(3),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^4",
+							"Sieve of Eratosthenes-buckets-2^4",
 							false,
 							()->new BucketNSieve(4),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^5",
+							"Sieve of Eratosthenes-buckets-2^5",
 							false,
 							()->new BucketNSieve(5),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^6",
+							"Sieve of Eratosthenes-buckets-2^6",
 							false,
 							()->new BucketNSieve(6),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^7",
+							"Sieve of Eratosthenes-buckets-2^7",
 							false,
 							()->new BucketNSieve(7),
 							30, 1, 20),
 					SieveMeasureFactory.create(
-							"Bucket sieve-2^8",
+							"Sieve of Eratosthenes-buckets-2^8",
 							false,
 							()->new BucketNSieve(8),
 							30, 1, 20)));
@@ -113,7 +119,7 @@ public abstract class BucketSieve extends SegmentedSieve {
 		}
 	}
 	
-	public static class Bucket1Sieve extends BucketSieve {
+	public static class Bucket1Sieve extends BucketSieveOfEratosthenes {
 		public Bucket1Sieve() {
 			super(64);
 		}
@@ -122,14 +128,9 @@ public abstract class BucketSieve extends SegmentedSieve {
 		protected int bucketIndex(long current, long position) {
 			return Long.numberOfLeadingZeros(current^position);
 		}
-		
-		@Override
-		protected long bucketSize(int index) {
-			return 1l<<(63-index);
-		}
 	}
 	
-	public static class BucketNSieve extends BucketSieve {
+	public static class BucketNSieve extends BucketSieveOfEratosthenes {
 		private final int bits;
 		private final byte[] digits=new byte[64];
 		private final int mask;
@@ -160,26 +161,20 @@ public abstract class BucketSieve extends SegmentedSieve {
 			}
 			return digits<<bits;
 		}
-		
-		@Override
-		protected long bucketSize(int index) {
-			return 1l<<(bits*(index>>>bits));
-		}
 	}
 	
 	private long addPrimePosition;
 	private final Bucket[] buckets;
-	private final long[] bucketSizes;
 	private Bucket freeList;
 	private OperationCounter operationCounter=OperationCounter.NOOP;
+	private int segmentSizeLog2;
+	private final LongList smallPrimePositions=new LongList();
+	private final IntList smallPrimes=new IntList();
 	
 	@SuppressWarnings("OverridableMethodCallInConstructor")
-	public BucketSieve(int buckets) {
+	public BucketSieveOfEratosthenes(int buckets) {
+		super(3l);
 		this.buckets=new Bucket[buckets];
-		bucketSizes=new long[buckets];
-		for (int ii=buckets-1; 0<=ii; --ii) {
-			bucketSizes[ii]=UnsignedLong.max(2l, bucketSize(ii));
-		}
 	}
 	
 	private void add(int bucket, long position, int prime) {
@@ -197,8 +192,21 @@ public abstract class BucketSieve extends SegmentedSieve {
 	}
 	
 	@Override
-	protected void addPrime(long position, int prime) {
-		add(bucketIndex(addPrimePosition, position), position, prime);
+	protected void addPrime(long end, OperationCounter operationCounter,
+			long position, long prime, SieveTable sieveTable, long start)
+			throws Throwable {
+		addPrime(position, prime);
+	}
+	
+	private void addPrime(long position, long prime) throws Throwable {
+		if (2l*prime<=segmentSize) {
+			smallPrimePositions.add(position);
+			smallPrimes.add((int)prime);
+		}
+		else {
+			add(bucketIndex(addPrimePosition, segment(position)),
+					position, (int)prime);
+		}
 	}
 	
 	private Bucket allocate(Bucket next) {
@@ -212,14 +220,14 @@ public abstract class BucketSieve extends SegmentedSieve {
 	
 	protected abstract int bucketIndex(long current, long position);
 	
-	protected abstract long bucketSize(int index);
-	
 	private void freeBucket(Bucket bucket) {
 		freeList=bucket.clear(freeList);
 	}
 	
 	@Override
-	public void reset() throws Throwable {
+	protected void reset(PrimesProducer primesProducer, Progress progress)
+			throws Throwable {
+		segmentSizeLog2=Long.numberOfTrailingZeros(segmentSize);
 		for (int ii=buckets.length-1; 0<=ii; --ii) {
 			while (null!=buckets[ii]) {
 				Bucket bucket=buckets[ii];
@@ -227,62 +235,53 @@ public abstract class BucketSieve extends SegmentedSieve {
 				freeBucket(bucket);
 			}
 		}
-		start=3l;
-	}
-	
-	@Override
-	public void reset(PrimesProducer primesProducer, Progress progress,
-			long start) throws Throwable {
-		checkOdd(start);
-		reset();
-		this.start=start;
-		addPrimePosition=start-2l;
+		if (0l==startSegment) {
+			return;
+		}
+		long start=start();
+		addPrimePosition=segment(start-1l);
 		primesProducer.primes(
 				(prime)->addPrime(
-						UnsignedLong.firstSievePosition(prime, this.start),
-						(int)prime),
-				UnsignedLong.min(UnsignedLong.MAX_PRIME, this.start-1l),
+						UnsignedLong.firstSievePosition(prime, start),
+						prime),
+				UnsignedLong.min(UnsignedLong.MAX_PRIME, start-1l),
 				progress);
+	}
+	
+	private long segment(long number) {
+		return (number-1l)>>>segmentSizeLog2;
 	}
 	
 	@Override
 	protected void sieveSegment(long end, OperationCounter operationCounter,
-			SieveTable sieveTable) throws Throwable {
+			SieveTable sieveTable, long start) throws Throwable {
 		this.operationCounter=operationCounter;
-		for (long start2=start; 0<Long.compareUnsigned(end, start2); ) {
-			int index=bucketIndex(start2-2l, start2);
-			Bucket bucket=buckets[index];
-			if (null==bucket) {
-				start2+=UnsignedLong.min(end-start2, bucketSizes[index]);
-				continue;
-			}
-			buckets[index]=null;
-			do {
-				Bucket bucket2=bucket;
-				bucket=bucket.next;
-				for (int ii=bucket2.size-1; 0<=ii; --ii) {
-					long position=bucket2.positions[ii];
-					int prime1=bucket2.primes[ii];
-					if (position==start2) {
-						long prime2=2l*UnsignedLong.unsignedInt(prime1);
-						for (; 0<Long.compareUnsigned(end, position);
-								position+=prime2) {
-							operationCounter.increment();
-							sieveTable.setComposite(position);
-						}
-					}
-					add(bucketIndex(start2, position), position, prime1);
-				}
-				freeBucket(bucket2);
-			}
-			while (null!=bucket);
-			start2+=2l;
+		addPrimePosition=segment(start);
+		if (0==addPrimePosition) {
+			return;
 		}
-		addPrimePosition=end-2l;
-	}
-	
-	@Override
-	public long start() {
-		return start;
+		for (int ii=smallPrimes.size()-1; 0<=ii; --ii) {
+			long position=smallPrimePositions.get(ii);
+			position=sieve(end, operationCounter, position,
+					UnsignedLong.unsignedInt(smallPrimes.get(ii)),
+					sieveTable);
+			smallPrimePositions.set(ii, position);
+		}
+		int index=bucketIndex(addPrimePosition-1l, addPrimePosition);
+		Bucket bucket=buckets[index];
+		buckets[index]=null;
+		while (null!=bucket) {
+			Bucket bucket2=bucket;
+			bucket=bucket.next;
+			for (int ii=bucket2.size-1; 0<=ii; --ii) {
+				long position=bucket2.positions[ii];
+				int prime1=bucket2.primes[ii];
+				position=sieve(end, operationCounter, position,
+						UnsignedLong.unsignedInt(prime1), sieveTable);
+				add(bucketIndex(addPrimePosition, segment(position)), position,
+						prime1);
+			}
+			freeBucket(bucket2);
+		}
 	}
 }

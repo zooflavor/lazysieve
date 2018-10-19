@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -33,7 +34,7 @@ public class MeasureSieve implements GuiParent<JDialog> {
 	public static final String TITLE="Measure sieve";
 	
 	private class MeasureModel implements ComboBoxModel<Measure> {
-		private Measure selected=Measure.values()[0];
+		private Measure selected=Measure.NANOSECS;
 		
 		@Override
 		public void addListDataListener(ListDataListener listener) {
@@ -65,7 +66,7 @@ public class MeasureSieve implements GuiParent<JDialog> {
 	}
 	
 	private class SieveModel implements ComboBoxModel<SieveMeasureFactory> {
-		private SieveMeasureFactory selected=Sieves.MEASURES.get(0);
+		private SieveMeasureFactory selected=Sieves.MEASURES.get(1);
 		
 		@Override
 		public void addListDataListener(ListDataListener listener) {
@@ -101,9 +102,10 @@ public class MeasureSieve implements GuiParent<JDialog> {
 	private final Plotter plotter;
 	private final UnsignedLongSpinner segments;
 	private final JSpinner segmentSize;
-	private final JLabel segmentSizeLabel;
+	private final JLabel segmentSizeEditor;
 	private final JComboBox<SieveMeasureFactory> sieve;
 	private final UnsignedLongSpinner startSegment;
+	private final JCheckBox sum;
 	
 	public MeasureSieve(Plotter plotter) throws Throwable {
 		this.plotter=plotter;
@@ -133,25 +135,31 @@ public class MeasureSieve implements GuiParent<JDialog> {
 		
 		JPanel segmentSizePanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(segmentSizePanel);
-		segmentSizeLabel=new JLabel(" 9999999999 = 2^99");
-		segmentSizeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		segmentSizeLabel.setFont(new Font(
+		JLabel segmentSizeLabel=new JLabel("Segment size:");
+		segmentSizePanel.add(segmentSizeLabel);
+		segmentSizeEditor=new JLabel(" 9,999,999,999 = 2^99");
+		segmentSizeEditor.setHorizontalAlignment(SwingConstants.RIGHT);
+		segmentSizeEditor.setFont(new Font(
 				Font.MONOSPACED,
 				Font.PLAIN,
-				segmentSizeLabel.getFont().getSize()));
-		segmentSizeLabel.setPreferredSize(segmentSizeLabel.getPreferredSize());
+				segmentSizeEditor.getFont().getSize()));
+		segmentSizeEditor.setPreferredSize(segmentSizeEditor.getPreferredSize());
 		segmentSize=new JSpinner();
-		segmentSize.setEditor(segmentSizeLabel);
+		segmentSize.setEditor(segmentSizeEditor);
 		segmentSize.addChangeListener(this::segmentSizeChanged);
 		segmentSizePanel.add(segmentSize);
 		
 		JPanel startSegmentPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(startSegmentPanel);
+		JLabel startSegmentLabel=new JLabel("Start segment:");
+		startSegmentPanel.add(startSegmentLabel);
 		startSegment=new UnsignedLongSpinner(1l<<30, 0l, 0l, 1l);
 		startSegmentPanel.add(startSegment);
 		
 		JPanel segmentsPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
 		panel.add(segmentsPanel);
+		JLabel segmentsLabel=new JLabel("Segments:");
+		segmentsPanel.add(segmentsLabel);
 		segments=new UnsignedLongSpinner(1l<<30, 1l, 100l, 1l);
 		segmentsPanel.add(segments);
 		
@@ -159,6 +167,11 @@ public class MeasureSieve implements GuiParent<JDialog> {
 		panel.add(measurePanel);
 		measure=new JComboBox<>(new MeasureModel());
 		measurePanel.add(measure);
+		
+		JPanel sumPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
+		panel.add(sumPanel);
+		sum=new JCheckBox("sum", true);
+		sumPanel.add(sum);
 		
 		sieveChanged(null);
 		
@@ -177,9 +190,11 @@ public class MeasureSieve implements GuiParent<JDialog> {
 		long segments2=segments.getNumber();
 		long startSegment2=startSegment.getNumber();
 		Measure measure2=Measure.values()[measure.getSelectedIndex()];
+		boolean sum2=sum.isSelected();
 		Color color=plotter.selectNewColor();
 		SieveMeasure sieve2=sieveFactory.create(color, measure2,
-				plotter.gui.database, segments2, segmentSize2, startSegment2);
+				plotter.gui.database, segments2, segmentSize2, startSegment2,
+				sum2);
 		new AddSampleProcess(plotter) {
 			@Override
 			protected Sample2D sample(Color color, Progress progress)
@@ -192,7 +207,7 @@ public class MeasureSieve implements GuiParent<JDialog> {
 	
 	private void segmentSizeChanged(ChangeEvent event) {
 		long value=UnsignedLong.unsignedInt((Integer)segmentSize.getValue());
-		segmentSizeLabel.setText(String.format(
+		segmentSizeEditor.setText(String.format(
 				"%1$s = 2^%2$2s",
 				UnsignedLong.format(1l<<value),
 				UnsignedLong.format(value)));

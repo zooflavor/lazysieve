@@ -13,20 +13,22 @@ import java.util.function.Supplier;
 public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 	public SegmentedSieveMeasure(Color color, String label, Measure measure,
 			PrimesProducer primes, long segments, long segmentSize,
-			Supplier<Sieve> sieveFactory, long startSegment) {
+			Supplier<Sieve> sieveFactory, long startSegment, boolean sum) {
 		super(color, label, measure, primes, segments, segmentSize,
-				sieveFactory, startSegment);
+				sieveFactory, startSegment, sum);
 	}
 	
 	@Override
 	public Sample2D measure(Progress progress) throws Throwable {
 		progress.progress(0.0);
 		Sieve sieve=sieveFactory.get();
-		sieve.reset(primes,
+		sieve.reset(
+				primes,
 				progress.subProgress(0.0, "init", 0.05),
-				(0l==startSegment)?3l:(startSegment*segmentSize+1l));
+				segmentSize,
+				startSegment*segmentSize+1l);
 		Segment segment=new Segment();
-		segment.clear(0l, 0l, 0l, 1l);
+		segment.clear(0l, 0l, 0l, sieve.defaultPrime(), 1l);
 		Map<Double, Double> sample=new HashMap<>((int)segments);
 		boolean time=Measure.NANOSECS.equals(measure);
 		OperationCounter counter
@@ -39,15 +41,30 @@ public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 			long start=(startSegment+ss)*segmentSize+1l;
 			long end=start+segmentSize;
 			if (0<=Long.compareUnsigned(start, segment.segmentEnd)) {
-				segment.clear(0l, 0l, 0l,
+				segment.clear(0l, 0l, 0l, sieve.defaultPrime(),
 						Long.divideUnsigned(start-1l, Segment.NUMBERS)
 								*Segment.NUMBERS+1l);
 			}
 			long startTime=System.nanoTime();
-			sieve.sieve(end, counter, segment);
+			sieve.sieve(counter, segment);
 			long endTime=System.nanoTime();
-			sieveTime+=endTime-startTime;
-			sample.put(1.0*end, 1.0*(time?sieveTime:(counter.get())));
+			long measure;
+			if (time) {
+				if (sum) {
+					sieveTime+=endTime-startTime;
+					measure=sieveTime;
+				}
+				else {
+					measure=endTime-startTime;
+				}
+			}
+			else {
+				measure=counter.get();
+				if (!sum) {
+					counter.reset();
+				}
+			}
+			sample.put(1.0*end, 1.0*measure);
 		}
 		subProgress.finished();
 		return new Sample2D(new Object(), label, Colors.INTERPOLATION,

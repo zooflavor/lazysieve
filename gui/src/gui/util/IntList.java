@@ -63,4 +63,13 @@ public class IntList {
 	public int size() {
 		return size;
 	}
+	
+	public void swapLastAndRemove(int index) {
+		check(index);
+		int size1=size-1;
+		if (index<size1) {
+			values[index]=values[size1];
+		}
+		size=size1;
+	}
 }

@@ -15,10 +15,11 @@ public abstract class AbstractSieveMeasure implements SieveMeasure {
 	protected final long segmentSize;
 	protected final Supplier<Sieve> sieveFactory;
 	protected final long startSegment;
+	protected final boolean sum;
 	
 	public AbstractSieveMeasure(Color color, String label, Measure measure,
 			PrimesProducer primes, long segments, long segmentSize,
-			Supplier<Sieve> sieveFactory, long startSegment) {
+			Supplier<Sieve> sieveFactory, long startSegment, boolean sum) {
 		if (0!=(segmentSize&1l)) {
 			throw new IllegalArgumentException(
 					UnsignedLong.format(segmentSize));
@@ -54,5 +55,6 @@ public abstract class AbstractSieveMeasure implements SieveMeasure {
 		this.segmentSize=segmentSize;
 		this.sieveFactory=sieveFactory;
 		this.startSegment=startSegment;
+		this.sum=sum;
 	}
 }

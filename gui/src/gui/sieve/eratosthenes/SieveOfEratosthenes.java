@@ -1,7 +1,11 @@
-package gui.sieve;
+package gui.sieve.eratosthenes;
 
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
+import gui.sieve.OperationCounter;
+import gui.sieve.SieveCheckFactory;
+import gui.sieve.SieveMeasureFactory;
+import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
 import gui.util.LongList;
@@ -9,7 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SieveOfEratosthenes extends SegmentedSieve {
+public class SieveOfEratosthenes extends EratosthenesianSieve {
 	public static List<SieveCheckFactory> CHECKS
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveCheckFactory.create(
@@ -22,74 +26,67 @@ public class SieveOfEratosthenes extends SegmentedSieve {
 							"Sieve of Eratosthenes",
 							true,
 							SieveOfEratosthenes::new,
-							30, 1, 20),
+							30, 6, 20),
 					SieveMeasureFactory.create(
 							"Sieve of Eratosthenes-segmented",
 							false,
 							SieveOfEratosthenes::new,
-							30, 1, 20)));
+							30, 6, 20)));
 	
 	private final LongList positions
 			=new LongList(UnsignedLong.MAX_PRIME_COUNT);
 	private final IntList primes=new IntList(UnsignedLong.MAX_PRIME_COUNT);
 	private int sqrtIndex;
 	
+	public SieveOfEratosthenes() {
+		super(3l);
+	}
+	
 	@Override
-	protected void addPrime(long position, int prime) {
+	protected void addPrime(long end, OperationCounter operationCounter,
+			long position, long prime, SieveTable sieveTable, long start)
+			throws Throwable {
 		positions.add(position);
-		primes.add(prime);
+		primes.add((int)prime);
 	}
 	
 	@Override
-	public void reset() throws Throwable {
+	protected void reset(PrimesProducer primesProducer, Progress progress)
+			throws Throwable {
 		positions.clear();
 		primes.clear();
 		sqrtIndex=0;
-		start=3l;
-	}
-	
-	@Override
-	public void reset(PrimesProducer primesProducer, Progress progress,
-			long start) throws Throwable {
-		checkOdd(start);
-		this.start=start;
-		positions.clear();
-		sqrtIndex=0;
-		primes.clear();
+		if (0l==startSegment) {
+			return;
+		}
 		primesProducer.primes(
 				(prime)->{
 					positions.add(
-							UnsignedLong.firstSievePosition(prime, start));
+							UnsignedLong.firstSievePosition(prime, start()));
 					primes.add((int)prime);
 				},
-				UnsignedLong.min(UnsignedLong.MAX_PRIME, start-1),
+				UnsignedLong.min(UnsignedLong.MAX_PRIME,
+						segmentSize*startSegment),
 				progress);
 	}
 	
 	@Override
 	protected void sieveSegment(long end, OperationCounter operationCounter,
-			SieveTable sieveTable) throws Throwable {
+			SieveTable sieveTable, long start) throws Throwable {
 		while ((primes.size()>sqrtIndex)
 				&& (0<=Long.compareUnsigned(end,
-						UnsignedLong.square(primes.get(sqrtIndex))))) {
+						UnsignedLong.square(UnsignedLong.unsignedInt(
+								primes.get(sqrtIndex)))))) {
 			++sqrtIndex;
 		}
 		for (int ii=0; sqrtIndex>ii; ++ii) {
 			operationCounter.increment();
 			long position=positions.get(ii);
 			if (0<Long.compareUnsigned(end, position)) {
-				long prime=2l*UnsignedLong.unsignedInt(primes.get(ii));
-				for(; 0<Long.compareUnsigned(end, position); position+=prime) {
-					operationCounter.increment();
-					sieveTable.setComposite(position);
-				}
+				position=sieve(end, operationCounter, position,
+						UnsignedLong.unsignedInt(primes.get(ii)), sieveTable);
 				positions.set(ii, position);
 			}
 		}
-	}
-	
-	@Override
-	public long start() {
-		return start;
 	}
 }
