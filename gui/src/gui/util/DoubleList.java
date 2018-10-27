@@ -2,25 +2,24 @@ package gui.util;
 
 import java.util.Arrays;
 
-public class LongList extends PrimitiveList<LongConsumer, LongList> {
-	private long[] values;
+public class DoubleList extends PrimitiveList<DoubleConsumer, DoubleList> {
+	private double[] values;
 	
-	private LongList(int size, long[] values) {
+	private DoubleList(int size, double[] values) {
 		super(size);
-		this.size=size;
 		this.values=values;
 	}
 	
-	public LongList(int expectedSize) {
+	public DoubleList(int expectedSize) {
 		super(0);
-		values=new long[Math.max(1, expectedSize)];
+		values=new double[Math.max(1, expectedSize)];
 	}
 	
-	public LongList() {
+	public DoubleList() {
 		this(16);
 	}
 	
-	public void add(long value) {
+	public void add(double value) {
 		if (values.length<=size) {
 			values=Arrays.copyOf(values, 2*values.length);
 		}
@@ -34,36 +33,36 @@ public class LongList extends PrimitiveList<LongConsumer, LongList> {
 	}
 	
 	@Override
-	protected LongList cast() {
+	protected DoubleList cast() {
 		return this;
 	}
 	
 	@Override
-	public LongList copy() {
-		return new LongList(size, Arrays.copyOf(values, size));
+	public DoubleList copy() {
+		return new DoubleList(size, Arrays.copyOf(values, size));
 	}
 	
 	@Override
-	protected boolean forEach(LongConsumer consumer, int index)
+	protected boolean forEach(DoubleConsumer consumer, int index)
 			throws Throwable {
 		return consumer.next(values[index]);
 	}
 	
-	public long get(int index) {
+	public double get(int index) {
 		check(index);
 		return values[index];
 	}
 	
-	public long set(int index, long value) {
+	public double set(int index, double value) {
 		check(index);
-		long result=values[index];
+		double result=values[index];
 		values[index]=value;
 		return result;
 	}
 	
 	@Override
 	protected void swapImpl(int index0, int index1) {
-		long temp=values[index0];
+		double temp=values[index0];
 		values[index0]=values[index1];
 		values[index1]=temp;
 	}

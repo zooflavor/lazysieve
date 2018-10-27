@@ -318,7 +318,6 @@ public class SieveOfAtkin extends SegmentedSieve {
 	@Override
 	protected void sieveSegment(long end, OperationCounter operationCounter,
 			SieveTable sieveTable, long start) throws Throwable {
-		//long time0=System.nanoTime();
 		if (0l==startSegment) {
 			sieveTable.setPrime(1l);
 			sieveTable.setPrime(3l);
@@ -343,7 +342,6 @@ public class SieveOfAtkin extends SegmentedSieve {
 				}
 			}
 		}
-		//long time1=System.nanoTime();
 		while ((primes.size()>sqrtIndex)
 				&& (0<=Long.compareUnsigned(end,
 						UnsignedLong.square(UnsignedLong.unsignedInt(
@@ -362,7 +360,5 @@ public class SieveOfAtkin extends SegmentedSieve {
 				}
 			}
 		}
-		//long time2=System.nanoTime();
-		//System.out.println(String.format("%1$,f", 1.0*(time1-time0)/(time2-time1)));
 	}
 }

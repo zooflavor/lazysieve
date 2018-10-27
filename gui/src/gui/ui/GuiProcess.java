@@ -1,11 +1,11 @@
 package gui.ui;
 
 import gui.ui.progress.GuiProgress;
-import java.awt.Component;
+import java.awt.Window;
 import java.util.concurrent.Executor;
 import javax.swing.SwingUtilities;
 
-public abstract class GuiProcess<C extends Component, P extends GuiParent<C>> {
+public abstract class GuiProcess<G extends GuiWindow<W>, W extends Window> {
 	private class RunnableImpl implements Runnable {
 		@Override
 		public void run() {
@@ -28,25 +28,25 @@ public abstract class GuiProcess<C extends Component, P extends GuiParent<C>> {
 						foreground();
 					}
 					catch (Throwable throwable) {
-						SwingUtils.showError(parent.component(), throwable);
+						SwingUtils.showError(parent.window(), throwable);
 					}
 				});
 			}
 			catch (Throwable throwable) {
 				SwingUtilities.invokeLater(()->{
 					parent.setAllEnabled(true);
-                    SwingUtils.showError(parent.component(), throwable);
+                    SwingUtils.showError(parent.window(), throwable);
 				});
 			}
 		}
 	}
 	
-	protected final P parent;
+	protected final G parent;
 	protected final GuiProgress progress;
 	
-	public GuiProcess(boolean cancellable, P parent, String title) {
+	public GuiProcess(boolean cancellable, G parent, String title) {
 		this.parent=parent;
-		progress=new GuiProgress(cancellable, parent.component(), title);
+		progress=new GuiProgress(cancellable, parent.window(), title);
 	}
 	
 	protected abstract void background() throws Throwable;

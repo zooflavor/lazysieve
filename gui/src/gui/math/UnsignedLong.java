@@ -120,7 +120,7 @@ public class UnsignedLong {
 	
 	public static long square(long value) {
 		if (!squareExists(value)) {
-			throw new ArithmeticException();
+			throw new ArithmeticException(format(value));
 		}
 		return value*value;
 	}
@@ -131,10 +131,6 @@ public class UnsignedLong {
 	
 	public static long squareRootFloor(long value) {
 		long higher=(1l<<(Long.SIZE/2))-1l;
-		String sh=Long.toUnsignedString(higher);
-		long ss=square(higher);
-		String sss=Long.toUnsignedString(ss);
-		int cc=Long.compareUnsigned(square(higher), value);
 		if (0>=Long.compareUnsigned(square(higher), value)) {
 			return higher;
 		}

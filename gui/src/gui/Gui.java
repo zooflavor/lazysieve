@@ -5,22 +5,17 @@ import gui.check.CheckSieves;
 import gui.io.Database;
 import gui.plotter.Plotter;
 import gui.ui.CloseButton;
-import gui.ui.GuiParent;
-import gui.ui.SwingUtils;
+import gui.ui.GuiWindow;
 import java.awt.FlowLayout;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-public class Gui implements GuiParent<JFrame> {
+public class Gui extends GuiWindow<JFrame> {
 	public static final List<Command.Descriptor> COMMANDS
 			=Collections.unmodifiableList(Arrays.asList(
 					new Command.Descriptor(
@@ -30,48 +25,12 @@ public class Gui implements GuiParent<JFrame> {
 							Gui::main,
 							"Main gui [database-directory]")));
 	
-	private class WindowListenerImpl implements WindowListener {
-		@Override
-		public void windowActivated(WindowEvent event) {
-		}
-		
-		@Override
-		public void windowClosed(WindowEvent event) {
-			executor.shutdown();
-		}
-		
-		@Override
-		public void windowClosing(WindowEvent event) {
-		}
-		
-		@Override
-		public void windowDeactivated(WindowEvent event) {
-		}
-		
-		@Override
-		public void windowDeiconified(WindowEvent event) {
-		}
-		
-		@Override
-		public void windowIconified(WindowEvent event) {
-		}
-		
-		@Override
-		public void windowOpened(WindowEvent event) {
-		}
-	}
+	private final JFrame frame;
 	
-	public final Database database;
-	public final ScheduledExecutorService executor;
-	public final JFrame frame;
-	
-	public Gui(Database database, ScheduledExecutorService executor)
-			throws Throwable {
-		this.database=database;
-		this.executor=executor;
+	public Gui(Session session) {
+		super(session);
 		frame=new JFrame("Zooflavor");
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.addWindowListener(new WindowListenerImpl());
 		
 		frame.getContentPane().setLayout(new FlowLayout());
 		
@@ -117,29 +76,24 @@ public class Gui implements GuiParent<JFrame> {
 		frame.pack();
 	}
 	
-	@Override
-	public JFrame component() {
-		return frame;
-	}
-	
 	public static void main(List<Object> arguments) throws Throwable {
 		Database database=new Database((Path)arguments.get(1));
 		boolean error=true;
-		ScheduledExecutorService executor=Executors.newScheduledThreadPool(
-				Runtime.getRuntime().availableProcessors());
+		Session session=new Session(database);
 		try {
-			new Gui(database, executor)
+			new Gui(session)
 					.show();
 			error=false;
 		}
 		finally {
 			if (error) {
-				executor.shutdown();
+				session.close();
 			}
 		}
 	}
 	
-	private void show() throws Throwable {
-		SwingUtils.show(frame);
+	@Override
+	public JFrame window() {
+		return frame;
 	}
 }

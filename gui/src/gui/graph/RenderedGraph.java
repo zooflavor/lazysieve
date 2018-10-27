@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RenderedGraph2D {
-	public final List<RenderedSample2D> functions;
-	public final Graph2D graph;
+public class RenderedGraph {
+	public final boolean completed;
+	public final List<RenderedSample> functions;
+	public final Graph graph;
 	public final List<Ruler> rulers;
-	public final List<RenderedSample2D> samples;
+	public final List<RenderedSample> samples;
 	
-	public RenderedGraph2D(List<RenderedSample2D> functions,
-			Graph2D graph, List<Ruler> rulers,
-			List<RenderedSample2D> samples) {
+	public RenderedGraph(boolean completed, List<RenderedSample> functions,
+			Graph graph, List<Ruler> rulers,
+			List<RenderedSample> samples) {
+		this.completed=completed;
 		this.functions
 				=Collections.unmodifiableList(new ArrayList<>(functions));
 		this.graph=graph;

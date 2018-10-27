@@ -45,6 +45,7 @@ public class Color implements Comparable<Color> {
 	}
 	
 	public final int alpha;
+	public final java.awt.Color awt;
 	public final int blue;
 	public final int green;
 	public final String name;
@@ -59,10 +60,15 @@ public class Color implements Comparable<Color> {
 						NAMELESS, alpha, blue, green, red)
 				:name;
 		this.red=red;
+		awt=new java.awt.Color(red, green, blue, alpha);
+	}
+	
+	public Color alpha(int alpha) {
+		return new Color(alpha, blue, green, null, red);
 	}
 	
 	public java.awt.Color awt() {
-		return new java.awt.Color(red, green, blue, alpha);
+		return awt;
 	}
 	
 	public static Color create(String name, int argb) {

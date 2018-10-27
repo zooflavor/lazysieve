@@ -7,14 +7,14 @@ public class DatabaseReaggregate {
     public static final char MNEMONIC='a';
     public static final String TITLE="DB reaggregate";
     
-    public static class Process extends GuiProcess<JFrame, Gui> {
+    public static class Process extends GuiProcess<Gui, JFrame> {
         public Process(Gui gui) {
             super(true, gui, TITLE);
         }
 
         @Override
         protected void background() throws Throwable {
-            parent.database.reaggregate(progress);
+            parent.session.database.reaggregate(progress);
         }
 
         @Override
@@ -24,6 +24,7 @@ public class DatabaseReaggregate {
     }
     
     public static void start(Gui gui) throws Throwable {
-        new Process(gui).start(gui.executor);
+        new Process(gui)
+				.start(gui.session.executor);
     }
 }

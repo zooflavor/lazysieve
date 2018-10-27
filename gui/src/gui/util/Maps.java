@@ -1,5 +1,6 @@
 package gui.util;
 
+import gui.graph.Sample;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -54,6 +55,14 @@ public class Maps {
 		NavigableMap<Double, Double> result=new TreeMap<>();
 		map.forEach((key, value)->
 				result.put(key.doubleValue(), value.doubleValue()));
+		return result;
+	}
+	
+	public static Sample.Builder toSample(
+			Map<? extends Number, ? extends Number> map) {
+		Sample.Builder result=Sample.builder(map.size());
+		map.forEach((key, value)->
+				result.add(key.longValue(), value.longValue()));
 		return result;
 	}
 }

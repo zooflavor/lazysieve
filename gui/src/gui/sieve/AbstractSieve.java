@@ -5,6 +5,7 @@ import gui.ui.progress.Progress;
 
 public abstract class AbstractSieve implements Sieve {
 	protected long segmentSize;
+	protected int segmentSizeLog2;
 	protected long startSegment;
 	
 	@Override
@@ -17,6 +18,7 @@ public abstract class AbstractSieve implements Sieve {
 			throw new IllegalArgumentException(""+segmentSize);
 		}
 		this.segmentSize=segmentSize;
+		segmentSizeLog2=Long.numberOfTrailingZeros(segmentSize);
 		startSegment=Long.divideUnsigned(start-1l, segmentSize);
 		reset(primesProducer, progress);
 	}

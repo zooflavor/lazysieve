@@ -1,8 +1,9 @@
 package gui.plotter;
 
 import gui.math.Functions;
+import gui.math.RealFunction;
 import gui.ui.EventHandler;
-import gui.ui.GuiParent;
+import gui.ui.GuiWindow;
 import gui.ui.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -10,24 +11,23 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-public class FunctionSelector implements GuiParent<JDialog> {
+public class FunctionSelector extends GuiWindow<JDialog> {
 	private final List<JCheckBox> checkBoxes=new ArrayList<>();
 	private final JDialog dialog;
-	private final EventHandler<List<Function<Double, Double>>> handler;
-	private final List<Function<Double, Double>> functions=new ArrayList<>();
+	private final EventHandler<List<RealFunction>> handler;
+	private final List<RealFunction> functions=new ArrayList<>();
 	
-	public FunctionSelector(
-			EventHandler<List<Function<Double, Double>>> handler,
+	public FunctionSelector(EventHandler<List<RealFunction>> handler,
 			Plotter plotter) {
+		super(plotter.session);
 		this.handler=handler;
 		
-		dialog=new JDialog(SwingUtils.window(plotter.component()),
+		dialog=new JDialog(SwingUtils.window(plotter.window()),
 				"Base functions");
 		dialog.getContentPane().setLayout(new BorderLayout());
 		
@@ -35,7 +35,7 @@ public class FunctionSelector implements GuiParent<JDialog> {
 		centerPanel.setLayout(new GridLayout(0, 4));
 		dialog.getContentPane().add(centerPanel, BorderLayout.CENTER);
 		
-		for (Function<Double, Double> function: Functions.FUNCTIONS) {
+		for (RealFunction function: Functions.FUNCTIONS) {
 			JCheckBox checkBox=new JCheckBox(function.toString());
 			checkBoxes.add(checkBox);
 			functions.add(function);
@@ -62,14 +62,9 @@ public class FunctionSelector implements GuiParent<JDialog> {
 		dialog.dispose();
 	}
 	
-	@Override
-	public JDialog component() {
-		return dialog;
-	}
-	
 	private void okButton(ActionEvent event) throws Throwable {
 		dialog.dispose();
-		List<Function<Double, Double>> functions2=new ArrayList<>();
+		List<RealFunction> functions2=new ArrayList<>();
 		for (int ii=0; checkBoxes.size()>ii; ++ii) {
 			if (checkBoxes.get(ii).isSelected()) {
 				functions2.add(functions.get(ii));
@@ -80,5 +75,10 @@ public class FunctionSelector implements GuiParent<JDialog> {
 	
     public void start() throws Throwable {
 		SwingUtils.show(dialog);
+	}
+	
+	@Override
+	public JDialog window() {
+		return dialog;
 	}
 }

@@ -9,7 +9,7 @@ import gui.ui.progress.Progress;
 import java.util.List;
 import javax.swing.JFrame;
 
-abstract class CheckProcess extends GuiProcess<JFrame, CheckSegments> {
+abstract class CheckProcess extends GuiProcess<CheckSegments, JFrame> {
 	private final PrimesProducer largePrimes;
 	private final List<Segment.Info> segmentInfos;
 	private final int[] selectedRows;
@@ -27,7 +27,7 @@ abstract class CheckProcess extends GuiProcess<JFrame, CheckSegments> {
 				maxSegmentStart=info.segmentStart;
 			}
 		}
-		largePrimes=new LargePrimesProducer(parent.gui.database);
+		largePrimes=new LargePrimesProducer(parent.session.database);
 	}
 
 	@Override

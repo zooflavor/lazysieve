@@ -4,8 +4,7 @@ import gui.Gui;
 import gui.io.Segment;
 import gui.io.Segments;
 import gui.ui.CloseButton;
-import gui.ui.GuiParent;
-import gui.ui.SwingUtils;
+import gui.ui.GuiWindow;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
-public class CheckSegments implements GuiParent<JFrame> {
+public class CheckSegments extends GuiWindow<JFrame> {
 	public static final char MNEMONIC='s';
 	public static final String TITLE="Check segments";
 	
@@ -72,12 +71,11 @@ public class CheckSegments implements GuiParent<JFrame> {
 	}
 	
 	private final JFrame frame;
-	final Gui gui;
 	private final List<Segment.Info> segmentInfos;
 	private final JTable table;
 	
 	public CheckSegments(Gui gui, Segments segments) {
-		this.gui=gui;
+		super(gui.session);
 		segmentInfos=new ArrayList<>(segments.segments.values());
 		
 		frame=new JFrame(TITLE);
@@ -101,14 +99,14 @@ public class CheckSegments implements GuiParent<JFrame> {
 		sieveButton.setMnemonic('s');
 		sieveButton.addActionListener((event)->
 				new SieveProcess(this, segmentInfos, table.getSelectedRows())
-						.start(gui.executor));
+						.start(session.executor));
 		panel.add(sieveButton);
 		
 		JButton testButton=new JButton("Test");
 		testButton.setMnemonic('t');
 		testButton.addActionListener((event)->
 				new TestProcess(this, segmentInfos, table.getSelectedRows())
-						.start(gui.executor));
+						.start(session.executor));
 		panel.add(testButton);
 		
 		panel.add(CloseButton.create(frame));
@@ -116,17 +114,13 @@ public class CheckSegments implements GuiParent<JFrame> {
 		frame.pack();
 	}
 	
-	@Override
-	public JFrame component() {
-		return frame;
-	}
-	
-	void show() {
-		SwingUtils.show(frame);
-	}
-	
 	public static void start(Gui gui) {
 		new StartProcess(gui)
-				.start(gui.executor);
+				.start(gui.session.executor);
+	}
+	
+	@Override
+	public JFrame window() {
+		return frame;
 	}
 }

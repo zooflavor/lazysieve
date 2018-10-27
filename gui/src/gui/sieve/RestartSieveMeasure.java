@@ -1,13 +1,12 @@
 package gui.sieve;
 
-import gui.graph.Sample2D;
+import gui.graph.PlotType;
+import gui.graph.Sample;
 import gui.io.PrimesProducer;
 import gui.plotter.Colors;
 import gui.ui.Color;
 import gui.ui.progress.Progress;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class RestartSieveMeasure extends AbstractSieveMeasure {
@@ -96,7 +95,7 @@ public class RestartSieveMeasure extends AbstractSieveMeasure {
 	}
 	
 	@Override
-	public Sample2D measure(Progress progress) throws Throwable {
+	public Sample measure(Progress progress) throws Throwable {
 		progress.progress(0.0);
 		Sieve sieve=sieveFactory.get();
 		sieve.reset(
@@ -104,7 +103,7 @@ public class RestartSieveMeasure extends AbstractSieveMeasure {
 				progress.subProgress(0.0, null, 0.0),
 				segmentSize,
 				1l);
-		Map<Double, Double> sample=new HashMap<>((int)segments);
+		Sample.Builder sample=Sample.builder((int)segments);
 		boolean time=Measure.NANOSECS.equals(measure);
 		OperationCounter counter
 				=time?OperationCounter.NOOP:OperationCounter.COUNTER;
@@ -137,10 +136,10 @@ public class RestartSieveMeasure extends AbstractSieveMeasure {
 				lastMeasure=measure2;
 				measure2-=measure3;
 			}
-			sample.put(1.0*end, 1.0*measure2);
+			sample.add(end, measure2);
 		}
 		progress.finished();
-		return new Sample2D(new Object(), label, Colors.INTERPOLATION,
-				color, sample, color);
+		return sample.create(new Object(), label, Colors.INTERPOLATION,
+				PlotType.LINE, color, color);
 	}
 }

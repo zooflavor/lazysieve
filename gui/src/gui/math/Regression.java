@@ -2,25 +2,26 @@ package gui.math;
 
 import gui.ui.progress.Progress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Regression {
 	private Regression() {
 	}
 	
-	public static double distanceSquared(Function<Double, Double> function,
-			Progress progress, Map<Double, Double> sample,
-			Supplier<Sum> sumFactory) throws Throwable {
+	public static <X extends Number, Y extends Number> double distanceSquared(
+			RealFunction function, Progress progress,
+			Collection<Map.Entry<X, Y>> sample, Supplier<Sum> sumFactory)
+			throws Throwable {
 		Sum sum=sumFactory.get();
 		int ii=0;
-		for (Map.Entry<Double, Double> entry: sample.entrySet()) {
+		for (Map.Entry<X, Y> entry: sample) {
 			progress.progress(1.0*ii/sample.size());
-			double xx=entry.getKey();
-			double yy=entry.getValue();
-			double dy=yy-function.apply(xx);
+			double xx=entry.getKey().doubleValue();
+			double yy=entry.getValue().doubleValue();
+			double dy=yy-function.valueAt(xx);
 			sum.add(dy*dy);
 			++ii;
 		}
@@ -28,22 +29,22 @@ public class Regression {
 		return sum.sum();
 	}
 	
-	public static LinearCombinationFunction regression(
-			List<Function<Double, Double>> functions,
-			Supplier<Sum> functionSumFactory, Progress progress,
-			Map<Double, Double> sample, Supplier<Sum> regressionSumFactory)
-			throws Throwable {
+	public static <X extends Number, Y extends Number>
+			LinearCombinationFunction regression(List<RealFunction> functions,
+					Supplier<Sum> functionSumFactory, Progress progress,
+					Collection<Map.Entry<X, Y>> sample,
+					Supplier<Sum> regressionSumFactory) throws Throwable {
 		double[][] xx=Matrix.create(sample.size(), functions.size());
 		double[][] yy=Matrix.create(sample.size(), 1);
 		Progress subProgress=progress.subProgress(0.0, null, 0.5);
 		int rr=0;
-		for (Map.Entry<Double, Double> entry: sample.entrySet()) {
+		for (Map.Entry<X, Y> entry: sample) {
 			subProgress.progress(1.0*rr/sample.size());
-			double sampleX=entry.getKey();
-			double sampleY=entry.getValue();
+			double sampleX=entry.getKey().doubleValue();
+			double sampleY=entry.getValue().doubleValue();
 			yy[rr][0]=sampleY;
 			for (int cc=functions.size()-1; 0<=cc; --cc) {
-				xx[rr][cc]=functions.get(cc).apply(sampleX);
+				xx[rr][cc]=functions.get(cc).valueAt(sampleX);
 			}
 			++rr;
 		}

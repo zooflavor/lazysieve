@@ -1,6 +1,6 @@
 package gui.plotter;
 
-import gui.graph.Sample2D;
+import gui.graph.Sample;
 import gui.math.UnsignedLong;
 import gui.sieve.Measure;
 import gui.sieve.SieveMeasure;
@@ -8,8 +8,7 @@ import gui.sieve.SieveMeasureFactory;
 import gui.sieve.Sieves;
 import gui.ui.CloseButton;
 import gui.ui.Color;
-import gui.ui.GuiParent;
-import gui.ui.SwingUtils;
+import gui.ui.GuiWindow;
 import gui.ui.UnsignedLongSpinner;
 import gui.ui.progress.Progress;
 import java.awt.BorderLayout;
@@ -30,7 +29,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListDataListener;
 
-public class MeasureSieve implements GuiParent<JDialog> {
+public class MeasureSieve extends GuiWindow<JDialog> {
 	public static final String TITLE="Measure sieve";
 	
 	private class MeasureModel implements ComboBoxModel<Measure> {
@@ -108,9 +107,10 @@ public class MeasureSieve implements GuiParent<JDialog> {
 	private final JCheckBox sum;
 	
 	public MeasureSieve(Plotter plotter) throws Throwable {
+		super(plotter.session);
 		this.plotter=plotter;
 		
-		dialog=new JDialog(plotter.component(), TITLE);
+		dialog=new JDialog(plotter.window(), TITLE);
 		dialog.getContentPane().setLayout(new BorderLayout());
 		
 		JPanel buttons=new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -153,7 +153,7 @@ public class MeasureSieve implements GuiParent<JDialog> {
 		panel.add(startSegmentPanel);
 		JLabel startSegmentLabel=new JLabel("Start segment:");
 		startSegmentPanel.add(startSegmentLabel);
-		startSegment=new UnsignedLongSpinner(1l<<30, 0l, 0l, 1l);
+		startSegment=new UnsignedLongSpinner(1l<<50, 0l, 0l, 1l);
 		startSegmentPanel.add(startSegment);
 		
 		JPanel segmentsPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -178,11 +178,6 @@ public class MeasureSieve implements GuiParent<JDialog> {
 		dialog.pack();
 	}
 	
-	@Override
-	public JDialog component() {
-		return dialog;
-	}
-	
 	private void measureButton(ActionEvent event) throws Throwable {
 		SieveMeasureFactory sieveFactory
 				=Sieves.MEASURES.get(sieve.getSelectedIndex());
@@ -193,15 +188,15 @@ public class MeasureSieve implements GuiParent<JDialog> {
 		boolean sum2=sum.isSelected();
 		Color color=plotter.selectNewColor();
 		SieveMeasure sieve2=sieveFactory.create(color, measure2,
-				plotter.gui.database, segments2, segmentSize2, startSegment2,
-				sum2);
+				session.database, segments2, segmentSize2,
+				startSegment2, sum2);
 		new AddSampleProcess(plotter) {
 			@Override
-			protected Sample2D sample(Color color, Progress progress)
+			protected Sample sample(Color color, Progress progress)
 					throws Throwable {
 				return sieve2.measure(progress);
 			}
-		}.start(plotter.gui.executor);
+		}.start(session.executor);
 		dialog.dispose();
 	}
 	
@@ -213,10 +208,6 @@ public class MeasureSieve implements GuiParent<JDialog> {
 				UnsignedLong.format(value)));
 	}
 	
-	public void show() {
-		SwingUtils.show(dialog);
-	}
-	
 	private void sieveChanged(ActionEvent event) throws Throwable {
 		SieveMeasureFactory factory
 				=Sieves.MEASURES.get(sieve.getSelectedIndex());
@@ -226,5 +217,10 @@ public class MeasureSieve implements GuiParent<JDialog> {
 				factory.smallSegmentSizeMaxLog2(),
 				1));
 		segmentSizeChanged(null);
+	}
+	
+	@Override
+	public JDialog window() {
+		return dialog;
 	}
 }

@@ -2,15 +2,17 @@ package gui.util;
 
 import java.util.Arrays;
 
-public class IntList {
-	private int size;
+public class IntList extends PrimitiveList<IntConsumer, IntList> {
 	private int[] values;
 	
+	private IntList(int size, int[] values) {
+		super(size);
+		this.values=values;
+	}
+	
 	public IntList(int expectedSize) {
-		if (0>=expectedSize) {
-			expectedSize=1;
-		}
-		values=new int[expectedSize];
+		super(0);
+		values=new int[Math.max(1, expectedSize)];
 	}
 	
 	public IntList() {
@@ -25,32 +27,30 @@ public class IntList {
 		++size;
 	}
 	
-	public void check(int index) {
-		if ((0>index)
-				|| (size<=index)) {
-			throw new ArrayIndexOutOfBoundsException(index);
-		}
+	@Override
+	public int capacity() {
+		return values.length;
 	}
 	
-	public void clear() {
-		size=0;
+	@Override
+	protected IntList cast() {
+		return this;
 	}
 	
-	public void foreach(IntConsumer consumer) throws Throwable {
-		for (int ii=0, ss=size; ss>ii; ++ii) {
-			if (!consumer.next(values[ii])) {
-				return;
-			}
-		}
+	@Override
+	public IntList copy() {
+		return new IntList(size, Arrays.copyOf(values, size));
+	}
+	
+	@Override
+	protected boolean forEach(IntConsumer consumer, int index)
+			throws Throwable {
+		return consumer.next(values[index]);
 	}
 	
 	public int get(int index) {
 		check(index);
 		return values[index];
-	}
-	
-	public boolean isEmpty() {
-		return 0>=size;
 	}
 	
 	public int set(int index, int value) {
@@ -60,8 +60,11 @@ public class IntList {
 		return result;
 	}
 	
-	public int size() {
-		return size;
+	@Override
+	protected void swapImpl(int index0, int index1) {
+		int temp=values[index0];
+		values[index0]=values[index1];
+		values[index1]=temp;
 	}
 	
 	public void swapLastAndRemove(int index) {
@@ -71,5 +74,10 @@ public class IntList {
 			values[index]=values[size1];
 		}
 		size=size1;
+	}
+	
+	@Override
+	protected void toString(StringBuilder builder, int index) {
+		builder.append(values[index]);
 	}
 }

@@ -13,9 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
-	private static final int BUCKET_SIZE=1000;
-	
+public abstract class BucketSieve extends EratosthenesianSieve {
 	public static final List<SieveCheckFactory> CHECKS
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveCheckFactory.create(
@@ -102,24 +100,7 @@ public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 							()->new BucketNSieve(8),
 							30, 1, 20)));
 	
-	private static class Bucket {
-		public Bucket next;
-		public final long[] positions=new long[BUCKET_SIZE];
-		public final int[] primes=new int[BUCKET_SIZE];
-		public int size;
-		
-		public Bucket(Bucket next) {
-			this.next=next;
-		}
-		
-		public Bucket clear(Bucket next) {
-			this.next=next;
-			size=0;
-			return this;
-		}
-	}
-	
-	public static class Bucket1Sieve extends BucketSieveOfEratosthenes {
+	public static class Bucket1Sieve extends BucketSieve {
 		public Bucket1Sieve() {
 			super(64);
 		}
@@ -130,7 +111,7 @@ public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 		}
 	}
 	
-	public static class BucketNSieve extends BucketSieveOfEratosthenes {
+	public static class BucketNSieve extends BucketSieve {
 		private final int bits;
 		private final byte[] digits=new byte[64];
 		private final int mask;
@@ -164,15 +145,13 @@ public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 	}
 	
 	private long addPrimePosition;
+	private final BucketAllocator bucketAllocator=new BucketAllocator();
 	private final Bucket[] buckets;
-	private Bucket freeList;
-	private OperationCounter operationCounter=OperationCounter.NOOP;
-	private int segmentSizeLog2;
+	private OperationCounter operationCounter;
 	private final LongList smallPrimePositions=new LongList();
 	private final IntList smallPrimes=new IntList();
 	
-	@SuppressWarnings("OverridableMethodCallInConstructor")
-	public BucketSieveOfEratosthenes(int buckets) {
+	public BucketSieve(int buckets) {
 		super(3l);
 		this.buckets=new Bucket[buckets];
 	}
@@ -181,8 +160,8 @@ public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 		operationCounter.increment();
 		Bucket bucket2=buckets[bucket];
 		if ((null==bucket2)
-				|| (BUCKET_SIZE<=bucket2.size)) {
-			bucket2=allocate(bucket2);
+				|| bucket2.isFull()) {
+			bucket2=bucketAllocator.allocate(bucket2);
 			buckets[bucket]=bucket2;
 		}
 		int index=bucket2.size;
@@ -209,31 +188,15 @@ public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 		}
 	}
 	
-	private Bucket allocate(Bucket next) {
-		if (null==freeList) {
-			return new Bucket(next);
-		}
-		Bucket bucket=freeList;
-		freeList=freeList.next;
-		return bucket.clear(next);
-	}
-	
 	protected abstract int bucketIndex(long current, long position);
-	
-	private void freeBucket(Bucket bucket) {
-		freeList=bucket.clear(freeList);
-	}
 	
 	@Override
 	protected void reset(PrimesProducer primesProducer, Progress progress)
 			throws Throwable {
-		segmentSizeLog2=Long.numberOfTrailingZeros(segmentSize);
+		operationCounter=OperationCounter.NOOP;
 		for (int ii=buckets.length-1; 0<=ii; --ii) {
-			while (null!=buckets[ii]) {
-				Bucket bucket=buckets[ii];
-				buckets[ii]=bucket.next;
-				freeBucket(bucket);
-			}
+			bucketAllocator.freeList(buckets[ii]);
+			buckets[ii]=null;
 		}
 		if (0l==startSegment) {
 			return;
@@ -278,10 +241,10 @@ public abstract class BucketSieveOfEratosthenes extends EratosthenesianSieve {
 				int prime1=bucket2.primes[ii];
 				position=sieve(end, operationCounter, position,
 						UnsignedLong.unsignedInt(prime1), sieveTable);
-				add(bucketIndex(addPrimePosition, segment(position)), position,
-						prime1);
+				add(bucketIndex(addPrimePosition, segment(position)),
+						position, prime1);
 			}
-			freeBucket(bucket2);
+			bucketAllocator.freeBucket(bucket2);
 		}
 	}
 }

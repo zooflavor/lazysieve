@@ -1,6 +1,5 @@
-package util;
+package gui.util;
 
-import gui.util.UnsignedLongMinQueue;
 import java.util.NoSuchElementException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

@@ -6,254 +6,420 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 
 public class Functions {
-	public static final Comparator<Function<Double, Double>> COMPARATOR
+	static Comparator<RealFunction> COMPARATOR
 			=(f0, f1)->f0.toString().compareTo(f1.toString());
-	public static final List<Function<Double, Double>> FUNCTIONS;
-	public static final Function<Double, Double> LNX
-			=new Function<Double, Double>() {
+	public static final List<RealFunction> FUNCTIONS;
+	public static final RealFunction LNX
+			=new RealFunction() {
 				@Override
-				public Double apply(Double xx) {
-					if (0.0>=xx) {
-						return null;
-					}
-					return Math.log(xx);
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
 				}
-				
+
 				@Override
 				public String toString() {
 					return "ln(x)";
 				}
-			};
-	public static final Function<Double, Double> ONE
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					return 1.0;
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
+					}
+					return Math.log(xx);
+				}
+			};
+	public static final RealFunction ONE
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "1";
 				}
-			};
-	public static final Function<Double, Double> ONE_PER_X
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					if (0.0==xx) {
-						return null;
+				public double valueAt(double xx) {
+					return 1.0;
+				}
+			};
+	public static final RealFunction ONE_PER_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
+				}
+				
+				@Override
+				public String toString() {
+					return "1/ln(ln(e+x))";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
 					}
-					return 1.0/xx;
+					return 1.0/Math.log(Math.log(Math.E+xx));
+				}
+			};
+	public static final RealFunction ONE_PER_LNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
+				}
+				
+				@Override
+				public String toString() {
+					return "1/ln(1+x)";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
+					}
+					return 1.0/Math.log(1.0+xx);
+				}
+			};
+	public static final RealFunction ONE_PER_X
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return (0.0<fromX)
+							|| (0.0>toX);
 				}
 				
 				@Override
 				public String toString() {
 					return "1/x";
 				}
-			};
-	public static final Function<Double, Double> ONE_PER_X2
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
+				public double valueAt(double xx) {
 					if (0.0==xx) {
-						return null;
+						return Double.NaN;
 					}
-					return 1.0/(xx*xx);
+					return 1.0/xx;
+				}
+			};
+	public static final RealFunction ONE_PER_X2
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return (0.0<fromX)
+							|| (0.0>toX);
 				}
 				
 				@Override
 				public String toString() {
 					return "1/x^2";
 				}
-			};
-	public static final Function<Double, Double> SQRT_X
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					if (0.0>xx) {
-						return null;
+				public double valueAt(double xx) {
+					if (0.0==xx) {
+						return Double.NaN;
 					}
-					return Math.sqrt(xx);
+					return 1.0/(xx*xx);
+				}
+			};
+	public static final RealFunction SQRT_X
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<=toX;
 				}
 				
 				@Override
 				public String toString() {
 					return "sqrt(x)";
 				}
-			};
-	public static final Function<Double, Double> X
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					return xx;
+				public double valueAt(double xx) {
+					if (0.0>xx) {
+						return Double.NaN;
+					}
+					return Math.sqrt(xx);
+				}
+			};
+	public static final RealFunction X
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "x";
 				}
-			};
-	public static final Function<Double, Double> X2
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					return xx*xx;
+				public double valueAt(double xx) {
+					return xx;
+				}
+			};
+	public static final RealFunction X2
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "x^2";
 				}
-			};
-	public static final Function<Double, Double> X3
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					return xx*xx*xx;
+				public double valueAt(double xx) {
+					return xx*xx;
+				}
+			};
+	public static final RealFunction X3
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "x^3";
 				}
-			};
-	public static final Function<Double, Double> X4
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					double x2=xx*xx;
-					return x2*x2;
+				public double valueAt(double xx) {
+					return xx*xx*xx;
+				}
+			};
+	public static final RealFunction X4
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "x^4";
 				}
-			};
-	public static final Function<Double, Double> X5
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
+				public double valueAt(double xx) {
 					double x2=xx*xx;
-					return x2*x2*xx;
+					return x2*x2;
+				}
+			};
+	public static final RealFunction X5
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "x^5";
 				}
-			};
-	public static final Function<Double, Double> X6
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
+				public double valueAt(double xx) {
 					double x2=xx*xx;
-					return x2*x2*x2;
+					return x2*x2*xx;
+				}
+			};
+	public static final RealFunction X6
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return true;
 				}
 				
 				@Override
 				public String toString() {
 					return "x^6";
 				}
-			};
-	public static final Function<Double, Double> X_LNLNX
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					if (1.0>=xx) {
-						return null;
-					}
-					return xx*Math.log(Math.log(xx));
+				public double valueAt(double xx) {
+					double x2=xx*xx;
+					return x2*x2*x2;
+				}
+			};
+	public static final RealFunction X_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
 				}
 				
 				@Override
 				public String toString() {
 					return "x*ln(ln(x)";
 				}
-			};
-	public static final Function<Double, Double> X_LNX
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					if (0.0>=xx) {
-						return null;
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
 					}
-					return xx*Math.log(xx);
+					return xx*Math.log(Math.log(xx));
+				}
+			};
+	public static final RealFunction X_LNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
 				}
 				
 				@Override
 				public String toString() {
 					return "x*ln(x)";
 				}
-			};
-	public static final Function<Double, Double> X_LN2X
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
+				public double valueAt(double xx) {
 					if (0.0>=xx) {
-						return null;
+						return Double.NaN;
 					}
-					double lnx=Math.log(xx);
-					return xx*lnx*lnx;
+					return xx*Math.log(xx);
+				}
+			};
+	public static final RealFunction X_LN2X
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
 				}
 				
 				@Override
 				public String toString() {
 					return "x*ln^2(x)";
 				}
-			};
-	public static final Function<Double, Double> X_LNX_LNLNX
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					if (1.0>=xx) {
-						return null;
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
 					}
 					double lnx=Math.log(xx);
-					return xx*lnx*Math.log(lnx);
+					return xx*lnx*lnx;
+				}
+			};
+	public static final RealFunction X_LNX_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
 				}
 				
 				@Override
 				public String toString() {
 					return "x*ln(x)*ln(ln(x))";
 				}
-			};
-	public static final Function<Double, Double> X_PER_LNLNX
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
+				public double valueAt(double xx) {
 					if (1.0>=xx) {
-						return null;
+						return Double.NaN;
 					}
-					return xx/Math.log(Math.log(xx));
+					double lnx=Math.log(xx);
+					return xx*lnx*Math.log(lnx);
+				}
+			};
+	public static final RealFunction X_PER_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
 				}
 				
 				@Override
 				public String toString() {
 					return "x/ln(ln(x))";
 				}
-			};
-	public static final Function<Double, Double> X_PER_LNX
-			=new Function<Double, Double>() {
+				
 				@Override
-				public Double apply(Double xx) {
-					if (0.0>=xx) {
-						return null;
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
 					}
-					return xx/Math.log(xx);
+					return xx/Math.log(Math.log(xx));
+				}
+			};
+	public static final RealFunction X2_PER_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
+				}
+				
+				@Override
+				public String toString() {
+					return "x^2/ln(ln(x))";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
+					}
+					return xx*xx/Math.log(Math.log(xx));
+				}
+			};
+	public static final RealFunction X_PER_LNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
 				}
 				
 				@Override
 				public String toString() {
 					return "x/ln(x)";
 				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
+					}
+					return xx/Math.log(xx);
+				}
+			};
+	public static final RealFunction X2_PER_LNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
+				}
+				
+				@Override
+				public String toString() {
+					return "x^2/ln(x)";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
+					}
+					return xx*xx/Math.log(xx);
+				}
 			};
 	
 	static {
-		List<Function<Double, Double>> functions0=new ArrayList<>();
+		List<RealFunction> functions0=new ArrayList<>();
 		functions0.add(Functions.ONE);
 		functions0.add(Functions.X);
 		functions0.add(Functions.X2);
@@ -265,15 +431,13 @@ public class Functions {
 		functions0.add(Functions.ONE_PER_X2);
 		functions0.add(Functions.LNX);
 		functions0.add(Functions.SQRT_X);
-		List<Function<Double, Double>> functions1=new ArrayList<>();
+		List<RealFunction> functions1=new ArrayList<>();
 		try {
 			int modifiers=Modifier.FINAL|Modifier.PUBLIC|Modifier.STATIC;
 			for (Field field: Functions.class.getDeclaredFields()) {
 				if ((field.getModifiers()==modifiers)
-						&& Function.class.equals(field.getType())) {
-					@SuppressWarnings("unchecked")
-					Function<Double, Double> function
-							=(Function<Double, Double>)field.get(null);
+						&& RealFunction.class.equals(field.getType())) {
+					RealFunction function=(RealFunction)field.get(null);
 					if (!functions0.contains(function)) {
 						functions1.add(function);
 					}

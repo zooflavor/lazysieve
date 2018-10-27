@@ -1,13 +1,13 @@
 package gui.plotter;
 
-import gui.graph.Sample2D;
+import gui.graph.Sample;
 import gui.ui.Color;
 import gui.ui.GuiProcess;
 import gui.ui.progress.Progress;
 import javax.swing.JFrame;
 
-public abstract class AddSampleProcess extends GuiProcess<JFrame, Plotter> {
-	private Sample2D sample;
+public abstract class AddSampleProcess extends GuiProcess<Plotter, JFrame> {
+	private Sample sample;
 	
 	public AddSampleProcess(Plotter parent) {
 		super(true, parent, Plotter.TITLE);
@@ -23,6 +23,6 @@ public abstract class AddSampleProcess extends GuiProcess<JFrame, Plotter> {
 		parent.addSample(sample);
 	}
 	
-	protected abstract Sample2D sample(Color color, Progress progress)
+	protected abstract Sample sample(Color color, Progress progress)
 			throws Throwable;
 }

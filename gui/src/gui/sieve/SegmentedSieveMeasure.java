@@ -1,13 +1,12 @@
 package gui.sieve;
 
-import gui.graph.Sample2D;
+import gui.graph.PlotType;
+import gui.graph.Sample;
 import gui.io.PrimesProducer;
 import gui.io.Segment;
 import gui.plotter.Colors;
 import gui.ui.Color;
 import gui.ui.progress.Progress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class SegmentedSieveMeasure extends AbstractSieveMeasure {
@@ -19,7 +18,7 @@ public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 	}
 	
 	@Override
-	public Sample2D measure(Progress progress) throws Throwable {
+	public Sample measure(Progress progress) throws Throwable {
 		progress.progress(0.0);
 		Sieve sieve=sieveFactory.get();
 		sieve.reset(
@@ -29,7 +28,7 @@ public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 				startSegment*segmentSize+1l);
 		Segment segment=new Segment();
 		segment.clear(0l, 0l, 0l, sieve.defaultPrime(), 1l);
-		Map<Double, Double> sample=new HashMap<>((int)segments);
+		Sample.Builder sample=Sample.builder((int)segments);
 		boolean time=Measure.NANOSECS.equals(measure);
 		OperationCounter counter
 				=time?OperationCounter.NOOP:OperationCounter.COUNTER;
@@ -48,26 +47,26 @@ public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 			long startTime=System.nanoTime();
 			sieve.sieve(counter, segment);
 			long endTime=System.nanoTime();
-			long measure;
+			long measure2;
 			if (time) {
 				if (sum) {
 					sieveTime+=endTime-startTime;
-					measure=sieveTime;
+					measure2=sieveTime;
 				}
 				else {
-					measure=endTime-startTime;
+					measure2=endTime-startTime;
 				}
 			}
 			else {
-				measure=counter.get();
+				measure2=counter.get();
 				if (!sum) {
 					counter.reset();
 				}
 			}
-			sample.put(1.0*end, 1.0*measure);
+			sample.add(end, measure2);
 		}
 		subProgress.finished();
-		return new Sample2D(new Object(), label, Colors.INTERPOLATION,
-				color, sample, color);
+		return sample.create(new Object(), label, Colors.INTERPOLATION,
+				PlotType.LINE, color, color);
 	}
 }

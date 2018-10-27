@@ -5,7 +5,7 @@ import gui.io.Segments;
 import gui.ui.GuiProcess;
 import javax.swing.JFrame;
 
-class StartProcess extends GuiProcess<JFrame, Gui> {
+class StartProcess extends GuiProcess<Gui, JFrame> {
 		private Segments segments;
 		
 		public StartProcess(Gui parent) {
@@ -14,7 +14,7 @@ class StartProcess extends GuiProcess<JFrame, Gui> {
 		
 		@Override
 		protected void background() throws Throwable {
-			segments=parent.database.readSegments(progress);
+			segments=parent.session.database.readSegments(progress);
 		}
 		
 		@Override

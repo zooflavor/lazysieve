@@ -8,9 +8,8 @@ import gui.sieve.Sieve;
 import gui.sieve.SieveCheckFactory;
 import gui.sieve.Sieves;
 import gui.ui.CloseButton;
-import gui.ui.GuiParent;
 import gui.ui.GuiProcess;
-import gui.ui.SwingUtils;
+import gui.ui.GuiWindow;
 import gui.ui.UnsignedLongSpinner;
 import gui.ui.progress.Progress;
 import java.awt.BorderLayout;
@@ -27,11 +26,11 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListDataListener;
 
-public class CheckSieves implements GuiParent<JFrame> {
+public class CheckSieves extends GuiWindow<JFrame> {
 	public static final char MNEMONIC='c';
 	public static final String TITLE="Check sieves";
 	
-	private class CheckProcess extends GuiProcess<JFrame, CheckSieves> {
+	private class CheckProcess extends GuiProcess<CheckSieves, JFrame> {
 		private final long end;
 		private final long endSegment;
 		private Segment referenceSegment;
@@ -58,7 +57,7 @@ public class CheckSieves implements GuiParent<JFrame> {
 			sieve=sieveFactory.create();
 			sieveSegment=new Segment();
 			sieve.reset(
-					gui.database,
+					session.database,
 					progress.subProgress(0.0, "init sieve", 0.05),
 					1l<<sieveFactory.smallSegmentSizeLog2(),
 					start);
@@ -74,7 +73,7 @@ public class CheckSieves implements GuiParent<JFrame> {
 				sieveSegment.clear(
 						0l, 0l, 0l, sieve.defaultPrime(), segmentStart);
 				SieveProcess.generateReference(
-						gui.database,
+						session.database,
 						subProgress2.subProgress(0.0, "reference", 0.3333),
 						referenceSegment);
 				long sieveStart=sieve.start();
@@ -98,7 +97,7 @@ public class CheckSieves implements GuiParent<JFrame> {
 		
 		@Override
 		protected void foreground() throws Throwable {
-			parent.showMessage("all segments checked out.");
+			showMessage("all segments checked out.");
 		}
 	}
 	
@@ -158,11 +157,10 @@ public class CheckSieves implements GuiParent<JFrame> {
 	private final JComboBox<SieveCheckFactory> sievesCombo;
 	private final UnsignedLongSpinner endSpinner;
 	private final JFrame frame;
-	final Gui gui;
 	private final UnsignedLongSpinner startSpinner;
 
 	public CheckSieves(Gui gui) {
-		this.gui=gui;
+		super(gui.session);
 		
 		this.frame=new JFrame(TITLE);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -227,16 +225,16 @@ public class CheckSieves implements GuiParent<JFrame> {
 						Sieves.CHECKS.get(sievesCombo.getSelectedIndex()),
 						start,
 						startSegment)
-				.start(gui.executor);
-	}
-	
-	@Override
-	public JFrame component() {
-		return frame;
+				.start(session.executor);
 	}
 	
 	public static void start(Gui gui) {
-		CheckSieves checkSieves=new CheckSieves(gui);
-		SwingUtils.show(checkSieves.frame);
+		new CheckSieves(gui)
+				.show();
+	}
+	
+	@Override
+	public JFrame window() {
+		return frame;
 	}
 }

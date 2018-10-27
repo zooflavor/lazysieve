@@ -2,6 +2,7 @@ package gui;
 
 import gui.io.Database;
 import gui.ui.GuiProcess;
+import gui.ui.GuiWindow;
 import gui.ui.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,11 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class DatabaseInfo {
+public class DatabaseInfo extends GuiWindow<JDialog> {
 	public static final char MNEMONIC='i';
 	public static final String TITLE="DB info";
 	
-	public static class Process extends GuiProcess<JFrame, Gui> {
+	public static class Process extends GuiProcess<Gui, JFrame> {
 		private Database.Info info;
 		
 		public Process(Gui gui) {
@@ -30,7 +31,7 @@ public class DatabaseInfo {
 		
 		@Override
 		protected void background() throws Throwable {
-			info=parent.database.info(progress);
+			info=parent.session.database.info(progress);
 		}
 		
 		@Override
@@ -43,7 +44,8 @@ public class DatabaseInfo {
 	private final JDialog dialog;
 	
 	private DatabaseInfo(Gui gui, Database.Info info) {
-		dialog=new JDialog(SwingUtils.window(gui.component()), TITLE);
+		super(gui.session);
+		dialog=new JDialog(SwingUtils.window(gui.window()), TITLE);
 		dialog.getContentPane().setLayout(new BorderLayout());
 		
 		JPanel center=new JPanel();
@@ -97,19 +99,19 @@ public class DatabaseInfo {
                         || (1l!=typeInfo.firstSegmentStart)) {
 					text=String.format(
 							"init.bin %1$s",
-							gui.database.rootDirectory,
+							session.database.rootDirectory,
 							typeInfo.missingSegmentStart);
                 }
                 else if (null==typeInfo.missingSegments) {
 					text=String.format(
 							"generator.bin %1$s start 0x%2$x reserve-space 0x100000000",
-							gui.database.rootDirectory,
+							session.database.rootDirectory,
 							typeInfo.missingSegmentStart);
 				}
 				else {
 					text=String.format(
 							"generator.bin %1$s start 0x%2$x segments 0x%3$x",
-							gui.database.rootDirectory,
+							session.database.rootDirectory,
 							typeInfo.missingSegmentStart,
 							typeInfo.missingSegments);
 				}
@@ -140,12 +142,13 @@ public class DatabaseInfo {
 		okButton.addActionListener((event)->dialog.dispose());
 		south.add(okButton);
 	}
-	
-	private void show() {
-		SwingUtils.show(dialog);
-	}
     
     public static void start(Gui gui) throws Throwable {
-		new Process(gui).start(gui.executor);
+		new Process(gui).start(gui.session.executor);
     }
+	
+	@Override
+	public JDialog window() {
+		return dialog;
+	}
 }

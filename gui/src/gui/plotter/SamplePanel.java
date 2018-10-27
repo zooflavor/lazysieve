@@ -1,8 +1,9 @@
 package gui.plotter;
 
-import gui.graph.Function2D;
-import gui.graph.Sample2D;
+import gui.graph.Function;
+import gui.graph.Sample;
 import gui.math.LinearCombinationFunction;
+import gui.math.RealFunction;
 import gui.ui.Color;
 import gui.ui.ColorRenderer;
 import gui.ui.DoubleRenderer;
@@ -15,7 +16,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -31,14 +31,14 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-final class Sample {
+final class SamplePanel {
 	private static class Approximation {
 		private final LinearCombinationFunction approximation;
 		private final double error;
-		private Function2D function;
+		private Function function;
 		
 		public Approximation(LinearCombinationFunction approximation,
-				double error, Function2D function) {
+				double error, Function function) {
 			this.approximation=approximation;
 			this.error=error;
 			this.function=function;
@@ -250,10 +250,10 @@ final class Sample {
 	private final JPanel panel;
 	final Plotter plotter;
 	private final JButton removeApproximationButton;
-	private Sample2D sample;
+	private Sample sample;
 	private final JComboBox<Color> sampleColor;
 	
-	public Sample(Plotter plotter, Sample2D sample) {
+	public SamplePanel(Plotter plotter, Sample sample) {
 		this.plotter=plotter;
 		this.sample=sample;
 		
@@ -269,6 +269,10 @@ final class Sample {
 		
 		JPanel northPanel=new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topPanel.add(northPanel, BorderLayout.NORTH);
+		
+		JButton saveSampleButton=new JButton("Save");
+		saveSampleButton.addActionListener(this::saveSampleButton);
+		northPanel.add(saveSampleButton);
 		
 		JButton removeSampleButton=new JButton("Remove");
 		removeSampleButton.addActionListener(this::removeSampleButton);
@@ -342,24 +346,24 @@ final class Sample {
 					.start();
 		}
 		catch (Throwable throwable) {
-			SwingUtils.showError(plotter.component(), throwable);
+			SwingUtils.showError(plotter.window(), throwable);
 		}
 	}
 	
-	private void approximateFunctions(
-			List<Function<Double, Double>> functions) throws Throwable {
+	private void approximateFunctions(List<RealFunction> functions)
+			throws Throwable {
 		if (functions.isEmpty()) {
 			return;
 		}
 		new ApproximationProcess(functions, this)
-				.start(plotter.gui.executor);
+				.start(plotter.session.executor);
 	}
 	
 	void approximation(double error, LinearCombinationFunction function)
 			throws Throwable {
 		Color color=plotter.selectNewColor();
 		StringBuilder label=new StringBuilder();
-		for (Function<?, ?> function2: function.functions) {
+		for (RealFunction function2: function.functions) {
 			if (0<label.length()) {
 				label.append("+");
 			}
@@ -368,7 +372,7 @@ final class Sample {
 		Approximation approximation=new Approximation(
 				function,
 				error,
-				new Function2D(color, function, new Object(), label.toString(),
+				new Function(color, function, new Object(), label.toString(),
 						color));
 		approximations.add(approximation);
 		plotter.addFunction(approximation.function);
@@ -445,7 +449,7 @@ final class Sample {
 		plotter.removeSample(this);
 	}
 	
-	public Sample2D sample() {
+	public Sample sample() {
 		return sample;
 	}
 	
@@ -453,6 +457,10 @@ final class Sample {
 		Color color=(Color)sampleColor.getSelectedItem();
 		sample=sample.setColors(Colors.INTERPOLATION, color, color);
 		plotter.replaceSample(sample);
+	}
+	
+	private void saveSampleButton(ActionEvent event) {
+        SaveSampleProcess.start(plotter, sample);
 	}
 	
 	public void usedColors(Consumer<Color> consumer) {

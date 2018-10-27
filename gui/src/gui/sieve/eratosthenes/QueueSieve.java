@@ -14,28 +14,28 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class QueueSieveOfEratosthenes extends EratosthenesianSieve {
+public class QueueSieve extends EratosthenesianSieve {
 	public static final List<SieveCheckFactory> CHECKS
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveCheckFactory.create(
 							"Sieve of Eratosthenes-bin.heap",
-							()->new QueueSieveOfEratosthenes(false),
+							()->new QueueSieve(false),
 							16),
 					SieveCheckFactory.create(
 							"Sieve of Eratosthenes-bin.heap-in-place",
-							()->new QueueSieveOfEratosthenes(true),
+							()->new QueueSieve(true),
 							16)));
 	public static final List<SieveMeasureFactory> MEASURES
 			=Collections.unmodifiableList(Arrays.asList(
 					SieveMeasureFactory.create(
 							"Sieve of Eratosthenes-bin.heap",
 							false,
-							()->new QueueSieveOfEratosthenes(false),
+							()->new QueueSieve(false),
 							24, 1, 10),
 					SieveMeasureFactory.create(
 							"Sieve of Eratosthenes-bin.heap-in-place",
 							false,
-							()->new QueueSieveOfEratosthenes(true),
+							()->new QueueSieve(true),
 							24, 1, 10)));
 	
 	private final PrimeQueue queue
@@ -44,7 +44,7 @@ public class QueueSieveOfEratosthenes extends EratosthenesianSieve {
 	private final LongList smallPrimePositions=new LongList();
 	private final IntList smallPrimes=new IntList();
 	
-	public QueueSieveOfEratosthenes(boolean replace) {
+	public QueueSieve(boolean replace) {
 		super(5l);
 		this.replace=replace;
 	}
