@@ -1,0 +1,156 @@
+\documentclass[12pt]{report}
+\usepackage[a4paper,
+			inner = 35mm,
+			outer = 25mm,
+			top = 25mm,
+			bottom = 25mm]{geometry}
+\usepackage{lmodern}
+\usepackage[magyar]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[unicode]{hyperref}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{setspace}
+\usepackage[nottoc,numbib]{tocbibind}
+\usepackage{color}
+\setcounter{secnumdepth}{3}
+\usepackage{algpseudocode}
+\usepackage{titlesec}
+\onehalfspacing
+\begin{document}
+\begin{titlepage}
+\vspace*{0cm}
+\centering
+\begin{tabular}{cp{2cm}c}
+\begin{minipage}{4cm}
+\vspace{0pt}
+\includegraphics[width=1\textwidth]{eltecimerszines}
+\end{minipage} & &
+\begin{minipage}{7cm}
+\vspace{0pt}Eötvös Loránd Tudományegyetem \vspace{10pt} \newline
+Informatikai Kar \vspace{10pt} \newline
+Komputeralgebra Tanszék
+\end{minipage}
+\end{tabular}
+
+\vspace*{0.2cm}
+\rule{\textwidth}{1pt}
+
+\vspace*{6cm}
+{\Huge Prímszita algoritmusok összehasonlítása}
+
+\vspace*{5cm}
+\begin{tabular}{lp{3cm}l}
+Vatai Emil & & Nagy Péter\\
+Adjunktus & & Programtervező Informatikus BSc
+\end{tabular}
+
+\vfill
+
+\vspace*{1cm}
+Budapest, 2018
+\end{titlepage}
+
+\tableofcontents
+
+\chapter{Bevezetés}
+\section{Motiváció}
+\paragraph{x}
+
+\section{Dolgozat eredményei}
+\paragraph{x}
+
+\section{Dolgozat szerkezete}
+\paragraph{x}
+
+\chapter{Felhasználói dokumentáció}
+
+\chapter{Fejlesztői dokumentáció}
+
+\section{x}
+
+\section{Prioritásos sorok}
+
+\begin{algorithmic}[1]
+\State $q \gets$ \Call{Új-sor}{}
+\For{$i\gets 2, n$}
+	\While{$\exists (p, k) \in q: k \le i$}
+		\State $(p, k) \gets $ \Call{Sor-Eltávolít-Min}{q}
+		\State \Call{Megjelöl}{i}
+		\State \Call{Sor-Beszúr}{q, (p, k+p)}
+	\EndWhile
+	\If{$\neg$ \Call{Megjelölt?}{i}}
+		\State \Call{Sor-Beszúr}{q, (i, 2i)}
+	\EndIf
+\EndFor
+\end{algorithmic}
+
+\subsection{Bináris kupac}
+
+A mérések grafikonják pixelei alapján lassú. A beszúrásonkénti elméleti
+$\mathcal{O}(log_{}{|q|})$ ideje se biztató.
+
+\subsection{Bigyó}
+
+A bigyó egy természetesszám-párokat tartalmazó monoton prioritásos sor.
+A számpárok egy prímet, és a prím egy szitálási pozícióját reprezentálják.
+A sor monoton, minden állapotához tartozik egy érték, a sor aktuális pozíciója,
+aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
+A bigyó edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
+Egy eltárolt elem helyét a sorozatban az elem pozíciójának
+és a sor aktuális pozíciójának távolsága határozza meg.
+
+A távolságfüggvény legyen
+
+\begin{align*}
+d(x, y) := \lfloor log_{2}{}(x \oplus y) \rfloor & & (x, y \in \mathbb{N}, y > x \ge 0)
+\end{align*}
+
+ahol $\oplus$ a bitenkénti XOR.
+
+$d(x, y)$ a legnagyobb bit-index, ahol $x$ és $y$ eltér.
+
+Ha $q$ egy bigyó, legyen $q.a$ $q$ aktuális pozíciója, és $q.e[i]$ $q$ $i$. edénye. AZ edények, és a számpárok struktúrája...
+
+Egy q bigyó invariánsa
+\begin{align*}
+\forall (p, k) \in q &: &\\ 
+	& q.a < k\\
+	& \forall i \in \mathbb{N}_{0}: (p, k) \in q.e[i] \iff i=d(q.a, k) \\
+\forall (p, k) \not\in q &: \forall i \in \mathbb{N}_{0}: (p, k) \not\in q.e[i]
+\end{align*}
+
+Új, üres sor létrehozása tetszőleges kezdőpozíciótól, és meglévő sorba elem beszúrása...
+
+A sor elemeinek feldolgozása $i$-ig
+\begin{algorithmic}[1]
+\While{$q.a < i$}
+	\State $j \gets d(q.a, q.a + 1)$
+	\State $q.a \gets q.a + 1$
+	\ForAll{$(p, k) \in q.e[j]$}
+		\State \Call{Edény-Kivesz}{$q.e[j], (p, k)$}
+		\If{$k = i$}
+			\State \Call{Visszaad}{$(p, k)$}
+		\Else
+			\State \Call{Edény-Beszúr}{$d(q.a, k), (p, k)$}
+		\EndIf
+	\EndFor
+\EndWhile
+\end{algorithmic}
+
+\subsubsection{Helyesség}
+
+\subsubsection{Idő}
+
+\subsubsection{Hely}
+
+\subsubsection{Számrendszer}
+
+\subsubsection{Cache}
+
+\section{x}
+
+\end{document}
