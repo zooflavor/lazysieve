@@ -1,0 +1,35 @@
+#!/bin/bash
+SEGMENTS=1024
+DB=../db
+
+function purge {
+	if [ ! -d "${1}" ]; then
+		return
+	fi
+	for DIR in $(find ${1} -maxdepth 1 -type d -name '[0-9a-f][0-9a-f]' ! -path ${1} ! -path ${1}/00)
+	do
+		rm -rf ${DIR}
+	done
+}
+
+java -jar ../gui/dist/gui.jar database "${DB}" reaggregate
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+while true
+do
+	purge "${DB}"
+	purge "${DB}/00"
+	purge "${DB}/00/00"
+	COMMAND="./$(java -jar ../gui/dist/gui.jar database "${DB}" crunch info ${SEGMENTS})"
+	echo command: ${COMMAND}
+	${COMMAND}
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+	java -jar ../gui/dist/gui.jar database "${DB}" reaggregate
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+done
+exit 0

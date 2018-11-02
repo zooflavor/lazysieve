@@ -3,7 +3,6 @@
 function compile {
 	rm -f ${1}.bin
 	gcc -o ${1}.bin ${1}.c \
-		-lz \
 		-std=c99 -pedantic -Wall -Werror \
 		-march=native -O3
 	if [ "0" != "$?" ]; then

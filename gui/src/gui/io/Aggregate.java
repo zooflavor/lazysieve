@@ -11,9 +11,6 @@ import java.util.TreeMap;
 
 public class Aggregate {
 	public final long aggregateNanos;
-	public final long gunzipNanos;
-	public final long gzipBytes;
-	public final long gzipNanos;
 	public final long initNanos;
 	public final long lastModification;
 	public final long maxPrime;
@@ -31,17 +28,13 @@ public class Aggregate {
 	public final long segmentStart;
 	public final long sieveNanos;
 	
-	public Aggregate(long aggregateNanos, long gunzipNanos, long gzipBytes,
-			long gzipNanos, long initNanos, long lastModification,
-			long maxPrime, long minPrime, long primeCount12Z11,
-			long primeCount4Z1, long primeCount4Z3, long primeCount6Z1,
-			Map<Long, Long> primeGapFrequencies,
+	public Aggregate(long aggregateNanos, long initNanos,
+			long lastModification, long maxPrime, long minPrime,
+			long primeCount12Z11, long primeCount4Z1, long primeCount4Z3,
+			long primeCount6Z1, Map<Long, Long> primeGapFrequencies,
 			Map<Long, Long> primeGapStarts, long segment, long segmentEnd,
 			long segmentStart, long sieveNanos) {
 		this.aggregateNanos=aggregateNanos;
-		this.gunzipNanos=gunzipNanos;
-		this.gzipBytes=gzipBytes;
-		this.gzipNanos=gzipNanos;
 		this.initNanos=initNanos;
 		this.lastModification=lastModification;
 		this.maxPrime=maxPrime;
@@ -62,9 +55,6 @@ public class Aggregate {
 	
 	public static Aggregate readFrom(DataInput input) throws IOException {
 		long aggregateNanos=input.readLong();
-		long gunzipNanos=input.readLong();
-		long gzipBytes=input.readLong();
-		long gzipNanos=input.readLong();
 		long initNanos=input.readLong();
 		long lastModification=input.readLong();
 		long maxPrime=input.readLong();
@@ -92,18 +82,14 @@ public class Aggregate {
 		long segmentEnd=input.readLong();
 		long segmentStart=input.readLong();
 		long sieveNanos=input.readLong();
-		return new Aggregate(aggregateNanos, gunzipNanos, gzipBytes, gzipNanos,
-				initNanos, lastModification, maxPrime, minPrime,
-				primeCount12Z11, primeCount4Z1, primeCount4Z3, primeCount6Z1,
-				primeGapFrequencies, primeGapStarts, segment, segmentEnd,
-				segmentStart, sieveNanos);
+		return new Aggregate(aggregateNanos, initNanos, lastModification,
+				maxPrime, minPrime, primeCount12Z11, primeCount4Z1,
+				primeCount4Z3, primeCount6Z1, primeGapFrequencies,
+				primeGapStarts, segment, segmentEnd, segmentStart, sieveNanos);
 	}
 	
 	public void writeTo(DataOutput output) throws IOException {
 		output.writeLong(aggregateNanos);
-		output.writeLong(gunzipNanos);
-		output.writeLong(gzipBytes);
-		output.writeLong(gzipNanos);
 		output.writeLong(initNanos);
 		output.writeLong(lastModification);
 		output.writeLong(maxPrime);

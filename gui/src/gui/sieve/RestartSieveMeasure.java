@@ -11,14 +11,10 @@ import java.util.function.Supplier;
 
 public class RestartSieveMeasure extends AbstractSieveMeasure {
 	private static class Table implements SieveTable {
-		private final long[] bits;
-		
-		public Table(long size) {
-			bits=new long[(int)(size>>6)];
-		}
+		private final long[] bits=new long[1<<25];
 		
 		public void clear(boolean prime) {
-			Arrays.fill(bits, prime?0l:1l);
+			Arrays.fill(bits, prime?0l:-1l);
 		}
 		
 		@Override
@@ -71,27 +67,27 @@ public class RestartSieveMeasure extends AbstractSieveMeasure {
 		@Override
 		public void setComposite(long number) throws Throwable {
 			number=(number-3l)>>>1;
-			bits[(int)(number>>>6)]|=1l<<(number&0x3fl);
+			int index=(int)(number>>>6);
+			if (bits.length>index) {
+				bits[index]|=1l<<(number&0x3fl);
+			}
 		}
 		
 		@Override
 		public void setPrime(long number) throws Throwable {
 			number=(number-3l)>>>1;
-			bits[(int)(number>>>6)]&=~(1l<<(number&0x3fl));
+			int index=(int)(number>>>6);
+			if (bits.length>index) {
+				bits[index]&=~(1l<<(number&0x3fl));
+			}
 		}
 	}
-	
-	private final long tableSize;
 	
 	public RestartSieveMeasure(Color color, String label, Measure measure,
 			PrimesProducer primes, long segments, long segmentSize,
 			Supplier<Sieve> sieveFactory, long startSegment, boolean sum) {
 		super(color, label, measure, primes, segments, segmentSize,
 				sieveFactory, startSegment, sum);
-		tableSize=segmentSize*segments/2;
-		if (0>Long.compareUnsigned(1l<<32, tableSize)) {
-			throw new IllegalArgumentException("sieve table is too large");
-		}
 	}
 	
 	@Override
@@ -107,7 +103,7 @@ public class RestartSieveMeasure extends AbstractSieveMeasure {
 		boolean time=Measure.NANOSECS.equals(measure);
 		OperationCounter counter
 				=time?OperationCounter.NOOP:OperationCounter.COUNTER;
-		Table table=new Table(tableSize);
+		Table table=new Table();
 		long lastMeasure=0l;
 		for (long ss=0; segments>ss; ++ss) {
 			progress.progress(1.0*ss/segments);

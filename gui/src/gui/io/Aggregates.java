@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class Aggregates {
@@ -144,38 +144,76 @@ public class Aggregates {
 		return result;
 	}
 	
-	public NavigableMap<Long, NavigableMap<Long, Long>> primeGapFrequencies() {
-		NavigableMap<Long, NavigableMap<Long, Long>> result=new TreeMap<>();
-		Map<Long, Long> primeGapFrequencies=new HashMap<>();
+	public NavigableMap<Long, Long> primeGapFrequencies() {
+		NavigableMap<Long, Long> result=new TreeMap<>(Long::compareUnsigned);
 		long lastPrime=2l;
 		for (Aggregate aggregate: completePrefix()) {
 			aggregate.primeGapFrequencies.forEach(
 					(gap, frequency)
-							->Maps.add(primeGapFrequencies, gap, frequency));
+							->Maps.add(result, gap, frequency));
 			if (0!=aggregate.maxPrime) {
 				long gap=aggregate.minPrime-lastPrime;
-				Maps.add(primeGapFrequencies, gap, 1l);
+				Maps.add(result, gap, 1l);
 				lastPrime=aggregate.maxPrime;
 			}
-			result.put(aggregate.segmentEnd-1,
-					new TreeMap<>(primeGapFrequencies));
 		}
 		return result;
 	}
 	
+	public NavigableMap<Long, Double> primeGapMerits() {
+		NavigableMap<Long, Double> result=new TreeMap<>();
+		Comparator<Double> comparator=Double::compare;
+		primeGapStarts().forEach((gap, start)->
+				Maps.min(result, gap, gap/Math.log(start), comparator));
+		return result;
+	}
+	
 	public NavigableMap<Long, Long> primeGapStarts() {
-		Map<Long, Long> result=new HashMap<>();
+		NavigableMap<Long, Long> result=new TreeMap<>(Long::compareUnsigned);
+		Comparator<Long> comparator=Long::compareUnsigned;
 		long lastPrime=2l;
 		for (Aggregate aggregate: completePrefix()) {
 			aggregate.primeGapStarts.forEach(
-					(gap, start)->Maps.min(result, gap, start));
+					(gap, start)->Maps.min(result, gap, start, comparator));
 			if (0!=aggregate.maxPrime) {
 				long gap=aggregate.minPrime-lastPrime;
-				Maps.min(result, gap, lastPrime);
+				Maps.min(result, gap, lastPrime, comparator);
 				lastPrime=aggregate.maxPrime;
 			}
 		}
-		return new TreeMap<>(result);
+		return result;
+	}
+	
+	public NavigableMap<Long, Long> maxPrimeGaps() {
+		NavigableMap<Long, Long> result=new TreeMap<>(Long::compareUnsigned);
+		newPrimeGaps().forEach(new BiConsumer<Long, Long>() {
+			private long maxGap;
+			private long maxStart;
+			
+			@Override
+			public void accept(Long start, Long gap) {
+				if (0==maxGap) {
+					result.put(start, gap);
+					maxGap=gap;
+					maxStart=start;
+				}
+				else if (0>Long.compareUnsigned(maxGap, gap)) {
+					if (maxStart!=start-1l) {
+						result.put(start-1l, maxGap);
+					}
+					result.put(start, gap);
+					maxGap=gap;
+					maxStart=start;
+				}
+			}
+		});
+		return result;
+	}
+	
+	public NavigableMap<Long, Long> newPrimeGaps() {
+		NavigableMap<Long, Long> result=new TreeMap<>(Long::compareUnsigned);
+		primeGapStarts().forEach((gap, start)->result.put(start, gap));
+		return result;
 	}
 	
 	public static Aggregates readFrom(DataInput input, Progress progress)

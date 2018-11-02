@@ -66,9 +66,9 @@ int main(int argv, char *argc[]) {
 		fixEndianness(segment);
 		uint64_t initNanos=initEnd-initStart;
 		uint64_t sieveNanos=sieveEnd-sieveStart;
-		uint64_t gzipNanos=writeSegment(databaseDirectory,
-				segment, 2*segmentStart+1, initNanos, sieveNanos);
-		printSegmentStats(2*segmentStart+1, initNanos, sieveNanos, gzipNanos);
+		writeSegment(databaseDirectory, segment,
+				2*segmentStart+1, initNanos, sieveNanos);
+		printSegmentStats(2*segmentStart+1, initNanos, sieveNanos);
 	}
 	return 0;
 }

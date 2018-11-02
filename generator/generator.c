@@ -296,11 +296,10 @@ int main(int argv, char *argc[]) {
 		sieveEnd=nanoTime();
 		uint64_t initNanos=initEnd-initStart;
 		uint64_t sieveNanos=sieveEnd-sieveStart;
-		uint64_t gzipNanos=writeSegment(
-				databaseDirectory, segment, 2*segmentStart+1,
-				initEnd-initStart, sieveEnd-sieveStart);
+		writeSegment(databaseDirectory, segment,
+				2*segmentStart+1, initEnd-initStart, sieveEnd-sieveStart);
 		allSieveNanos+=sieveNanos;
-		printSegmentStats(2*segmentStart+1, initNanos, sieveNanos, gzipNanos);
+		printSegmentStats(2*segmentStart+1, initNanos, sieveNanos);
 		segmentStart+=SEGMENT_SIZE_BITS;
 		if (0<=segmentCount) {
 			--segmentCount;

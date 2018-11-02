@@ -58,20 +58,55 @@ Budapest, 2018
 
 \chapter{Bevezetés}
 
-\section{Motiváció}
-
 Sziták összehasonlítása azonos környezetben.
 Hatékonyság összehasonlítása az elmélet szerint várható értékekkel.
 Ellenőrzésként a prímek néhány statisztikájának összevetése az elméleti értékekkel,
 és az ismert eredményekkel.
 Hatékonyság és implementálhatóság.
 
-\section{Dolgozat eredményei}
-
-
 \chapter{Felhasználói dokumentáció}
 
 \section{A megoldott feladat}
+
+A program lehetővé teszi különböző sziták futási idejének ábrázolását grafikonon,
+és összevetését elméleti becsült értékekkel.
+A programmal egyéb forrásból származó minták megjelenítése is lehetséges.
+
+A prímszámok statisztikáinak előállításához a programhoz tartozik egy optimalizát
+szita-implementáció, amivel $2^{64}$-ig lehet szitálni, és az eredményt rögzíteni.
+Az elmentett eredményeket a program egy külön része összesíti néhány alapstatisztikára.
+
+Különböző szita-algoritmusok futási idejének összehasonlításához a program tartalmazza
+Atkin szitájának egy implementációját, és Eratosztenész szitájának néhány variációját.
+
+\section{Felhasznált módszerek}
+
+A program két rész fő részből áll.
+A prímszámok generátora C-99 nyelven készült el.
+A program csak parancssorból futtatható, és a sztenderd könvytári függvényekből
+is csak néhányat használ a memóriájában előállítótt eredmények fájlba írásához.
+A C nyelv választását a hatékony végrehajtás és memórafelhasználás, és
+a hordozhatóság indokolja, a generátor elkülönítését az automatizálhatóság indokolja.
+
+A prímgenerátor Eratosztenész szitájának szegmentált változata,
+a szitatábla egy $2^{30}$ hosszú darabját szitálja ki minden iterációban.
+A generátor önmaga is két részből áll.
+Egy egyszerűbb implementáció a prímek listáját állítja elő $2^{32}$-ig.
+
+A gyorsabb, de összetettebb szita $2^{32}$-től $2^{64}-2^{33}$-ig szitál,
+és a futásához szükséges a prímek listája $2^{32}$-ig.
+A szitatáblát a memóriában a gyorsítótár hatékonyabb a kihasználásához kisebb
+résszegemensekre osztja,
+és a prímeket a nagyságuk és a következő szitálási pozíciójuk szerint csoportosítja.
+Továbbá nagyobb prímeknek csak $30$-cal relatív prím többszöröseit veszi figyelembe.
+
+A program többi része a Java környezethez készült, a képzésben betöltött szerepe miatt,
+valamint a Swing grafikus könyvtára egyszerű, hordozható, és a feladatra elégséges.
+A Java sztenderd konténerosztájai habár kényelmesen használhatóak, és változatosak,
+de sebesség és memóriakihasználtsági problémák miatt több helyen is alacsonyabb szintű
+megoldást kellett választani.
+
+A program szembetűnő része a minták ábrázolása.
 
 \section{A program telepítése és futtatása}
 
@@ -186,11 +221,19 @@ A sor elemeinek feldolgozása $i$-ig
 
 \subsubsection{Számrendszer}
 
+És számrendszer vs. tisztán funkcionálisban nincs bármekkora tömb, csak valami fával közelítve.
+
+Amúgy sincs bármekkora tömb...
+
+És exponenciálisan kell növelni...
+
 \subsubsection{Cache}
+
+És exponenciálisan kell növelni...
 
 \section{Memória}
 
-Összes prím, és pozíciója $2^32$-ig. Garbage collector.
+Összes prím, és pozíciója $2^32$-ig. Primitív típusok és boxing. Garbage collector.
 
 \section{Teszt}
 

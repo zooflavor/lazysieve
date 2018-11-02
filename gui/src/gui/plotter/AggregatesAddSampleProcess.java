@@ -6,11 +6,7 @@ import gui.io.Aggregates;
 import gui.ui.Color;
 import gui.ui.progress.Progress;
 import gui.util.Maps;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.NavigableMap;
-import java.util.TreeMap;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -185,15 +181,27 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Aggregates aggregates, Color color)
 					throws Throwable {
-				return Maps.toSample(
-						aggregates.aggregates
-								.lastEntry()
-								.getValue()
-								.primeGapFrequencies)
+				return Maps.toSample(aggregates.primeGapFrequencies())
 						.create(new Object(),
-								"prime gap distribution",
+								"prime gap frequencies",
 								Colors.INTERPOLATION,
 								PlotType.BARS,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeGapMeritsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Aggregates aggregates, Color color)
+					throws Throwable {
+				return Maps.toSample(aggregates.primeGapMerits())
+						.create(new Object(),
+								"prime gap merits",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
 								color,
 								color);
 			}
@@ -221,36 +229,30 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Aggregates aggregates, Color color)
 					throws Throwable {
-				NavigableMap<Long, Long> primeGapStarts
-						=aggregates.primeGapStarts();
-				NavigableMap<Long, Long> maxPrimeGaps=new TreeMap<>();
-				primeGapStarts.forEach(
-						(key, value)->maxPrimeGaps.put(value, key));
-				Long max=0l;
-                Map<Long, Long> counterPoints=new HashMap<>();
-                for (Iterator<Map.Entry<Long, Long>> iterator
-                                =maxPrimeGaps.entrySet().iterator();
-                        iterator.hasNext(); ) {
-                    Map.Entry<Long, Long> entry=iterator.next();
-                    Long gap=entry.getValue();
-                    if (gap>max) {
-                        if (0l<max) {
-                            counterPoints.put(entry.getKey()-1l, max);
-                        }
-                        max=gap;
-                    }
-                    else {
-                        iterator.remove();
-                    }
-                }
-                maxPrimeGaps.putAll(counterPoints);
-				return Maps.toSample(maxPrimeGaps)
+				return Maps.toSample(aggregates.maxPrimeGaps())
 						.create(new Object(),
 								"max. prime gaps",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
 								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addNewPrimeGapsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Aggregates aggregates, Color color)
+					throws Throwable {
+				return Maps.toSample(aggregates.newPrimeGaps())
+						.create(
+							new Object(),
+							"new prime gaps",
+							Colors.INTERPOLATION,
+							PlotType.LINE,
+							color,
+							color);
 			}
 		}.start(plotter.session.executor);
 	}
@@ -332,6 +334,12 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.addPrimeGapFrequenciesSample(plotter));
 		menu.add(addPrimeGapFrequenciesItem);
 		
+		JMenuItem addPrimeGapMeritsItem
+				=new JMenuItem("Add prime gap merits sample");
+		addPrimeGapMeritsItem.addActionListener((event2)->
+				AggregatesAddSampleProcess.addPrimeGapMeritsSample(plotter));
+		menu.add(addPrimeGapMeritsItem);
+		
 		JMenuItem addPrimeGapStartsItem
 				=new JMenuItem("Add prime gap starts sample");
 		addPrimeGapStartsItem.addActionListener((event2)->
@@ -343,6 +351,12 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 		addMaxPrimeGapsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addMaxPrimeGapsSample(plotter));
 		menu.add(addMaxPrimeGapsItem);
+		
+		JMenuItem addNewPrimeGapsItem
+				=new JMenuItem("Add new prime gaps sample");
+		addNewPrimeGapsItem.addActionListener((event2)->
+				AggregatesAddSampleProcess.addNewPrimeGapsSample(plotter));
+		menu.add(addNewPrimeGapsItem);
 		
 		JMenuItem addSieveNanosItem
 				=new JMenuItem("Add sieve nanos sample");

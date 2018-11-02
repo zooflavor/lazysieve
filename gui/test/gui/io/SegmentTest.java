@@ -9,7 +9,7 @@ public class SegmentTest {
 	@Test
 	public void testListPrimes() throws Throwable {
 		Segment segment=new Segment();
-		segment.clear(0l, 0l, 0l, true, 1l);
+		segment.clear(0l, true, 1l);
 		new Random(1234l).nextBytes(segment.segment);
 		for (long start=1l; 4000l>start; start+=6) {
 			for (long end=start; 4000l>end; end+=10) {

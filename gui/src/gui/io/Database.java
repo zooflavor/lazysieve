@@ -25,7 +25,7 @@ public class Database implements PrimesProducer {
 	public static final String AGGREGATES="aggregates";
 	public static final String AGGREGATES_TEMP="aggregates.tmp";
 	public static final Pattern SEGMENT_PATTERN
-			=Pattern.compile("([0-9a-f]{8}[048c]0000001).gz");
+			=Pattern.compile("([0-9a-f]{8}[048c]0000001).primes");
 	public static final long SMALL_PRIMES_MAX
 			=UnsignedLong.squareRootFloor(Segment.NUMBERS+1l);
 	
@@ -263,7 +263,7 @@ public class Database implements PrimesProducer {
 				.resolve(String.format("%1$02x", (segmentStart>>56)&0xff))
 				.resolve(String.format("%1$02x", (segmentStart>>48)&0xff))
 				.resolve(String.format("%1$02x", (segmentStart>>40)&0xff))
-				.resolve(String.format("%1$016x.gz", segmentStart));
+				.resolve(String.format("%1$016x.primes", segmentStart));
 	}
 	
 	public static IntList smallPrimes(Progress progress) throws Throwable {

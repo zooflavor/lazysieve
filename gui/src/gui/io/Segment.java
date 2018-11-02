@@ -34,9 +34,6 @@ public class Segment implements SieveTable {
 		}
 	}
 	
-	public long gunzipNanos;
-	public long gzipBytes;
-	public long gzipNanos;
 	public long initNanos;
 	public long lastModification;
 	private final byte[] longBuffer=new byte[8];
@@ -48,53 +45,68 @@ public class Segment implements SieveTable {
 	public Aggregate aggregate() throws Throwable {
 		check();
 		long aggregateStart=System.nanoTime();
+		long[] primeCounts=new long[12];
+		long[] primeGapFrequencies=new long[2048];
+		long[] primeGapStarts=new long[primeGapFrequencies.length];
 		class Aa {
 			long maxPrime=0l;
 			long minPrime=0l;
-			long primeCount12Z11=0l;
-			long primeCount4Z1=0l;
-			long primeCount4Z3=0l;
-			long primeCount6Z1=0l;
+			
+			private void next(long prime) {
+				++primeCounts[(int)Long.remainderUnsigned(prime, 12l)];
+				if (0==minPrime) {
+					minPrime=prime;
+				}
+				else {
+					long gap2=prime-maxPrime;
+					if (gap2>=primeGapFrequencies.length) {
+						throw new IllegalStateException(String.format(
+								"prime gap %1$,d is too large", gap2));
+					}
+					int gap=(int)gap2;
+					++primeGapFrequencies[gap];
+					if (0l==primeGapStarts[gap]) {
+						primeGapStarts[gap]=maxPrime;
+					}
+				}
+				maxPrime=prime;
+			}
 		}
 		Aa aa=new Aa();
-		Map<Long, Long> primeGapStarts=new HashMap<>();
-		Map<Long, Long> primeGapFrequencies=new HashMap<>();
-		listPrimes(segmentEnd,
-				(prime)->{
-					if (0==((prime>>>1)&1)) {
-						++aa.primeCount4Z1;
-					}
-					else {
-						++aa.primeCount4Z3;
-					}
-					if (1l==Long.remainderUnsigned(prime, 6)) {
-						++aa.primeCount6Z1;
-					}
-					if (11l==Long.remainderUnsigned(prime, 12)) {
-						++aa.primeCount12Z11;
-					}
-					if (0==aa.minPrime) {
-						aa.minPrime=prime;
-					}
-					else {
-						Long gap=prime-aa.maxPrime;
-						Long frequency=primeGapFrequencies.get(gap);
-						primeGapFrequencies.put(gap,
-								(null==frequency)?1l:(frequency+1l));
-						Long start=primeGapStarts.get(gap);
-						if (null==start) {
-							primeGapStarts.put(gap, aa.maxPrime);
-						}
-					}
-					aa.maxPrime=prime;
-				},
-				segmentStart);
+		listPrimes(segmentEnd, aa::next, segmentStart);
 		long aggregateEnd=System.nanoTime();
 		long aggregateNanos=aggregateEnd-aggregateStart;
-		return new Aggregate(aggregateNanos, gunzipNanos, gzipBytes, gzipNanos,
-				initNanos, lastModification, aa.maxPrime, aa.minPrime,
-				aa.primeCount12Z11, aa.primeCount4Z1, aa.primeCount4Z3,
-				aa.primeCount6Z1, primeGapFrequencies, primeGapStarts,
+		for (int ii=0; primeCounts.length>ii; ii+=2) {
+			if (0l!=primeCounts[ii]) {
+				throw new IllegalStateException(String.format(
+						"prime congruent to %1$,d (mod 12)", ii));
+			}
+		}
+		if (0l!=primeCounts[9]) {
+			throw new IllegalStateException(String.format(
+					"prime congruent to %1$,d (mod 12)", 9));
+		}
+		if ((1l<segmentStart)
+				&& (0l!=primeCounts[3])) {
+			throw new IllegalStateException(String.format(
+					"prime congruent to %1$,d (mod 12)", 3));
+		}
+		Map<Long, Long> primeGapStarts2=new HashMap<>();
+		Map<Long, Long> primeGapFrequencies2=new HashMap<>();
+		for (int gap=primeGapFrequencies.length-1; 0<=gap; --gap) {
+			if (0!=primeGapFrequencies[gap]) {
+				Long gap2=(long)gap;
+				primeGapFrequencies2.put(gap2, primeGapFrequencies[gap]);
+				primeGapStarts2.put(gap2, primeGapStarts[gap]);
+			}
+		}
+		return new Aggregate(aggregateNanos, initNanos, lastModification,
+				aa.maxPrime, aa.minPrime,
+				primeCounts[11],
+				primeCounts[1]+primeCounts[5],
+				primeCounts[3]+primeCounts[7]+primeCounts[11],
+				primeCounts[1]+primeCounts[7],
+				primeGapFrequencies2, primeGapStarts2,
 				segmentStart/Segment.NUMBERS, segmentEnd, segmentStart,
 				sieveNanos);
 	}
@@ -131,16 +143,13 @@ public class Segment implements SieveTable {
 		}
 	}
 	
-	public void clear(long gunzipNanos, long gzipBytes, long lastModification,
-			boolean prime, long segmentStart) {
+	public void clear(long lastModification, boolean prime,
+			long segmentStart) {
 		checkSegmentStart(segmentStart);
-		this.gunzipNanos=gunzipNanos;
-		this.gzipBytes=gzipBytes;
 		this.lastModification=lastModification;
 		this.segmentStart=segmentStart;
 		Arrays.fill(segment, (byte)(prime?0:-1));
 		segmentEnd=segmentStart+NUMBERS;
-		gzipNanos=0l;
 		initNanos=0l;
 		sieveNanos=0l;
 	}
@@ -279,10 +288,8 @@ public class Segment implements SieveTable {
 		read(database.segmentFile(segmentStart));
 	}
 	
-	public void read(long gzipBytes, long lastModification, long segmentStart,
+	public void read(long lastModification, long segmentStart,
 			InputStream stream) throws IOException {
-		long gunzipStart=System.nanoTime();
-		this.gzipBytes=gzipBytes;
 		this.lastModification=lastModification;
 		for (int ii=0; segment.length>ii; ) {
 			int rr=stream.read(segment, ii, segment.length-ii);
@@ -299,27 +306,19 @@ public class Segment implements SieveTable {
 		segmentEnd=this.segmentStart+NUMBERS;
 		initNanos=readLong(stream);
 		sieveNanos=readLong(stream);
-		gzipNanos=readLong(stream);
 		if (0<=stream.read()) {
 			throw new IOException("no eof");
 		}
-		long gunzipEnd=System.nanoTime();
-		gunzipNanos=gunzipEnd-gunzipStart;
 	}
 	
 	public void read(Path path) throws IOException {
-		long gzipBytes2=Files.size(path);
 		long lastModification2=Files.getLastModifiedTime(path).toMillis();
 		long segmentStart2=Long.parseUnsignedLong(
 				path.getFileName().toString().substring(0, 16),
 				16);
 		try (InputStream is=Files.newInputStream(path);
 				InputStream bis0=new BufferedInputStream(is)) {
-				//InputStream bis0=new BufferedInputStream(is);
-				//InputStream gzis=new GZIPInputStream(bis0);
-				//InputStream bis1=new BufferedInputStream(gzis)) {
-			read(gzipBytes2, lastModification2, segmentStart2, bis0);
-			//read(gzipBytes2, lastModification2, segmentStart2, bis1);
+			read(lastModification2, segmentStart2, bis0);
 		}
 	}
 	

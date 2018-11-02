@@ -44,8 +44,7 @@ abstract class CheckProcess extends GuiProcess<CheckSegments, JFrame> {
 			Segment.Info info=segmentInfos.get(selectedRows[ii]);
 			readSegment.read(info.path);
 			subProgress.progress(0.01);
-			generatedSegment.clear(0l, 0l, 0l, true,
-					readSegment.segmentStart);
+			generatedSegment.clear(0l, true, readSegment.segmentStart);
 			gui.io.PrimesProducer primes2;
 			if (1l==readSegment.segmentStart) {
 				generatedSegment.setComposite(0);

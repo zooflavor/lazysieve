@@ -27,7 +27,7 @@ public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 				segmentSize,
 				startSegment*segmentSize+1l);
 		Segment segment=new Segment();
-		segment.clear(0l, 0l, 0l, sieve.defaultPrime(), 1l);
+		segment.clear(0l, sieve.defaultPrime(), 1l);
 		Sample.Builder sample=Sample.builder((int)segments);
 		boolean time=Measure.NANOSECS.equals(measure);
 		OperationCounter counter
@@ -40,7 +40,7 @@ public class SegmentedSieveMeasure extends AbstractSieveMeasure {
 			long start=(startSegment+ss)*segmentSize+1l;
 			long end=start+segmentSize;
 			if (0<=Long.compareUnsigned(start, segment.segmentEnd)) {
-				segment.clear(0l, 0l, 0l, sieve.defaultPrime(),
+				segment.clear(0l, sieve.defaultPrime(),
 						Long.divideUnsigned(start-1l, Segment.NUMBERS)
 								*Segment.NUMBERS+1l);
 			}

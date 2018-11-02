@@ -1,7 +1,9 @@
 package gui.io;
 
 import gui.Command;
+import gui.math.UnsignedLong;
 import gui.ui.progress.PrintStreamProgress;
+import gui.ui.progress.Progress;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +25,15 @@ public class DatabaseCommands {
 							Arrays.asList(
 									Command.Argument.constant("database"),
 									Command.Argument.PATH,
+									Command.Argument.constant("crunch"),
+									Command.Argument.constant("info"),
+									Command.Argument.LONG),
+							DatabaseCommands::crunchInfo,
+							"Main database [database-directory] crunch info [segments]"),
+					new Command.Descriptor(
+							Arrays.asList(
+									Command.Argument.constant("database"),
+									Command.Argument.PATH,
 									Command.Argument.constant("info")),
 							DatabaseCommands::info,
 							"Main database [database-directory] info"),
@@ -35,6 +46,25 @@ public class DatabaseCommands {
 							"Main database [database-directory] reaggregate")));
 	
 	private DatabaseCommands() {
+	}
+	
+	public static void crunchInfo(List<Object> arguments) throws Throwable {
+		Database database=new Database((Path)arguments.get(1));
+		long segments=(Long)arguments.get(4);
+		Database.TypeInfo info=database.info(Progress.NULL)
+				.aggregates;
+		if ((1l<<32)>=info.missingSegmentStart) {
+			System.out.println(String.format(
+					"init.bin %1$s",
+					database.rootDirectory));
+		}
+		else {
+			System.out.println(String.format(
+					"generator.bin %1$s start 0x%2$s segments %3$s",
+					database.rootDirectory,
+					Long.toUnsignedString(info.missingSegmentStart, 16),
+					Long.toUnsignedString(segments)));
+		}
 	}
 	
 	public static void importAggregates(List<Object> arguments)

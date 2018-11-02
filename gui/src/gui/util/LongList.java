@@ -54,6 +54,16 @@ public class LongList extends PrimitiveList<LongConsumer, LongList> {
 		return values[index];
 	}
 	
+	public void insert(int index, long value) {
+		checkInsert(index);
+		if (values.length<=size) {
+			values=Arrays.copyOf(values, 2*values.length);
+		}
+		System.arraycopy(values, index, values, index+1, size-index);
+		values[index]=value;
+		++size;
+	}
+	
 	public long set(int index, long value) {
 		check(index);
 		long result=values[index];
