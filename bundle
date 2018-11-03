@@ -1,11 +1,17 @@
 #!/bin/bash
 
 cd generator
-make clean
+make clean build
+if [ "0" != "$?" ]; then
+	exit 1
+fi
 cd ..
 
 cd gui
-ant -q clean
+ant -q clean jar
+if [ "0" != "$?" ]; then
+	exit 1
+fi
 cd ..
 
 cd szakdolgozat
@@ -33,4 +39,7 @@ rm -f *.out
 rm -f *.toc
 cd ..
 
-tar --exclude gui/nbproject/private -czf "szakdolgozat-$(date '+%F-%H-%M')".tar.gz generator gui szakdolgozat
+tar --exclude "generator/*.bin" \
+	--exclude "gui/build" \
+	--exclude "gui/nbproject/private" \
+	-czf "szakdolgozat-$(date '+%F-%H-%M')".tar.gz generator gui szakdolgozat
