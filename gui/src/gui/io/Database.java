@@ -8,6 +8,7 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -294,12 +295,14 @@ public class Database implements PrimesProducer {
 		Path realPath=rootDirectory.resolve(AGGREGATES);
 		Path tempPath=rootDirectory.resolve(AGGREGATES_TEMP);
 		Files.deleteIfExists(tempPath);
-		try (OutputStream os=Files.newOutputStream(tempPath);
+		try (FileOutputStream os=new FileOutputStream(tempPath.toFile());
 				OutputStream bos0=new BufferedOutputStream(os);
 				GZIPOutputStream gzos=new GZIPOutputStream(bos0);
 				OutputStream bos1=new BufferedOutputStream(gzos);
 				DataOutputStream dos=new DataOutputStream(bos1)) {
 			aggregates.writeTo(dos, progress);
+			dos.flush();
+			os.getFD().sync();
 		}
 		Files.deleteIfExists(realPath);
 		Files.move(tempPath, realPath);

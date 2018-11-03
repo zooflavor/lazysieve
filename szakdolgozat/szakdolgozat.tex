@@ -100,13 +100,40 @@ résszegemensekre osztja,
 és a prímeket a nagyságuk és a következő szitálási pozíciójuk szerint csoportosítja.
 Továbbá nagyobb prímeknek csak $30$-cal relatív prím többszöröseit veszi figyelembe.
 
-A program többi része a Java környezethez készült, a képzésben betöltött szerepe miatt,
-valamint a Swing grafikus könyvtára egyszerű, hordozható, és a feladatra elégséges.
+A program többi része a Java környezethez készült, a képzésben betöltött szerepe és
+a hordozhatósága miatt.
+A minták és függvények ábrázolásához használt Swing grafikus könyvtár
+a Java környezet része, egyszerű, hordozható, támogatja az élsimítást,
+és a sebessége elfogadható a feladatra.
 A Java sztenderd konténerosztájai habár kényelmesen használhatóak, és változatosak,
 de sebesség és memóriakihasználtsági problémák miatt több helyen is alacsonyabb szintű
 megoldást kellett választani.
 
-A program szembetűnő része a minták ábrázolása.
+A program a mintákat alapfüggvények lineáris kombinációjával képes közelíteni,
+a legkisebb négyzetek módszerével. A minták elemeinek nagy száma, és a mintaértékek
+nagy terjedelme miatt szükséges volt a numerikus algoritmusok nagyobb pontosságú
+implementációja, ami a számítási idő növekedésével jár.
+
+A program hosszabb távon egyedül a prímek szegmensenkénti statisztikáit tárolja,
+amit csak sorban dolgoz fel, és a statisztikák összmérete sem indokolna
+egy egyszerű bináris fájlnál bonyolultabb megoldást. Az adatvesztés elkerüléséhez
+elég a statiszikafájl csere alapú felülírása.
+
+A Java program tartalmaz több prímszita implementációt is, ezeknek az algoritmikus
+bonyolultsága különböző, de az összehasonlíthatósághoz a közös részek közös
+implementációt kaptak, és az eltérő részek hasonló szinten optimalizáltak.
+A sziták helyességének ellenőrzéséhez a sziták eredménye egymással összehasonlítható.
+A programhoz elkészült Atkin szitája, és Eratoszthenész szitájának több variációja:
+az algoritmus legegyszerűbb implementációja a teljes szitatáblán jelöli meg
+a prímek többszöröseit, a többi a táblát rövidebb szegmensekre osztja fel,
+és ezeket sorban szitálja. A szegmentálás szükségessé teszi, hogy eldüntsük,
+hogy mely szegmensben mely prímek szitálnak. A legegyszerűbb megvalósítás
+minden szegmensben minden prímmel megpróbál szitálni, a próbaosztáshoz hasonlóan.
+Ennél hatékonyabb a két elsőbbségi sorral megvalósított szita, és a harmadik,
+edényekbe csoportosító megoldás.
+
+A sziták között kapott helyet a próbaosztás, és az erős pszeudo-prím teszt is,
+de ezek a lassúságuk miatt csak igen rövid tartományok ellenőrzésére alkalmasak.
 
 \section{A program telepítése és futtatása}
 
