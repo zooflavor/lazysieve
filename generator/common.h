@@ -212,11 +212,9 @@ void readSegment(char *databaseDirectory, void *segment, uint64_t start) {
 
 void segmentFile(char *result, char *databaseDirectory,
 		uint64_t segmentStart) {
-	sprintf(result, "%s/%02lx/%02lx/%02lx/%016lx.primes",
+	sprintf(result,
+			"%s/primes.%016lx",
 			databaseDirectory,
-			(segmentStart>>56)&0xffl,
-			(segmentStart>>48)&0xffl,
-			(segmentStart>>40)&0xffl,
 			segmentStart);
 }
 
@@ -254,20 +252,10 @@ void writeFully(int file, void *buffer, size_t length) {
 void writeSegment(char *databaseDirectory, void *segment, uint64_t start,
 		uint64_t initNanos, uint64_t sieveNanos) {
 	char tempFileName[FILE_NAME_SIZE];
-	char directory0Name[FILE_NAME_SIZE];
-	char directory1Name[FILE_NAME_SIZE];
-	char directory2Name[FILE_NAME_SIZE];
 	char outputFileName[FILE_NAME_SIZE];
 	sprintf(tempFileName, "%s/tmp.tmp", databaseDirectory);
-	sprintf(directory0Name, "%s/%02lx", databaseDirectory, (start>>56)&0xff);
-	sprintf(directory1Name, "%s/%02lx", directory0Name, (start>>48)&0xff);
-	sprintf(directory2Name, "%s/%02lx", directory1Name, (start>>40)&0xff);
-	sprintf(outputFileName, "%s/%016lx.primes", directory2Name, start);
+	segmentFile(outputFileName, databaseDirectory, start);
 	deleteIfExists(tempFileName);
-	makeDirectoryIfDoesntExist(__FILE__, __LINE__, directory0Name, S_IRWXU|S_IRWXG|S_IRWXO);
-	makeDirectoryIfDoesntExist(__FILE__, __LINE__, directory1Name, S_IRWXU|S_IRWXG|S_IRWXO);
-	makeDirectoryIfDoesntExist(__FILE__, __LINE__, directory2Name, S_IRWXU|S_IRWXG|S_IRWXO);
-	deleteIfExists(outputFileName);
 	int file=open(tempFileName, O_CREAT|O_RDWR|O_TRUNC,
 			S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH);
 	if (-1==file) {
@@ -280,6 +268,7 @@ void writeSegment(char *databaseDirectory, void *segment, uint64_t start,
 	if (-1==close(file)) {
 		printStdError(__FILE__, __LINE__, "close");
 	}
+	deleteIfExists(outputFileName);
 	if (0!=rename(tempFileName, outputFileName)) {
 		printStdError(__FILE__, __LINE__, "rename");
 	}

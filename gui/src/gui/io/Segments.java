@@ -32,11 +32,12 @@ public class Segments {
 	}
 	
 	public Database.TypeInfo info() {
-		return Database.TypeInfo.info(segments);
+		return Database.TypeInfo.info(segments.navigableKeySet());
 	}
 	
-	public List<Long> newSegments(Aggregates aggregates, Progress progress)
-			throws Throwable {
+	public List<Long> newSegments(
+			NavigableMap<Long, Long> aggregateLastModifications,
+			Progress progress) throws Throwable {
 		progress.checkCancelled();
 		List<Long> newSegments=new ArrayList<>();
 		int ii=0;
@@ -45,9 +46,9 @@ public class Segments {
 			++ii;
 			Long start=entry.getKey();
 			Segment.Info segment=entry.getValue();
-			Aggregate aggregate=aggregates.aggregates.get(start);
-			if ((null==aggregate)
-					|| (aggregate.lastModification<segment.lastModification)) {
+			Long lastModification=aggregateLastModifications.get(start);
+			if ((null==lastModification)
+					|| (lastModification<segment.lastModification)) {
 				newSegments.add(start);
 			}
 		}

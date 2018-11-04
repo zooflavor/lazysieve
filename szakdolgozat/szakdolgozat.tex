@@ -18,6 +18,7 @@
 \usepackage{color}
 \setcounter{secnumdepth}{3}
 \usepackage{algpseudocode}
+\usepackage{listings}
 \usepackage{titlesec}
 \onehalfspacing
 \begin{document}
@@ -98,7 +99,7 @@ A gyorsabb, de összetettebb szita $2^{32}$-től $2^{64}-2^{33}$-ig szitál,
 A szitatáblát a memóriában a gyorsítótár hatékonyabb a kihasználásához kisebb
 résszegemensekre osztja,
 és a prímeket a nagyságuk és a következő szitálási pozíciójuk szerint csoportosítja.
-Továbbá nagyobb prímeknek csak $30$-cal relatív prím többszöröseit veszi figyelembe.
+Továbbá nagyobb prímeknek csak harminccal relatív prím többszöröseit veszi figyelembe.
 
 A program többi része a Java környezethez készült, a képzésben betöltött szerepe és
 a hordozhatósága miatt.
@@ -137,6 +138,26 @@ de ezek a lassúságuk miatt csak igen rövid tartományok ellenőrzésére alka
 
 \section{A program telepítése és futtatása}
 
+A Java program futtatásához JRE8-ra van szükség,
+a fordításához JDK8-ra. A C program fordításához C99
+szabványú fordítóprogram kell. A program fejlesztése
+és tesztelése OpenJDK8-cal és GCC 7.3-mal történt
+Linux operációs rendszeren.
+
+A tarball a Java programot lefordítva is tartalmazza,
+kicsomagolás után azonnal futtatható.
+A C programot a generator könyvtárban található Makefile segítségével lehet lefordítani:
+\begin{lstlisting}[language=bash]
+$ make clean build
+\end{lstlisting}
+
+A Java program a NetBeans 8-as verziójával készült,
+parancssorból a project ant fájlának segítségével lehet
+újrafordítani:
+\begin{lstlisting}[language=bash]
+$ ant clean jar
+\end{lstlisting}
+
 \section{A szitatábla-generátor}
 
 \section{Mintaadatbázis karbantartása}
@@ -146,6 +167,10 @@ de ezek a lassúságuk miatt csak igen rövid tartományok ellenőrzésére alka
 \section{Minta megjelenítése}
 
 \section{Minta közelítése függvényekkel}
+
+\section{Minták generálása scriptekkel}
+
+\section{Sziták ellenőrzése scriptekkel}
 
 
 \chapter{Fejlesztői dokumentáció}

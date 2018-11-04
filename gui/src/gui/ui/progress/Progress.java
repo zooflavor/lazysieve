@@ -17,7 +17,11 @@ public interface Progress {
 	}
 	
 	default void finished() throws Throwable {
-		progress(null, 1.0);
+		finished(null);
+	}
+	
+	default void finished(String message) throws Throwable {
+		progress(message, 1.0);
 	}
 	
 	void progress(String message, double progress) throws Throwable;

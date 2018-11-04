@@ -10,6 +10,7 @@ import gui.graph.RenderedSample;
 import gui.graph.RendererDeathException;
 import gui.graph.Ruler;
 import gui.graph.Sample;
+import gui.util.Consumer;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 import javax.swing.JComponent;
 import javax.swing.JToolTip;
 import javax.swing.SwingUtilities;
@@ -329,17 +329,21 @@ public class GraphPlotter extends JComponent {
 		return toolTip2;
 	}
 	
-	private void fireListeners(EventHandler<Listener> handler) {
+	private void fireListeners(Consumer<Listener> handler) {
 		List<Listener> listeners2;
 		synchronized (lock) {
 			listeners2=new ArrayList<>(listeners);
 		}
 		listeners2.forEach((listener)->{
 			try {
-				handler.handle(listener);
+				handler.consume(listener);
 			}
 			catch (Throwable throwable) {
-				logger.accept(throwable);
+				try {
+					logger.consume(throwable);
+				}
+				catch (Throwable throwable2) {
+				}
 			}
 		});
 	}

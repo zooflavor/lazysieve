@@ -1,0 +1,46 @@
+#!/bin/bash
+
+cd ..
+
+cd generator
+make clean build
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+cd ..
+
+cd gui
+ant -q clean jar
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+cd ..
+
+cd szakdolgozat
+rm -f *.aux
+rm -f *.dvi
+rm -f *.gz
+rm -f *.log
+rm -f *.out
+rm -f *.pdf
+rm -f *.toc
+pdflatex --interaction=batchmode -halt-on-error szakdolgozat.tex
+if [ "0" != "$?"  ]; then
+	exit 1
+fi
+pdflatex --interaction=batchmode -halt-on-error szakdolgozat.tex
+if [ "0" != "$?"  ]; then
+	exit 1
+fi
+rm -f *.aux
+rm -f *.dvi
+rm -f eltecimerszines*.pdf
+rm -f *.gz
+rm -f *.log
+rm -f *.out
+rm -f *.toc
+cd ..
+
+cd scripts
+
+exit 0

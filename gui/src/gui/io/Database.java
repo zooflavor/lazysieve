@@ -3,30 +3,24 @@ package gui.io;
 import gui.math.UnsignedLong;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class Database implements PrimesProducer {
 	public static final String AGGREGATES="aggregates";
 	public static final String AGGREGATES_TEMP="aggregates.tmp";
 	public static final Pattern SEGMENT_PATTERN
-			=Pattern.compile("([0-9a-f]{8}[048c]0000001).primes");
+			=Pattern.compile("primes.([0-9a-f]{8}[048c]0000001)");
 	public static final long SMALL_PRIMES_MAX
 			=UnsignedLong.squareRootFloor(Segment.NUMBERS+1l);
 	
@@ -60,22 +54,22 @@ public class Database implements PrimesProducer {
 			this.numberOfSegments=numberOfSegments;
 		}
 		
-		public static TypeInfo info(NavigableMap<Long, ?> segments) {
+		public static TypeInfo info(NavigableSet<Long> segments) {
 			if (segments.isEmpty()) {
 				return new TypeInfo(null, null, null, 1l, 0l);
 			}
 			long missingSegmentStart=1l;
-			while (segments.containsKey(missingSegmentStart)) {
+			while (segments.contains(missingSegmentStart)) {
 				missingSegmentStart+=Segment.NUMBERS;
 			}
 			Long missingSegments;
-			Long next=segments.higherKey(missingSegmentStart);
+			Long next=segments.higher(missingSegmentStart);
 			missingSegments=(null==next)
 					?null
 					:((next-missingSegmentStart)/Segment.NUMBERS);
 			return new TypeInfo(
-					segments.firstKey(),
-					segments.lastKey(),
+					segments.first(),
+					segments.last(),
 					missingSegments,
 					missingSegmentStart,
 					segments.size());
@@ -88,32 +82,100 @@ public class Database implements PrimesProducer {
 		this.rootDirectory=rootDirectory.toAbsolutePath().normalize();
 	}
 	
+	public AggregatesReader aggregatesReader() throws IOException {
+		return AggregatesReader.create(rootDirectory.resolve(AGGREGATES));
+	}
+	
 	public void importAggregates(Path aggregatesFile, Progress progress)
 			throws Throwable {
-        Aggregates aggregates
-                =readAggregates(progress.subProgress(
-								0.0, "read aggregates", 0.3))
-                        .importAggregates(
-								readAggregates(aggregatesFile,
-										progress.subProgress(0.3,
-												"import aggregates", 0.6)));
-        progress.cancellable(false);
-		writeAggregates(aggregates,
-				progress.subProgress(0.6, "write aggregates", 1.0));
+		try (AggregatesWriter writer=AggregatesWriter.create(
+				rootDirectory.resolve(AGGREGATES),
+				rootDirectory.resolve(AGGREGATES_TEMP))) {
+			try (AggregatesReader reader0=aggregatesReader();
+					AggregatesReader reader1
+							=AggregatesReader.create(aggregatesFile)) {
+				boolean hasMore0=true;
+				boolean hasMore1=true;
+				AggregateBlock block0=null;
+				AggregateBlock block1=null;
+				while (true) {
+					if ((null==block0)
+							&& hasMore0) {
+						block0=reader0.next(false);
+						if (null==block0) {
+							hasMore0=false;
+						}
+					}
+					if ((null==block1)
+							&& hasMore1) {
+						block1=reader1.next(false);
+						if (null==block1) {
+							hasMore1=false;
+						}
+					}
+					progress.progress("importing aggregates",
+							0.5*(reader0.progress()+reader1.progress()));
+					if (null==block0) {
+						if (null==block1) {
+							break;
+						}
+						else {
+							writer.write(block1);
+							block1=null;
+						}
+					}
+					else {
+						if (null==block1) {
+							writer.write(block0);
+							block0=null;
+						}
+						else {
+							int cc=Long.compareUnsigned(
+									block0.get().segmentStart,
+									block1.get().segmentStart);
+							if (0<cc) {
+								writer.write(block1);
+								block1=null;
+							}
+							else if (0>cc) {
+								writer.write(block0);
+								block0=null;
+							}
+							else {
+								if (block0.get().lastModification
+										>=block1.get().lastModification) {
+									writer.write(block0);
+								}
+								else {
+									writer.write(block1);
+								}
+								block0=null;
+								block1=null;
+							}
+						}
+					}
+				}
+			}
+			writer.setSuccessful();
+		}
 		progress.finished();
 	}
 	
 	public Database.Info info(Progress progress) throws Throwable {
-		Aggregates aggregates=readAggregates(
-				progress.subProgress(0.0, "read aggregates", 0.6));
+		NavigableMap<Long, Long> lastModifications;
+		try (AggregatesReader reader=aggregatesReader()) {
+			lastModifications=Aggregates.lastModifications(
+					progress.subProgress(0.0, "read aggregates", 0.6),
+					reader);
+		}
 		Segments segments=readSegments(
 				progress.subProgress(0.6, "read segments", 0.99));
-		int newSegments=segments.newSegments(aggregates,
+		int newSegments=segments.newSegments(lastModifications,
 						progress.subProgress(0.99, "new segments", 1.0))
 				.size();
 		progress.finished();
 		return new Info(
-				aggregates.info(),
+				Aggregates.info(lastModifications),
 				newSegments,
 				segments.info());
 	}
@@ -149,28 +211,6 @@ public class Database implements PrimesProducer {
 				consumer.prime(lastPrime);
 			}
 		}
-	}
-	
-	public Aggregates readAggregates(Progress progress) throws Throwable {
-		return readAggregates(rootDirectory.resolve(AGGREGATES), progress);
-	}
-	
-	public static Aggregates readAggregates(Path path, Progress progress)
-			throws Throwable {
-		progress.checkCancelled();
-		if (Files.exists(path)) {
-			try (InputStream is=Files.newInputStream(path);
-					InputStream bis0=new BufferedInputStream(is);
-					GZIPInputStream gzis=new GZIPInputStream(bis0);
-					InputStream bis1=new BufferedInputStream(gzis);
-					DataInputStream dis=new DataInputStream(bis1)) {
-				return Aggregates.readFrom(dis, progress);
-			}
-			catch (FileNotFoundException ex) {
-			}
-		}
-		progress.finished();
-		return new Aggregates(new ArrayList<>(0));
 	}
 	
 	public IntList readPrimes(Progress progress) throws Throwable {
@@ -221,50 +261,74 @@ public class Database implements PrimesProducer {
 	}
 	
 	public void reaggregate(Progress progress) throws Throwable {
-		Aggregates aggregates=readAggregates(
-				progress.subProgress(0.0, "read aggregates", 0.2));
+		Deque<Segment.Info> segmentInfos=new ArrayDeque<>(
+				readSegments(
+						progress.subProgress(0.0, "reading segments", 0.2))
+						.segments
+						.values());
 		Segment segment=new Segment();
-		List<Long> newSegments=readSegments(
-						progress.subProgress(0.2, "read segments", 0.25))
-				.newSegments(aggregates,
-						progress.subProgress(0.25, "new segments", 0.3));
-		List<Aggregate> newAggregates=new ArrayList<>();
-		int ii=0;
-		for (Long segmentStart: newSegments) {
-			progress.checkCancelled();
-			Progress subProgress=progress.subProgress(
-					(0.3*(newSegments.size()-ii)+0.9*ii)
-							/newSegments.size(),
-					"aggregate segments",
-					(0.3*(newSegments.size()-ii-1)+0.9*(ii+1))
-							/newSegments.size());
-			subProgress.progress("aggregate segment", 0.0);
-			segment.read(this, segmentStart);
-			newAggregates.add(segment.aggregate());
-			++ii;
-			if (0==(ii%128)) {
-				aggregates=aggregates.importAggregates(
-						new Aggregates(newAggregates));
-				newAggregates.clear();
-                progress.cancellable(false);
-				writeAggregates(aggregates, subProgress);
-                progress.cancellable(true);
+		try (AggregatesWriter writer=AggregatesWriter.create(
+				rootDirectory.resolve(AGGREGATES),
+				rootDirectory.resolve(AGGREGATES_TEMP))) {
+			try (AggregatesReader reader=aggregatesReader()) {
+				reader.consume(
+						false,
+						(aggregateBlock, progress2)->{
+							Aggregate aggregate=aggregateBlock.get();
+							while (!segmentInfos.isEmpty()) {
+								Segment.Info segmentInfo
+										=segmentInfos.peekFirst();
+								if (0<=Long.compareUnsigned(
+											segmentInfo.segmentStart,
+											aggregate.segmentStart)) {
+									break;
+								}
+								segmentInfos.pollFirst();
+								segment.read(this, segmentInfo.segmentStart);
+								writer.write(new AggregateBlock(
+										segment.aggregate()));
+							}
+							Segment.Info segmentInfo=segmentInfos.peekFirst();
+							if ((null==segmentInfo)
+									|| (0<Long.compareUnsigned(
+											segmentInfo.segmentStart,
+											aggregate.segmentStart))) {
+								writer.write(aggregateBlock);
+							}
+							else {
+								segmentInfo=segmentInfos.pollFirst();
+								if (aggregate.lastModification
+										>=segmentInfo.lastModification) {
+									writer.write(aggregateBlock);
+								}
+								else {
+									segment.read(this,
+											segmentInfo.segmentStart);
+									writer.write(new AggregateBlock(
+											segment.aggregate()));
+								}
+							}
+						},
+						null,
+						progress.subProgress(0.2, "reaggregating", 0.6));
 			}
+			Progress subProgress
+					=progress.subProgress(0.6, "reaggregating", 1.0);
+			for (int ii=0, ss=segmentInfos.size(); ss>ii; ++ii) {
+				subProgress.progress(1.0*ii/ss);
+				Segment.Info segmentInfo=segmentInfos.pollFirst();
+				segment.read(this, segmentInfo.segmentStart);
+				writer.write(new AggregateBlock(segment.aggregate()));
+			}
+			writer.setSuccessful();
 		}
-        progress.cancellable(false);
-		writeAggregates(
-				aggregates.importAggregates(new Aggregates(newAggregates)),
-				progress.subProgress(0.9, "write aggregates", 1.0));
 		progress.finished();
 	}
 	
 	public Path segmentFile(long segmentStart) {
 		Segment.checkSegmentStart(segmentStart);
 		return rootDirectory
-				.resolve(String.format("%1$02x", (segmentStart>>56)&0xff))
-				.resolve(String.format("%1$02x", (segmentStart>>48)&0xff))
-				.resolve(String.format("%1$02x", (segmentStart>>40)&0xff))
-				.resolve(String.format("%1$016x.primes", segmentStart));
+				.resolve(String.format("primes.%1$016x", segmentStart));
 	}
 	
 	public static IntList smallPrimes(Progress progress) throws Throwable {
@@ -287,24 +351,5 @@ public class Database implements PrimesProducer {
 			}
 		}
 		return primes;
-	}
-	
-	public void writeAggregates(Aggregates aggregates, Progress progress)
-			throws Throwable {
-		progress.checkCancelled();
-		Path realPath=rootDirectory.resolve(AGGREGATES);
-		Path tempPath=rootDirectory.resolve(AGGREGATES_TEMP);
-		Files.deleteIfExists(tempPath);
-		try (FileOutputStream os=new FileOutputStream(tempPath.toFile());
-				OutputStream bos0=new BufferedOutputStream(os);
-				GZIPOutputStream gzos=new GZIPOutputStream(bos0);
-				OutputStream bos1=new BufferedOutputStream(gzos);
-				DataOutputStream dos=new DataOutputStream(bos1)) {
-			aggregates.writeTo(dos, progress);
-			dos.flush();
-			os.getFD().sync();
-		}
-		Files.deleteIfExists(realPath);
-		Files.move(tempPath, realPath);
 	}
 }

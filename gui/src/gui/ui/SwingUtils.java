@@ -1,5 +1,6 @@
 package gui.ui;
 
+import gui.util.Consumer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.function.Consumer;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -29,22 +29,26 @@ public class SwingUtils {
 	private SwingUtils() {
 	}
 	
-	public static void ask(EventHandler<Boolean> handler,
+	public static void ask(Consumer<Boolean> handler,
 			Consumer<Throwable> logger, Component owner, String question) {
 		JDialog dialog=new JDialog(window(owner));
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
-		Consumer<Boolean> handler2=(result)->{
+		java.util.function.Consumer<Boolean> handler2=(result)->{
 			try {
 				try {
 					dialog.dispose();
 				}
 				finally {
-					handler.handle(result);
+					handler.consume(result);
 				}
 			}
 			catch (Throwable throwable) {
-				logger.accept(throwable);
+				try {
+					logger.consume(throwable);
+				}
+				catch (Throwable throwable2) {
+				}
 			}
 		};
 		
@@ -110,16 +114,20 @@ public class SwingUtils {
 		}
 	}
 	
-	public static void setupClosed(EventHandler<Void> handler,
+	public static void setupClosed(gui.util.Consumer<Void> handler,
 			Consumer<Throwable> logger, Window window) {
 		window.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent event) {
 				try {
-					handler.handle(null);
+					handler.consume(null);
 				}
 				catch (Throwable throwable) {
-					logger.accept(throwable);
+					try {
+						logger.consume(throwable);
+					}
+					catch (Throwable throwable2) {
+					}
 				}
 			}
 			

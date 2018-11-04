@@ -3,6 +3,7 @@ package gui.ui.progress;
 import java.io.PrintStream;
 
 public class PrintStreamProgress implements Progress {
+	private int maxLineLength;
 	public final boolean newLine;
 	public final PrintStream stream;
 	
@@ -31,13 +32,16 @@ public class PrintStreamProgress implements Progress {
 				?String.format("%1$5.1f%%", Math.floor(1000.0*progress)/10.0)
 				:String.format("%1$5.1f%%: %2$s",
 						Math.floor(1000.0*progress)/10.0, message);
+		maxLineLength=Math.max(maxLineLength, line.length());
 		if (newLine) {
 			stream.println(line);
 		}
 		else {
 			stream.print("\r");
 			stream.print(line);
-			stream.print(" ");
+			for (int ii=maxLineLength-line.length(); 0<ii; --ii) {
+				stream.print(" ");
+			}
 			if (1.0<=progress) {
 				stream.println();
 			}

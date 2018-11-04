@@ -6,9 +6,14 @@ function purge {
 	if [ ! -d "${1}" ]; then
 		return
 	fi
-	for DIR in $(find ${1} -maxdepth 1 -type d -name '[0-9a-f][0-9a-f]' ! -path ${1} ! -path ${1}/00)
+	for FILE in $(find ${1} -maxdepth 1 -type f -name 'primes.*' \
+		! -path ${1} \
+		! -path "${1}/primes.0000000000000001" \
+		! -path "${1}/primes.0000000040000001" \
+		! -path "${1}/primes.0000000080000001" \
+		! -path ${1} ! -path "${1}/primes.00000000c0000001")
 	do
-		rm -rf ${DIR}
+		rm ${FILE}
 	done
 }
 
@@ -19,9 +24,7 @@ fi
 while true
 do
 	purge "${DB}"
-	purge "${DB}/00"
-	purge "${DB}/00/00"
-	COMMAND="./$(java -jar ../gui/dist/gui.jar database "${DB}" crunch info ${SEGMENTS})"
+	COMMAND="../generator/$(java -jar ../gui/dist/gui.jar database "${DB}" crunch info ${SEGMENTS})"
 	echo command: ${COMMAND}
 	${COMMAND}
 	if [ "0" != "$?" ]; then

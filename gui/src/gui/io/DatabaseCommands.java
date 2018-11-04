@@ -51,9 +51,12 @@ public class DatabaseCommands {
 	public static void crunchInfo(List<Object> arguments) throws Throwable {
 		Database database=new Database((Path)arguments.get(1));
 		long segments=(Long)arguments.get(4);
-		Database.TypeInfo info=database.info(Progress.NULL)
-				.aggregates;
-		if ((1l<<32)>=info.missingSegmentStart) {
+		Database.Info info=database.info(Progress.NULL);
+		Database.TypeInfo aggregatesInfo=info.aggregates;
+		Database.TypeInfo segmentsInfo=info.segments;
+		if ((1l<<32)>=UnsignedLong.min(
+				aggregatesInfo.missingSegmentStart,
+				segmentsInfo.missingSegmentStart)) {
 			System.out.println(String.format(
 					"init.bin %1$s",
 					database.rootDirectory));
@@ -62,7 +65,8 @@ public class DatabaseCommands {
 			System.out.println(String.format(
 					"generator.bin %1$s start 0x%2$s segments %3$s",
 					database.rootDirectory,
-					Long.toUnsignedString(info.missingSegmentStart, 16),
+					Long.toUnsignedString(
+							aggregatesInfo.missingSegmentStart, 16),
 					Long.toUnsignedString(segments)));
 		}
 	}

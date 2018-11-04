@@ -18,7 +18,6 @@ while [ "8" -ge "$BUCKET_BITS" ]; do
 		gcc -o tmp/generator.bin generator.c \
 			-DBUCKET_BITS=$BUCKET_BITS \
 			-DSEGMENT_SMALL_SIZE_BITS_LOG2=$SMALL_SIZE \
-			-lz \
 			-std=c99 -pedantic -Wall -Werror \
 			-march=native -O3
 		if [ "0" != "$?" ]; then

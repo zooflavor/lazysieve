@@ -313,8 +313,9 @@ public class Segment implements SieveTable {
 	
 	public void read(Path path) throws IOException {
 		long lastModification2=Files.getLastModifiedTime(path).toMillis();
+		String fileName=path.getFileName().toString();
 		long segmentStart2=Long.parseUnsignedLong(
-				path.getFileName().toString().substring(0, 16),
+				fileName.substring(fileName.length()-16, fileName.length()),
 				16);
 		try (InputStream is=Files.newInputStream(path);
 				InputStream bis0=new BufferedInputStream(is)) {

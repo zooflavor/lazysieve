@@ -1,6 +1,7 @@
 package gui.ui;
 
 import gui.Session;
+import gui.util.Consumer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -15,10 +16,10 @@ public abstract class GuiWindow<W extends java.awt.Window> {
 		this.session=session;
 	}
 	
-	public ActionListener actionListener(EventHandler<ActionEvent> handler) {
+	public ActionListener actionListener(Consumer<ActionEvent> handler) {
 		return (event)->{
 			try {
-				handler.handle(event);
+				handler.consume(event);
 			}
 			catch (Throwable throwable) {
 				SwingUtils.showError(window(), throwable);

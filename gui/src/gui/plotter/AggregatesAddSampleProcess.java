@@ -3,10 +3,10 @@ package gui.plotter;
 import gui.graph.PlotType;
 import gui.graph.Sample;
 import gui.io.Aggregates;
+import gui.io.AggregatesReader;
 import gui.ui.Color;
 import gui.ui.progress.Progress;
 import gui.util.Maps;
-import java.util.NavigableMap;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -15,221 +15,13 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 		super(parent);
 	}
 	
-	public static void addPrime12Z11CountsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.prime12Z11Counts())
-						.create(new Object(),
-								"prime 12Z+11 counts",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrime4Z1CountsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.prime4Z1Counts())
-						.create(new Object(),
-								"prime 4Z+1 counts",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrime4Z3CountsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.prime4Z3Counts())
-						.create(new Object(),
-								"prime 4Z+3 counts",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrime6Z1CountsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.prime6Z1Counts())
-						.create(new Object(),
-								"prime 6Z+1 counts",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeCountsAbsoluteErrorSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				NavigableMap<Long, Long> primeCounts=aggregates.primeCounts();
-				Sample.Builder sample=Sample.builder(primeCounts.size());
-				primeCounts.forEach(
-						(key, value)->{
-							if (Math.E>=key) {
-								return;
-							}
-							sample.add(
-									key,
-									value-key/Math.log(key));
-						});
-				return sample.create(
-						new Object(),
-						"prime counts abs. error",
-						Colors.INTERPOLATION,
-						PlotType.LINE,
-						color,
-						color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeCountsExpectedSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				NavigableMap<Long, Long> primeCounts=aggregates.primeCounts();
-				Sample.Builder sample=Sample.builder(primeCounts.size());
-				primeCounts.forEach(
-						(key, value)->{
-							if (Math.E>=key) {
-								return;
-							}
-							sample.add(
-									key,
-									key/Math.log(key));
-						});
-				return sample.create(
-						new Object(),
-						"expected prime counts",
-						Colors.INTERPOLATION,
-						PlotType.LINE,
-						color,
-						color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeCountsRelativeErrorSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				NavigableMap<Long, Long> primeCounts=aggregates.primeCounts();
-				Sample.Builder sample=Sample.builder(primeCounts.size());
-				primeCounts.forEach(
-						(key, value)->{
-							if (Math.E>=key) {
-								return;
-							}
-							sample.add(
-									key,
-									(value-key/Math.log(key))/value);
-						});
-				return sample.create(
-						new Object(),
-						"prime counts rel. error",
-						Colors.INTERPOLATION,
-						PlotType.LINE,
-						color,
-						color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeCountsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.primeCounts())
-						.create(new Object(),
-								"prime counts",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeGapFrequenciesSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.primeGapFrequencies())
-						.create(new Object(),
-								"prime gap frequencies",
-								Colors.INTERPOLATION,
-								PlotType.BARS,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeGapMeritsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.primeGapMerits())
-						.create(new Object(),
-								"prime gap merits",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
-	public static void addPrimeGapStartsSample(Plotter plotter) {
-		new AggregatesAddSampleProcess(plotter) {
-			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.primeGapStarts())
-						.create(new Object(),
-								"prime gap starts",
-								Colors.INTERPOLATION,
-								PlotType.LINE,
-								color,
-								color);
-			}
-		}.start(plotter.session.executor);
-	}
-	
 	public static void addMaxPrimeGapsSample(Plotter plotter) {
 		new AggregatesAddSampleProcess(plotter) {
 			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.maxPrimeGaps())
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Maps.toSample(
+							Aggregates.maxPrimeGaps(progress, reader))
 						.create(new Object(),
 								"max. prime gaps",
 								Colors.INTERPOLATION,
@@ -243,9 +35,10 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 	public static void addNewPrimeGapsSample(Plotter plotter) {
 		new AggregatesAddSampleProcess(plotter) {
 			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.newPrimeGaps())
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Maps.toSample(
+							Aggregates.newPrimeGaps(progress, reader))
 						.create(
 							new Object(),
 							"new prime gaps",
@@ -257,12 +50,190 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 		}.start(plotter.session.executor);
 	}
 	
+	public static void addPrime12Z11CountsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.prime12Z11Counts(progress, reader)
+						.create(new Object(),
+								"prime 12Z+11 counts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrime4Z1CountsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.prime4Z1Counts(progress, reader)
+						.create(new Object(),
+								"prime 4Z+1 counts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrime4Z3CountsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.prime4Z3Counts(progress, reader)
+						.create(new Object(),
+								"prime 4Z+3 counts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrime6Z1CountsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.prime6Z1Counts(progress, reader)
+						.create(new Object(),
+								"prime 6Z+1 counts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeCountsAbsoluteErrorSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.primeCountsAbsoluteError(progress, reader)
+						.create(new Object(),
+								"prime counts abs. error",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeCountsExpectedSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.primeCountsExpectedValue(progress, reader)
+						.create(new Object(),
+								"expected prime counts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeCountsRelativeErrorSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.primeCountsRelativeError(progress, reader)
+						.create(new Object(),
+								"prime counts rel. error",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeCountsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.primeCounts(progress, reader)
+						.create(new Object(),
+								"prime counts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeGapFrequenciesSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Maps.toSample(
+							Aggregates.primeGapFrequencies(progress, reader))
+						.create(new Object(),
+								"prime gap frequencies",
+								Colors.INTERPOLATION,
+								PlotType.BARS,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeGapMeritsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Maps.toSample(
+							Aggregates.primeGapMerits(progress, reader))
+						.create(new Object(),
+								"prime gap merits",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addPrimeGapStartsSample(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Maps.toSample(
+							Aggregates.primeGapStarts(progress, reader))
+						.create(new Object(),
+								"prime gap starts",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
 	public static void addSieveNanosSample(Plotter plotter) {
 		new AggregatesAddSampleProcess(plotter) {
 			@Override
-			protected Sample sample(Aggregates aggregates, Color color)
-					throws Throwable {
-				return Maps.toSample(aggregates.sieveNanos())
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.sieveNanos(progress, reader)
 						.create(new Object(),
 								"sieve nanos",
 								Colors.INTERPOLATION,
@@ -370,9 +341,12 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 	@Override
 	protected Sample sample(Color color, Progress progress)
 			throws Throwable {
-		return sample(parent.session.database.readAggregates(progress), color);
+		try (AggregatesReader reader
+				=parent.session.database.aggregatesReader()) {
+			return sample(color, progress, reader);
+		}
 	}
 	
-	protected abstract Sample sample(Aggregates aggregates, Color color)
-			throws Throwable;
+	protected abstract Sample sample(Color color, Progress progress,
+			AggregatesReader reader) throws Throwable;
 }

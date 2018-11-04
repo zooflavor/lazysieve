@@ -2,9 +2,9 @@ package gui.plotter;
 
 import gui.math.Functions;
 import gui.math.RealFunction;
-import gui.ui.EventHandler;
 import gui.ui.GuiWindow;
 import gui.ui.SwingUtils;
+import gui.util.Consumer;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -19,10 +19,10 @@ import javax.swing.JPanel;
 public class FunctionSelector extends GuiWindow<JDialog> {
 	private final List<JCheckBox> checkBoxes=new ArrayList<>();
 	private final JDialog dialog;
-	private final EventHandler<List<RealFunction>> handler;
+	private final Consumer<List<RealFunction>> handler;
 	private final List<RealFunction> functions=new ArrayList<>();
 	
-	public FunctionSelector(EventHandler<List<RealFunction>> handler,
+	public FunctionSelector(Consumer<List<RealFunction>> handler,
 			Plotter plotter) {
 		super(plotter.session);
 		this.handler=handler;
@@ -70,7 +70,7 @@ public class FunctionSelector extends GuiWindow<JDialog> {
 				functions2.add(functions.get(ii));
 			}
 		}
-		handler.handle(functions2);
+		handler.consume(functions2);
 	}
 	
     public void start() throws Throwable {
