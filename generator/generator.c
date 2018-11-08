@@ -27,7 +27,7 @@ uint64_t initStart;
 uint64_t initEnd;
 
 uint64_t segment[SEGMENT_SIZE_UINT64_T];
-int64_t segmentCount=-1;
+uint64_t segmentCount=-1;
 uint64_t segmentStart;
 
 uint64_t sieveStart;
@@ -233,9 +233,9 @@ int main(int argv, char *argc[]) {
 	databaseDirectory=argc[1];
 	checkDatabase();
 	segmentStart=strtoull(argc[3], 0, 0);
-	if (segmentStart<(1l<<32)+1) {
+	if (segmentStart<GENERATOR_START_NUMBER) {
 		printf("segment start %lu is smaller than the minimum %lu\n",
-				segmentStart, (1l<<32)+1);
+				segmentStart, GENERATOR_START_NUMBER);
 		exit(1);
 	}
 	if (1l!=(segmentStart&(SEGMENT_SIZE_NUMBERS-1))) {
@@ -246,9 +246,13 @@ int main(int argv, char *argc[]) {
 		exit(1);
 	}
 	printf("segment start:    ");
+	if (END_NUMBER<=segmentStart) {
+		printf("segment start %lu is larger than the maximum %lu\n",
+				segmentStart, END_NUMBER-1l);
+		exit(1);
+	}
 	printUint64(20, segmentStart);
 	printf("\n");
-	segmentStart/=2;
 	if (0==strcmp(argc[4], "reserve-space")) {
 		spaceToReserve=strtoll(argc[5], 0, 0);
 		if ((1l<<27)>spaceToReserve) {
@@ -267,13 +271,23 @@ int main(int argv, char *argc[]) {
 			printf("segment count %lu is smaller than 1\n", segmentCount);
 			exit(1);
 		}
+		int truncated=0;
+		uint64_t max=(END_NUMBER-segmentStart)/SEGMENT_SIZE_NUMBERS;
+		if (max<segmentCount) {
+			segmentCount=max;
+			truncated=1;
+		}
 		printf("segment count:    ");
 		printUint64(20, segmentCount);
+		if (truncated) {
+			printf(" (truncated)");
+		}
 		printf("\n");
 	}
 	else {
 		printUsage();
 	}
+	segmentStart>>=1;
 	printf("small segment size: %d\n", SEGMENT_SMALL_SIZE_BITS_LOG2);
 	printf("bucket bits: %d\n", BUCKET_BITS);
 	initStart=nanoTime();

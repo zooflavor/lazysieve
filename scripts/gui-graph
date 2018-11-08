@@ -1,0 +1,4 @@
+#!/bin/bash
+DB=../db
+java -Xms3072m -Xmx3584m -jar ../gui/dist/gui.jar gui ${DB} graph
+exit $?

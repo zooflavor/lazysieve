@@ -17,6 +17,8 @@ import java.util.Map;
 public class Segment implements SieveTable {
 	public static final int BITS=1<<29;
 	public static final int BYTES=BITS>>3;
+	public static final long END_NUMBER=1l-(1l<<34);
+	public static final long GENERATOR_START_NUMBER=(1l<<32)+1l;
 	public static final int LONGS=BITS>>6;
 	public static final long MAX=-(1l<<33)-1l;
 	public static final long MIN=3l;

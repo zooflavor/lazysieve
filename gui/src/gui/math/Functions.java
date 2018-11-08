@@ -11,6 +11,47 @@ public class Functions {
 	static Comparator<RealFunction> COMPARATOR
 			=(f0, f1)->f0.toString().compareTo(f1.toString());
 	public static final List<RealFunction> FUNCTIONS;
+	public static final RealFunction LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
+				}
+
+				@Override
+				public String toString() {
+					return "ln(ln(x))";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
+					}
+					return Math.log(Math.log(xx));
+				}
+			};
+	public static final RealFunction LNLNX_LNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
+				}
+
+				@Override
+				public String toString() {
+					return "ln(ln(x))*ln(x)";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
+					}
+					double lnx=Math.log(xx);
+					return Math.log(lnx)*lnx;
+				}
+			};
 	public static final RealFunction LNX
 			=new RealFunction() {
 				@Override
@@ -29,6 +70,27 @@ public class Functions {
 						return Double.NaN;
 					}
 					return Math.log(xx);
+				}
+			};
+	public static final RealFunction LN2X
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
+				}
+
+				@Override
+				public String toString() {
+					return "ln^2(x)";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
+					}
+					double lnx=Math.log(xx);
+					return lnx*lnx;
 				}
 			};
 	public static final RealFunction ONE

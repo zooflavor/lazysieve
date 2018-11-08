@@ -22,9 +22,9 @@ public class Aggregates {
 	private Aggregates() {
 	}
 	
-	public static Database.TypeInfo info(
+	public static DatabaseInfo.TypeInfo info(
 			NavigableMap<Long, Long> lastModifications) throws Throwable {
-		return Database.TypeInfo.info(lastModifications.navigableKeySet());
+		return DatabaseInfo.typeInfo(lastModifications.navigableKeySet());
 	}
 	
 	public static NavigableMap<Long, Long> lastModifications(Progress progress,
@@ -44,29 +44,34 @@ public class Aggregates {
 	public static NavigableMap<Long, Long> maxPrimeGaps(Progress progress,
 			AggregatesReader reader) throws Throwable {
 		NavigableMap<Long, Long> result=new TreeMap<>(Long::compareUnsigned);
-		newPrimeGaps(progress, reader)
-				.forEach(
-						new BiConsumer<Long, Long>() {
-							private long maxGap;
-							private long maxStart;
+		class BC implements BiConsumer<Long, Long> {
+			private long lastStart;
+			private long maxGap;
+			private long maxStart;
 
-							@Override
-							public void accept(Long start, Long gap) {
-								if (0==maxGap) {
-									result.put(start, gap);
-									maxGap=gap;
-									maxStart=start;
-								}
-								else if (0>Long.compareUnsigned(maxGap, gap)) {
-									if (maxStart!=start-1l) {
-										result.put(start-1l, maxGap);
-									}
-									result.put(start, gap);
-									maxGap=gap;
-									maxStart=start;
-								}
-							}
-						});
+			@Override
+			public void accept(Long start, Long gap) {
+				if (0==maxGap) {
+					result.put(start, gap);
+					maxGap=gap;
+					maxStart=start;
+				}
+				else if (0>Long.compareUnsigned(maxGap, gap)) {
+					if (maxStart!=start-1l) {
+						result.put(start-1l, maxGap);
+					}
+					result.put(start, gap);
+					maxGap=gap;
+					maxStart=start;
+				}
+				lastStart=start;
+			}
+		}
+		BC bc=new BC();
+		newPrimeGaps(progress, reader).forEach(bc);
+		if (bc.lastStart!=bc.maxStart) {
+			result.put(bc.lastStart, bc.maxGap);
+		}
 		return result;
 	}
 	
@@ -200,10 +205,23 @@ public class Aggregates {
 	}
 	
 	public static Sample.Builder sieveNanos(Progress progress,
-			AggregatesReader reader) throws Throwable {
-		return sum(progress, reader, Sample.builder(),
-				(aggregate)->aggregate.sieveNanos,
-				0l, null);
+			AggregatesReader reader, boolean sum) throws Throwable {
+		if (sum) {
+			return sum(progress, reader, Sample.builder(),
+					(aggregate)->aggregate.sieveNanos,
+					0l, null);
+		}
+		else {
+			Sample.Builder sample=Sample.builder();
+			reader.consume(false,
+					(aggregateBlock, progress2)->
+						sample.add(
+								aggregateBlock.get().segmentEnd-1l,
+								aggregateBlock.get().sieveNanos),
+					null,
+					progress);
+			return sample;
+		}
 	}
 	
 	private static Sample.Builder sum(Progress progress,
@@ -221,7 +239,7 @@ public class Aggregates {
 							Progress progress) throws Throwable {
 						Aggregate aggregate=aggregateBlock.get();
 						sum2+=selector.apply(aggregate);
-						long lastNumber=aggregate.segmentEnd-1;
+						long lastNumber=aggregate.segmentEnd-1l;
 						if (null==transform) {
 							sample.add(lastNumber, sum2);
 						}

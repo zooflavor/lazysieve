@@ -3,6 +3,7 @@ package gui.check;
 import gui.Gui;
 import gui.io.Segment;
 import gui.io.Segments;
+import gui.math.UnsignedLong;
 import gui.ui.CloseButton;
 import gui.ui.GuiWindow;
 import java.awt.BorderLayout;
@@ -52,7 +53,7 @@ public class CheckSegments extends GuiWindow<JFrame> {
 		
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			return String.format("%1$,d",
+			return UnsignedLong.format(
 					segmentInfos.get(rowIndex).segmentStart);
 		}
 		

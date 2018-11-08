@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.NavigableMap;
-import java.util.NavigableSet;
 import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,58 +22,6 @@ public class Database implements PrimesProducer {
 			=Pattern.compile("primes.([0-9a-f]{8}[048c]0000001)");
 	public static final long SMALL_PRIMES_MAX
 			=UnsignedLong.squareRootFloor(Segment.NUMBERS+1l);
-	
-	public static class Info {
-		public final TypeInfo aggregates;
-		public final long numberOfNewSegments;
-		public final TypeInfo segments;
-		
-		public Info(TypeInfo aggregates, long numberOfNewSegments,
-				TypeInfo segments) {
-			this.aggregates=aggregates;
-			this.numberOfNewSegments=numberOfNewSegments;
-			this.segments=segments;
-		}
-	}
-	
-	public static class TypeInfo {
-		public final Long firstSegmentStart;
-		public final Long lastSegmentStart;
-		public final Long missingSegments;
-		public final Long missingSegmentStart;
-		public final long numberOfSegments;
-		
-		public TypeInfo(Long firstSegmentStart, Long lastSegmentStart,
-				Long missingSegments, Long missingSegmentStart,
-				long numberOfSegments) {
-			this.firstSegmentStart=firstSegmentStart;
-			this.lastSegmentStart=lastSegmentStart;
-			this.missingSegments=missingSegments;
-			this.missingSegmentStart=missingSegmentStart;
-			this.numberOfSegments=numberOfSegments;
-		}
-		
-		public static TypeInfo info(NavigableSet<Long> segments) {
-			if (segments.isEmpty()) {
-				return new TypeInfo(null, null, null, 1l, 0l);
-			}
-			long missingSegmentStart=1l;
-			while (segments.contains(missingSegmentStart)) {
-				missingSegmentStart+=Segment.NUMBERS;
-			}
-			Long missingSegments;
-			Long next=segments.higher(missingSegmentStart);
-			missingSegments=(null==next)
-					?null
-					:((next-missingSegmentStart)/Segment.NUMBERS);
-			return new TypeInfo(
-					segments.first(),
-					segments.last(),
-					missingSegments,
-					missingSegmentStart,
-					segments.size());
-		}
-	}
 	
 	public final Path rootDirectory;
 	
@@ -161,7 +108,7 @@ public class Database implements PrimesProducer {
 		progress.finished();
 	}
 	
-	public Database.Info info(Progress progress) throws Throwable {
+	public DatabaseInfo info(Progress progress) throws Throwable {
 		NavigableMap<Long, Long> lastModifications;
 		try (AggregatesReader reader=aggregatesReader()) {
 			lastModifications=Aggregates.lastModifications(
@@ -174,7 +121,7 @@ public class Database implements PrimesProducer {
 						progress.subProgress(0.99, "new segments", 1.0))
 				.size();
 		progress.finished();
-		return new Info(
+		return new DatabaseInfo(
 				Aggregates.info(lastModifications),
 				newSegments,
 				segments.info());

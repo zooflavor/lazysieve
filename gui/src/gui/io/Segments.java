@@ -13,7 +13,8 @@ public class Segments {
 	public final NavigableMap<Long, Segment.Info> segments;
 	
 	public Segments(Iterable<Segment.Info> segments) {
-		NavigableMap<Long, Segment.Info> segments2=new TreeMap<>();
+		NavigableMap<Long, Segment.Info> segments2
+				=new TreeMap<>(Long::compareUnsigned);
 		for (Segment.Info segment: segments) {
 			Long start=segment.segmentStart;
 			Segment.Info segment2=segments2.get(start);
@@ -31,8 +32,8 @@ public class Segments {
 		firstMissingStart=firstMissingStart2;
 	}
 	
-	public Database.TypeInfo info() {
-		return Database.TypeInfo.info(segments.navigableKeySet());
+	public DatabaseInfo.TypeInfo info() {
+		return DatabaseInfo.typeInfo(segments.navigableKeySet());
 	}
 	
 	public List<Long> newSegments(

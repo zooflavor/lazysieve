@@ -1,6 +1,6 @@
 package gui.plotter;
 
-import gui.Gui;
+import gui.Session;
 import gui.graph.Function;
 import gui.graph.Graph;
 import gui.graph.Sample;
@@ -143,8 +143,8 @@ public class Plotter extends GuiWindow<JFrame> {
 	private final Collection<TableModelListener> tableModelListeners
 			=new LinkedList<>();
     
-    public Plotter(Gui gui) {
-		super(gui.session);
+    public Plotter(Session session) {
+		super(session);
 		
         frame=new JFrame(TITLE);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -337,8 +337,8 @@ public class Plotter extends GuiWindow<JFrame> {
 						(sample)->sample.usedColors(consumer)));
 	}
     
-    public static void start(Gui gui) throws Throwable {
-		new Plotter(gui)
+    public static void start(Session session) throws Throwable {
+		new Plotter(session)
 				.show();
     }
 	

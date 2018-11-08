@@ -1,12 +1,19 @@
 #!/bin/bash
-SEGMENTS=1024
+SEGMENTS=33
 DB=../db
+
+function database {
+	java -Xmx3584m -jar ../gui/dist/gui.jar database "${DB}" $@
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+}
 
 function purge {
 	if [ ! -d "${1}" ]; then
 		return
 	fi
-	for FILE in $(find ${1} -maxdepth 1 -type f -name 'primes.*' \
+	for FILE in $(find -L ${1} -maxdepth 1 -type f -name 'primes.*' \
 		! -path ${1} \
 		! -path "${1}/primes.0000000000000001" \
 		! -path "${1}/primes.0000000040000001" \
@@ -17,20 +24,23 @@ function purge {
 	done
 }
 
-java -jar ../gui/dist/gui.jar database "${DB}" reaggregate
+database reaggregate
 if [ "0" != "$?" ]; then
 	exit 1
 fi
 while true
 do
 	purge "${DB}"
-	COMMAND="../generator/$(java -jar ../gui/dist/gui.jar database "${DB}" crunch info ${SEGMENTS})"
+	rm -f "${DB}/tmp.tmp"
+	database info crunch ${SEGMENTS} | tee "${DB}/tmp.tmp"
+	COMMAND=$(cat "${DB}/tmp.tmp"|grep "crunch: "|sed -r "s/crunch: (.*)/\\1/")
+	rm -f "${DB}/tmp.tmp"
 	echo command: ${COMMAND}
 	${COMMAND}
 	if [ "0" != "$?" ]; then
 		exit 1
 	fi
-	java -jar ../gui/dist/gui.jar database "${DB}" reaggregate
+	database reaggregate
 	if [ "0" != "$?" ]; then
 		exit 1
 	fi

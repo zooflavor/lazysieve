@@ -228,14 +228,15 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			}
 		}.start(plotter.session.executor);
 	}
-	public static void addSieveNanosSample(Plotter plotter) {
+	public static void addSieveNanosSample(Plotter plotter, boolean sum) {
 		new AggregatesAddSampleProcess(plotter) {
 			@Override
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
-				return Aggregates.sieveNanos(progress, reader)
+				return Aggregates.sieveNanos(progress, reader, sum)
 						.create(new Object(),
-								"sieve nanos",
+								String.format("sieve nanos (%1$s)",
+										sum?"sum":"segments"),
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -330,10 +331,18 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 		menu.add(addNewPrimeGapsItem);
 		
 		JMenuItem addSieveNanosItem
-				=new JMenuItem("Add sieve nanos sample");
+				=new JMenuItem("Add sieve nanos sample (segments)");
 		addSieveNanosItem.addActionListener((event2)->
-				AggregatesAddSampleProcess.addSieveNanosSample(plotter));
+				AggregatesAddSampleProcess
+						.addSieveNanosSample(plotter, false));
 		menu.add(addSieveNanosItem);
+		
+		JMenuItem addSieveNanosSumItem
+				=new JMenuItem("Add sieve nanos sample (sum)");
+		addSieveNanosSumItem.addActionListener((event2)->
+				AggregatesAddSampleProcess
+						.addSieveNanosSample(plotter, true));
+		menu.add(addSieveNanosSumItem);
 		
 		return menu;
 	}
