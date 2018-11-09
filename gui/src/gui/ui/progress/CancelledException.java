@@ -6,6 +6,6 @@ public class CancelledException extends MessageException {
     private static final long serialVersionUID=0l;
     
     public CancelledException() {
-        super("cancelled");
+        super("megszakítva");
     }
 }

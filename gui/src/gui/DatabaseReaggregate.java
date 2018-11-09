@@ -4,8 +4,8 @@ import gui.ui.GuiProcess;
 import javax.swing.JFrame;
 
 public class DatabaseReaggregate {
-    public static final char MNEMONIC='a';
-    public static final String TITLE="DB reaggregate";
+    public static final char MNEMONIC='t';
+    public static final String TITLE="DB összesítés";
     
     public static class Process extends GuiProcess<Gui, JFrame> {
         public Process(Gui gui) {
@@ -19,7 +19,7 @@ public class DatabaseReaggregate {
 
         @Override
         protected void foreground() throws Throwable {
-			parent.showMessage("reaggregate completed");
+			parent.showMessage("összesítés befejeződött");
         }
     }
     

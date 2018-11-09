@@ -71,7 +71,7 @@ public class CheckSieves extends GuiWindow<JFrame> {
 				long segmentStart=ss*Segment.NUMBERS+1l;
 				referenceSegment.clear(0l, true, segmentStart);
 				sieveSegment.clear(0l, sieve.defaultPrime(), segmentStart);
-				SieveProcess.generateReference(
+				ReferenceSegment.SIEVE.generate(
 						session.database,
 						subProgress2.subProgress(0.0, "reference", 0.3333),
 						referenceSegment);

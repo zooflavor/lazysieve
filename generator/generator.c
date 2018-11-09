@@ -122,14 +122,14 @@ int bucketIndex(uint64_t current, uint64_t position) {
 
 void checkDatabase() {
 	if (!fileExists(databaseDirectory)) {
-		printf("database directory %s doesn't exist\n", databaseDirectory);
+		printf("a %s adatbázis könyvtár nem létezik\n", databaseDirectory);
 		exit(1);
 	}
 	for (int ii=0; INIT_SEGMENTS>ii; ++ii) {
 		char filename[FILE_NAME_SIZE];
 		segmentFile(filename, databaseDirectory, ii*SEGMENT_SIZE_NUMBERS+1);
 		if (!fileExists(filename)) {
-			printf("segment file %s doesn't exist\n", filename);
+			printf("a %s szegmens fájl nem létezik\n", filename);
 			exit(1);
 		}
 	}
@@ -147,7 +147,7 @@ void init() {
 	}
 	initTinyPrimes();
 	for (int ii=0; INIT_SEGMENTS>ii; ++ii) {
-		printf("init segment %d\n", ii);
+		printf("felkészülés %d/%d\n", ii+1, INIT_SEGMENTS);
 		uint64_t start=ii*SEGMENT_SIZE_NUMBERS+1;
 		readSegment(databaseDirectory, segment, start);
 		for (size_t jj=(0==ii)?32:0; SEGMENT_SIZE_BITS>jj; ++jj) {
@@ -156,7 +156,7 @@ void init() {
 			}
 		}
 	}
-	printf("init end\n");
+	printf("felkészülés vége\n");
 }
 
 uint64_t initPosition(uint64_t prime, int square) {
@@ -234,62 +234,57 @@ int main(int argv, char *argc[]) {
 	checkDatabase();
 	segmentStart=strtoull(argc[3], 0, 0);
 	if (segmentStart<GENERATOR_START_NUMBER) {
-		printf("segment start %lu is smaller than the minimum %lu\n",
+		printf("A %lu szegmens kezdet kisebb, mint a minimum %lu\n",
 				segmentStart, GENERATOR_START_NUMBER);
 		exit(1);
 	}
 	if (1l!=(segmentStart&(SEGMENT_SIZE_NUMBERS-1))) {
-		printf("segment start %lu is not congruent to 1 but to %lu (mod %lu)\n",
+		printf("a %lu szegmens kezdet nem 1-gyel, hanem %lu-val kongruens (mod %lu)\n",
 				segmentStart,
 				segmentStart&(SEGMENT_SIZE_NUMBERS-1),
 				SEGMENT_SIZE_NUMBERS);
 		exit(1);
 	}
-	printf("segment start:    ");
 	if (END_NUMBER<=segmentStart) {
-		printf("segment start %lu is larger than the maximum %lu\n",
+		printf("a %lu szegmens kezdet nagyobb, mint a maximum %lu\n",
 				segmentStart, END_NUMBER-1l);
 		exit(1);
 	}
+	printf("szegmens kezdet:    ");
 	printUint64(20, segmentStart);
 	printf("\n");
 	if (0==strcmp(argc[4], "reserve-space")) {
 		spaceToReserve=strtoll(argc[5], 0, 0);
 		if ((1l<<27)>spaceToReserve) {
-			printf("space to reserve %lu is smaller than %lu\n",
-					(1l<<27),
-					spaceToReserve);
+			printf("a %lu byte fenntartandó hely kisebb, mint a minimum %lu\n",
+					spaceToReserve,
+					(1l<<27));
 			exit(1);
 		}
-		printf("space to reserve: ");
+		printf("fenntartandó hely: ");
 		printUint64(20, spaceToReserve);
-		printf("\n");
+		printf(" byte \n");
 	}
 	else if (0==strcmp(argc[4], "segments")) {
 		segmentCount=strtoll(argc[5], 0, 0);
 		if (0>=segmentCount) {
-			printf("segment count %lu is smaller than 1\n", segmentCount);
+			printf("a %lu szegmens kisebb, mint a minimum 1\n", segmentCount);
 			exit(1);
 		}
-		int truncated=0;
 		uint64_t max=(END_NUMBER-segmentStart)/SEGMENT_SIZE_NUMBERS;
 		if (max<segmentCount) {
 			segmentCount=max;
-			truncated=1;
 		}
-		printf("segment count:    ");
+		printf("szegmensek száma: ");
 		printUint64(20, segmentCount);
-		if (truncated) {
-			printf(" (truncated)");
-		}
 		printf("\n");
 	}
 	else {
 		printUsage();
 	}
 	segmentStart>>=1;
-	printf("small segment size: %d\n", SEGMENT_SMALL_SIZE_BITS_LOG2);
-	printf("bucket bits: %d\n", BUCKET_BITS);
+	printf("kis szegmensek mérete: %d\n", SEGMENT_SMALL_SIZE_BITS_LOG2);
+	printf("elágazások bitjei: %d\n", BUCKET_BITS);
 	initStart=nanoTime();
 	init();
 	uint64_t allSieveNanos=0l;
@@ -319,16 +314,16 @@ int main(int argv, char *argc[]) {
 			--segmentCount;
 		}
 	}
-	printf("all sieve nanos ");
+	printf("összes szitálás ");
 	printUint64(0, allSieveNanos);
 	printf(" ns\n");
 	return 0;
 }
 
 void printUsage() {
-	printf("usage:\n");
-	printf("\tgenerator [database-directory] start [segment start] reserve-space [space to reserve]\n");
-	printf("\tgenerator [database-directory] start [segment start] segments [segment count]\n");
+	printf("használat:\n");
+	printf("\tgenerator [adatbázis könyvtár] start [szegmens kezdete] reserve-space [fenntartandó hely]\n");
+	printf("\tgenerator [adatbázis könyvtár] start [szegmens kezdete] segments [szegmensek száma]\n");
 	exit(1);
 }
 

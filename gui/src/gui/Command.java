@@ -15,7 +15,7 @@ public interface Command {
 			@Override
 			public Long parse(String argument) throws Throwable {
 				return (argument.startsWith("0x"))
-						?Long.parseUnsignedLong(argument, 16)
+						?Long.parseUnsignedLong(argument.substring(2), 16)
 						:Long.parseUnsignedLong(argument, 10);
 			}
 		};
@@ -52,6 +52,10 @@ public interface Command {
 			};
 		}
 		
+		public boolean matches(String argument) {
+			return pattern.matcher(argument).matches();
+		}
+		
 		public abstract T parse(String argument) throws Throwable;
 	}
 	
@@ -59,13 +63,20 @@ public interface Command {
 		public final List<Argument<?>> arguments;
 		public final Command command;
 		public final String usage;
+		public final Argument<?> vararg;
 		
 		public Descriptor(List<Argument<?>> arguments, Command command,
-				String usage) {
+				String usage, Argument<?> vararg) {
 			this.arguments=Collections.unmodifiableList(
 					new ArrayList<>(arguments));
 			this.command=command;
 			this.usage=usage;
+			this.vararg=vararg;
+		}
+		
+		public Descriptor(List<Argument<?>> arguments, Command command,
+				String usage) {
+			this(arguments, command, usage, null);
 		}
 	}
 	

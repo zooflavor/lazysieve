@@ -139,9 +139,12 @@ public class Segment implements SieveTable {
 	}
 	
 	public static void checkSegmentStart(long segmentStart) {
-		if (1l!=(segmentStart&((1l<<30)-1))) {
+		if (1l!=(segmentStart&(NUMBERS-1))) {
 			throw new IllegalArgumentException(String.format(
-					"1l!=(%1$,d&((1l<<30)-1))", segmentStart));
+					"a %1$s szegmens kezdet nem 1-gyel, hanem %2$s-vel kongruens (mod %3$s)",
+					UnsignedLong.format(segmentStart),
+					UnsignedLong.format(segmentStart&(NUMBERS-1)),
+					UnsignedLong.format(NUMBERS)));
 		}
 	}
 	

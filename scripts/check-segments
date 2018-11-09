@@ -1,0 +1,4 @@
+#!/bin/bash
+DB=../db
+java -Xmx3584m -jar ../gui/dist/gui.jar check segments ${DB} "$@"
+exit $?

@@ -3,6 +3,7 @@ package gui.ui.progress;
 import java.io.PrintStream;
 
 public class PrintStreamProgress implements Progress {
+	private long lastLineTime=System.nanoTime();
 	private int maxLineLength;
 	public final boolean newLine;
 	public final PrintStream stream;
@@ -28,6 +29,12 @@ public class PrintStreamProgress implements Progress {
 	
 	@Override
 	public void progress(String message, double progress) throws Throwable {
+		long now=System.nanoTime();
+		if ((1.0>progress)
+				&& (lastLineTime+500000000l>now)) {
+			return;
+		}
+		lastLineTime=now;
 		String line=(null==message)
 				?String.format("%1$5.1f%%", Math.floor(1000.0*progress)/10.0)
 				:String.format("%1$5.1f%%: %2$s",

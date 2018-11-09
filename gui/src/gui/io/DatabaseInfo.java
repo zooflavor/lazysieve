@@ -81,13 +81,13 @@ public class DatabaseInfo {
 	public List<DatabaseInfo.Output> output(Long crunchSegments,
 			Database database, boolean prefixType) {
 		List<Output> output=new ArrayList<>();
-		output(output, prefixType, "segment files", segments);
+		output(output, prefixType, "szegmensfájlok", segments);
 		output.add(null);
-		output(output, prefixType, "aggregates", aggregates);
+		output(output, prefixType, "összesítések", aggregates);
 		if (0l<numberOfNewSegments) {
 			output.add(null);
 			output.add(Output.create(
-				"new segment files",
+				"új szegmensfájlok",
 				numberOfNewSegments));
 		}
 		if (null!=crunchSegments) {
@@ -106,30 +106,30 @@ public class DatabaseInfo {
 		}
 		String prefix=prefixType?(type+": "):"";
 		output.add(Output.create(String.format(
-				"%1$snumber of segments",
+				"%1$sszegmensek száma",
 				prefix),
 				typeInfo.numberOfSegments));
 		if (null!=typeInfo.firstSegmentStart) {
 			output.add(Output.create(String.format(
-					"%1$sstart of the first segment",
+					"%1$selső szegmens kezdete",
 					prefix),
 					typeInfo.firstSegmentStart));
 		}
 		if (null!=typeInfo.lastSegmentStart) {
 			output.add(Output.create(String.format(
-					"%1$sstart of the last segment",
+					"%1$sutolsó szegmens kezdete",
 					prefix),
 					typeInfo.lastSegmentStart));
 		}
 		if (null!=typeInfo.missingSegmentStart) {
 			output.add(Output.create(String.format(
-					"%1$sstart of the first missing segment",
+					"%1$selső hiányzó szegmens kezdete",
 					prefix),
 					typeInfo.missingSegmentStart));
 		}
 		if (null!=typeInfo.missingSegments) {
 			output.add(Output.create(String.format(
-					"%1$snumber of missing segments",
+					"%1$shiányzó szegmensek száma",
 					prefix),
 					typeInfo.missingSegments));
 		}

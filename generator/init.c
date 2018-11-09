@@ -28,13 +28,13 @@ void initPrimes() {
 
 int main(int argv, char *argc[]) {
 	if (2!=argv) {
-		printf("usage:\n");
-		printf("\tinit [database-directory]\n");
+		printf("használat:\n");
+		printf("\tinit [adatbázis könyvtár]\n");
 		exit(1);
 	}
 	databaseDirectory=argc[1];
 	if (!fileExists(databaseDirectory)) {
-		printf("database directory %s doesn't exist\n", databaseDirectory);
+		printf("a %s adatbázis könyvtár nem létezik\n", databaseDirectory);
 		exit(1);
 	}
 	initStart=nanoTime();

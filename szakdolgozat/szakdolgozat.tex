@@ -21,6 +21,21 @@
 \usepackage{listings}
 \usepackage{titlesec}
 \onehalfspacing
+\lstset{literate=
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+  {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+  {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+  {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+  {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+  {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+  {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+  {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
+}
 \begin{document}
 \begin{titlepage}
 \vspace*{0cm}
@@ -181,10 +196,10 @@ Az első négymilliárd szám szitálása a következő képpen indítható el:
 \tiny
 \begin{lstlisting}[language=bash]
 generator$ ./init.bin ../db
-segment 0 - start             1 - init 152 512 370 ns - sieve 1 068 908 595 ns
-segment 1 - start 1 073 741 825 - init   2 095 563 ns - sieve 1 117 359 702 ns
-segment 2 - start 2 147 483 649 - init   2 107 942 ns - sieve 1 127 848 722 ns
-segment 3 - start 3 221 225 473 - init   1 996 728 ns - sieve 1 145 187 514 ns
+szegmens 0 - kezdet             1 - felkészülés 159 906 063 ns - szitálás 1 122 878 403 ns
+szegmens 1 - kezdet 1 073 741 825 - felkészülés   2 353 698 ns - szitálás 1 171 101 336 ns
+szegmens 2 - kezdet 2 147 483 649 - felkészülés   2 344 515 ns - szitálás 1 188 330 478 ns
+szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1 199 900 603 ns
 \end{lstlisting}
 \small
 
@@ -203,37 +218,38 @@ vagy "0x" prefixszel hexadecimálisan.
 \tiny
 \begin{lstlisting}[language=bash]
 generator$ ./generator.bin ../db start 0x100000001 segments 3
-segment start: 4 294 967 297
-segment count:             3
-small segment size: 22
-bucket bits: 8
-init segment 0
-init segment 1
-init segment 2
-init segment 3
-init end
-segment 4 - start 4 294 967 297 - init 7 812 301 909 ns - sieve 704 592 094 ns
-segment 5 - start 5 368 709 121 - init           340 ns - sieve 707 145 420 ns
-segment 6 - start 6 442 450 945 - init           371 ns - sieve 715 291 366 ns
-all sieve nanos 2 127 028 880 ns
+szegmens kezdet: 4 294 967 297
+szegmensek száma: 3
+kis szegmensek mérete: 22
+elágazások bitjei: 8
+felkészülés 1/4
+felkészülés 2/4
+felkészülés 3/4
+felkészülés 4/4
+felkészülés vége
+szegmens 4 - kezdet 4 294 967 297 - felkészülés 8 162 031 487 ns - szitálás 729 914 370 ns
+szegmens 5 - kezdet 5 368 709 121 - felkészülés           418 ns - szitálás 736 412 117 ns
+szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás 750 022 409 ns
+összes szitálás 2 216 348 896 ns
 \end{lstlisting}
 \small
 
 \tiny
 \begin{lstlisting}[language=bash]
 generator$ ./generator.bin ../db start 0x100000001 reserve-space 1000000000
-segment start:    4 294 967 297
-space to reserve: 1 000 000 000
-small segment size: 22
-bucket bits: 8
-init segment 0
-init segment 1
-init segment 2
-init segment 3
-init end
-segment 4 - start 4 294 967 297 - init 7 834 902 368 ns - sieve 693 775 928 ns
-segment 5 - start 5 368 709 121 - init         1 018 ns - sieve 705 013 333 ns
-segment 6 - start 6 442 450 945 - init        16 917 ns - sieve 705 195 144 ns
+szegmens kezdet: 4 294 967 297
+fenntartandó hely: 1 000 000 000 byte 
+kis szegmensek mérete: 22
+elágazások bitjei: 8
+felkészülés 1/4
+felkészülés 2/4
+felkészülés 3/4
+felkészülés 4/4
+felkészülés vége
+szegmens 4 - kezdet 4 294 967 297 - felkészülés 8 162 031 487 ns - szitálás 729 914 370 ns
+szegmens 5 - kezdet 5 368 709 121 - felkészülés           418 ns - szitálás 736 412 117 ns
+szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás 750 022 409 ns
+összes szitálás 2 216 348 896 ns
 \end{lstlisting}
 \small
 
@@ -298,32 +314,36 @@ lekérdezni, parancssorból a "database info" kiadásával.
 \tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./database info
-100%
-segment files: number of segments: 4
-segment files: start of the first segment: 1
-segment files: start of the last segment: 3,221,225,473
-segment files: start of the first missing segment: 4,294,967,297
-segment files: number of missing segments: 18,446,744,073,709,551,596
-aggregates: number of segments: 4
-aggregates: start of the first segment: 1
-aggregates: start of the last segment: 3,221,225,473
-aggregates: start of the first missing segment: 4,294,967,297
-aggregates: number of missing segments: 18,446,744,073,709,551,596
-new segment files: 4
+100.0%
+szegmensfájlok: szegmensek száma: 7
+szegmensfájlok: első szegmens kezdete: 1
+szegmensfájlok: utolsó szegmens kezdete: 6,442,450,945
+szegmensfájlok: első hiányzó szegmens kezdete: 7,516,192,769
+szegmensfájlok: hiányzó szegmensek száma: 18,446,744,073,709,551,593
+
+összesítések: szegmensek száma: 62,881
+összesítések: első szegmens kezdete: 1
+összesítések: utolsó szegmens kezdete: 67,516,885,893,121
+összesítések: első hiányzó szegmens kezdete: 67,517,959,634,945
+összesítések: hiányzó szegmensek száma: 18,446,744,073,709,488,719
+
+új szegmensfájlok: 7
 
 scripts$ ./database info crunch 100
-100%
-segment files: number of segments: 4
-segment files: start of the first segment: 1
-segment files: start of the last segment: 3,221,225,473
-segment files: start of the first missing segment: 4,294,967,297
-segment files: number of missing segments: 18,446,744,073,709,551,596
-aggregates: number of segments: 4
-aggregates: start of the first segment: 1
-aggregates: start of the last segment: 3,221,225,473
-aggregates: start of the first missing segment: 4,294,967,297
-aggregates: number of missing segments: 18,446,744,073,709,551,596
-crunch: ../generator/generator.bin ../db start 0x100000001 segments 0x64
+100.0%
+szegmensfájlok: szegmensek száma: 7
+szegmensfájlok: első szegmens kezdete: 1
+szegmensfájlok: utolsó szegmens kezdete: 6,442,450,945
+szegmensfájlok: első hiányzó szegmens kezdete: 7,516,192,769
+szegmensfájlok: hiányzó szegmensek száma: 18,446,744,073,709,551,593
+
+összesítések: szegmensek száma: 62,881
+összesítések: első szegmens kezdete: 1
+összesítések: utolsó szegmens kezdete: 67,516,885,893,121
+összesítések: első hiányzó szegmens kezdete: 67,517,959,634,945
+összesítések: hiányzó szegmensek száma: 18,446,744,073,709,488,719
+
+crunch: ../generator/generator.bin ../db start 0x3d6840000001 segments 0x64
 \end{lstlisting}
 \small
 
@@ -335,13 +355,13 @@ A "crunch-numbers" script ezt a feladatot kísérli meg elvégezni.
 Az info megjeleníti az új szegmensfájlok számát is, azokat,
 amikhez vagy nem tartozik összesített adat, vagy tartozik,
 de az ott tárolt utolsó módosításnál újabb a szegmensfájl.
-Ezeket a "DB reaggregate" gomb megnyomásával,
+Ezeket a "DB összesítés" gomb megnyomásával,
 vagy a "database reaggregate" paranccsal lehet összesíteni.
 
 \tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./database reaggregate
-100%
+100.0%
 \end{lstlisting}
 \small
 
@@ -355,11 +375,48 @@ statisztikák utolsó módosítási ideje nagyobb az adatbázisban lévőnél.
 \tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./database import aggregates ../db/aggregates.large
-100%
+100.0%
 \end{lstlisting}
 \small
 
+{\color{red}screenshot}
+
 \section{Szitatáblák ellenőrzése}
+
+A generator program teszteléséhez a grafikus program képes a szegmensfájlok
+ellenőrzésére.
+Ehhez a program újra előállítja az ellenőrzött szegmensfájlokat,
+és azokat összeveti. A újraelőállításhoz egy egyszerű szegmentált
+Eratoszthenészi szitát, vagy ez erős pszeudo-prím tesztet lehet választani.
+A pszeudo-prím teszt rendkívül lassú, a célja, hogy a szitákhoz képest egy
+alapvetően más módszer is rendelkezésre álljon az ellenőrzéshez.
+
+A grafikus felületen a "Szegmensfájlok ellenőrzése" gomb megnyomása után
+lehet kiválasztani a szitálni kívánt szegmenseket, és a referencia előállításának
+módszerét, majd az "Ellenőrzés" gombbal lehet megkezdeni a tényleges
+folyamatot.
+
+Az ellenőrzést parancssorból is lehet futtatni a check-segments scripttel.
+A script első paraméterében a referencia módszerét várja,
+ami lehet "sieve", vagy "test", a paraméterek maradéke az ellenőrizendő
+szegmensek kezdőszáma kell legyen. Ha egy kezdet sincs megadva, akkor
+a program az adatbázis könyvtárban található összes szegmensfájlt ellenőrzi.
+
+\tiny
+\begin{lstlisting}[language=bash]
+scripts$ ./check-segments sieve
+100.0%: A szegmensek helyesek.             
+
+scripts$ ./check-segments sieve 0x1 0xc0000001
+100.0%: A szegmensek helyesek.             
+
+scripts$ ./check-segments test 0x1
+100.0%: A szegmensek helyesek.             
+
+\end{lstlisting}
+\small
+
+{\color{red}screenshot}
 
 \section{Minta megjelenítése}
 

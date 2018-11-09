@@ -29,7 +29,7 @@ while [ "8" -ge "$BUCKET_BITS" ]; do
 			echo bucket bits $BUCKET_BITS small size $SMALL_SIZE start $SEGMENT_START
 			echo -n "${BUCKET_BITS},${SMALL_SIZE},${SEGMENT_START}," >> time-generator.out
 			tmp/generator.bin tmp start $SEGMENT_START segments 16 | \
-					grep "all sieve nanos" | \
+					tail -n 1 | \
 					sed "s/[^0-9]//g" >> time-generator.out
 		done
 		

@@ -8,8 +8,8 @@ public class CloseButton {
 	}
 	
 	public static JButton create(Window window) {
-		JButton exitButton=new JButton("Close");
-		exitButton.setMnemonic('c');
+		JButton exitButton=new JButton("Bezár");
+		exitButton.setMnemonic('z');
 		exitButton.addActionListener((event)->window.dispose());
 		return exitButton;
 	}

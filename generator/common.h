@@ -131,13 +131,13 @@ void printErrorPrefix(char *file, int line, char *message) {
 
 void printSegmentStats(uint64_t segmentStart, uint64_t initNanos,
 		uint64_t sieveNanos) {
-	printf("segment ");
+	printf("szegmens ");
 	printUint64(10, segmentStart/SEGMENT_SIZE_NUMBERS);
-	printf(" - start ");
+	printf(" - kezdet ");
 	printUint64(20, segmentStart);
-	printf(" - init ");
+	printf(" - felkészülés ");
 	printUint64(20, initNanos);
-	printf(" ns - sieve ");
+	printf(" ns - szitálás ");
 	printUint64(20, sieveNanos);
 	printf(" ns\n");
 }
@@ -182,7 +182,7 @@ void readFully(int file, void *buffer, size_t length) {
 		}
 		if (0==result) {
 			printErrorPrefix(__FILE__, __LINE__, "read");
-			printf("unexpected eof\n");
+			printf("váratlan eof\n");
 			exit(1);
 		}
 		buffer2+=result;
@@ -201,7 +201,7 @@ void readSegment(char *databaseDirectory, void *segment, uint64_t start) {
 	uint64_t temp;
 	readFully(file, &temp, sizeof(uint64_t));
 	if (start!=temp) {
-		printf("segment file %s: invalid segment start %lu\n",
+		printf("szegmens fájl %s: érvénytelen szegmens kezdet %lu\n",
 				filename, temp);
 		exit(1);
 	}
