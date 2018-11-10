@@ -153,6 +153,20 @@ public class Graph {
                 && (viewTop==graph.viewTop);
     }
 	
+	public Graph logarithmicX(boolean logarithmicX) {
+		return new Graph(backgroundColor, componentHeight, componentWidth,
+				functions, incompleteColor, labelSize, logarithmicX,
+				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
+				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
+	}
+	
+	public Graph logarithmicY(boolean logarithmicY) {
+		return new Graph(backgroundColor, componentHeight, componentWidth,
+				functions, incompleteColor, labelSize, logarithmicX,
+				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
+				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
+	}
+	
 	public double pixelBorderX(int xx) {
 		return pixelBorderX(xx, componentWidth);
 	}
@@ -169,16 +183,16 @@ public class Graph {
 		return viewTop-yy*viewHeight/componentHeight;
 	}
 	
-	public Graph remove(Object id) {
+	public Graph remove(Object object) {
 		List<Function> functions2=new ArrayList<>(functions.size());
 		for (Function function2: functions) {
-			if (!function2.id.equals(id)) {
+			if (function2!=object) {
 				functions2.add(function2);
 			}
 		}
 		List<Sample> samples2=new ArrayList<>(samples.size());
 		for (Sample sample2: samples) {
-			if (!sample2.id.equals(id)) {
+			if (sample2!=object) {
 				samples2.add(sample2);
 			}
 		}
@@ -192,43 +206,29 @@ public class Graph {
 	public Graph replace(Function function) {
 		List<Function> functions2=new ArrayList<>(functions.size()+1);
 		for (Function function2: functions) {
-			if (!function2.id.equals(function.id)) {
+			if (function2!=function) {
 				functions2.add(function2);
 			}
 		}
 		functions2.add(function);
-		List<Sample> samples2=new ArrayList<>(samples.size());
-		for (Sample sample2: samples) {
-			if (!sample2.id.equals(function.id)) {
-				samples2.add(sample2);
-			}
-		}
-		return new Graph(backgroundColor, componentHeight,
-				componentWidth, functions2, incompleteColor, labelSize,
-				logarithmicX, logarithmicY, rulerColor, samples2,
-				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
-				viewRight, viewTop);
+		return new Graph(backgroundColor, componentHeight, componentWidth,
+				functions2, incompleteColor, labelSize, logarithmicX,
+				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
+				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
 	}
 	
 	public Graph replace(Sample sample) {
-		List<Function> functions2=new ArrayList<>(functions.size());
-		for (Function function2: functions) {
-			if (!function2.id.equals(sample.id)) {
-				functions2.add(function2);
-			}
-		}
 		List<Sample> samples2=new ArrayList<>(samples.size()+1);
 		for (Sample sample2: samples) {
-			if (!sample2.id.equals(sample.id)) {
+			if (sample2!=sample) {
 				samples2.add(sample2);
 			}
 		}
 		samples2.add(sample);
-		return new Graph(backgroundColor, componentHeight,
-				componentWidth, functions2, incompleteColor, labelSize,
-				logarithmicX, logarithmicY, rulerColor, samples2,
-				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
-				viewRight, viewTop);
+		return new Graph(backgroundColor, componentHeight, componentWidth,
+				functions, incompleteColor, labelSize, logarithmicX,
+				logarithmicY, rulerColor, samples2, toolTipBackgroundColor,
+				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
 	}
 	
 	public Graph scale(double xScale, double yScale) {

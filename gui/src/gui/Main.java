@@ -1,6 +1,7 @@
 package gui;
 
 import gui.check.CheckSegments;
+import gui.check.CheckSieves;
 import gui.io.DatabaseCommands;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ public class Main {
 		try {
 			List<Command.Descriptor> commands=new ArrayList<>();
 			commands.addAll(CheckSegments.COMMANDS);
+			commands.addAll(CheckSieves.COMMANDS);
 			commands.addAll(DatabaseCommands.COMMANDS);
 			commands.addAll(Gui.COMMANDS);
 			commands.sort((c0, c1)->c0.usage.compareTo(c1.usage));

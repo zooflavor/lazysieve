@@ -4,8 +4,7 @@ import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
 import gui.sieve.PrimeQueue;
-import gui.sieve.SieveCheckFactory;
-import gui.sieve.SieveMeasureFactory;
+import gui.sieve.Sieve;
 import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
@@ -14,28 +13,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class QueueSieve extends EratosthenesianSieve {
-	public static final List<SieveCheckFactory> CHECKS
+public class QueueSieve extends SegmentedEratosthenesianSieve {
+	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-bin.heap",
+					new Sieve.Descriptor(
 							()->new QueueSieve(false),
-							16),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-bin.heap-in-place",
-							()->new QueueSieve(true),
-							16)));
-	public static final List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-bin.heap",
-							false,
-							()->new QueueSieve(false),
+							"Eratoszthenész szitája-bin.kupac",
+							"bin-heap",
 							24, 1, 10),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-bin.heap-in-place",
-							false,
+					new Sieve.Descriptor(
 							()->new QueueSieve(true),
+							"Eratoszthenész szitája-bin.kupac helyben",
+							"bin-heap-inplace",
 							24, 1, 10)));
 	
 	private final PrimeQueue queue

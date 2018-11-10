@@ -5,8 +5,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class Color implements Comparable<Color> {
 	public static final Color BLACK=Color.create("black", 0xff000000);
@@ -26,7 +24,7 @@ public class Color implements Comparable<Color> {
 	
 	static {
 		try {
-			Set<Color> colors=new TreeSet<>();
+			List<Color> colors=new ArrayList<>();
 			int modifiers=Modifier.FINAL|Modifier.PUBLIC|Modifier.STATIC;
 			for (Field field: Color.class.getDeclaredFields()) {
 				if ((field.getModifiers()==modifiers)
@@ -35,6 +33,7 @@ public class Color implements Comparable<Color> {
 					colors.add(color);
 				}
 			}
+			colors.sort(null);
 			COLORS=Collections.unmodifiableList(new ArrayList<>(colors));
 		}
 		catch (IllegalAccessException

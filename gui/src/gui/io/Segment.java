@@ -148,12 +148,17 @@ public class Segment implements SieveTable {
 		}
 	}
 	
+	@Override
+	public void clear(boolean prime) {
+		Arrays.fill(segment, (byte)(prime?0:-1));
+	}
+	
 	public void clear(long lastModification, boolean prime,
 			long segmentStart) {
 		checkSegmentStart(segmentStart);
 		this.lastModification=lastModification;
 		this.segmentStart=segmentStart;
-		Arrays.fill(segment, (byte)(prime?0:-1));
+		clear(prime);
 		segmentEnd=segmentStart+NUMBERS;
 		initNanos=0l;
 		sieveNanos=0l;

@@ -1,12 +1,7 @@
-package gui.sieve.atkin;
+package gui.sieve;
 
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
-import gui.sieve.OperationCounter;
-import gui.sieve.SegmentedSieve;
-import gui.sieve.SieveCheckFactory;
-import gui.sieve.SieveMeasureFactory;
-import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
 import gui.util.LongList;
@@ -15,23 +10,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class SieveOfAtkin extends SegmentedSieve {
-	public static List<SieveCheckFactory> CHECKS
+	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"Sieve of Atkin",
+					new Sieve.Descriptor(
 							SieveOfAtkin::new,
-							24)));
-	public static List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
-							"Sieve of Atkin",
-							true,
-							SieveOfAtkin::new,
-							30, 6, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Atkin-segmented",
-							false,
-							SieveOfAtkin::new,
+							"Atkin szitája",
+							"atkin",
 							30, 6, 20)));
 	
 	@FunctionalInterface
@@ -47,7 +31,7 @@ public class SieveOfAtkin extends SegmentedSieve {
 			{11, 23, 47, 59},
 			{1, 13, 17, 29, 37, 41, 49, 53},
 			{7, 19, 31, 43}};
-	private static final QuadraticSieve[] SIEVES={
+	private static final QuadraticSieve[] SIEVES2={
 			SieveOfAtkin::sieve12Z11,
 			SieveOfAtkin::sieve4Z1,
 			SieveOfAtkin::sieve6Z1};
@@ -327,8 +311,8 @@ public class SieveOfAtkin extends SegmentedSieve {
 		long er=Long.remainderUnsigned(end, 60);
 		long sq=Long.divideUnsigned(start, 60);
 		long sr=Long.remainderUnsigned(start, 60);
-		for (int ii=SIEVES.length-1; 0<=ii; --ii) {
-			QuadraticSieve sieve=SIEVES[ii];
+		for (int ii=SIEVES2.length-1; 0<=ii; --ii) {
+			QuadraticSieve sieve=SIEVES2[ii];
 			for (int jj=SIEVE_REMAINDERS[ii].length-1; 0<=jj; --jj) {
 				long delta=SIEVE_REMAINDERS[ii][jj];
 				long LB=(delta<er)

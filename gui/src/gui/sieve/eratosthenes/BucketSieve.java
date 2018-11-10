@@ -3,102 +3,34 @@ package gui.sieve.eratosthenes;
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
-import gui.sieve.SieveCheckFactory;
-import gui.sieve.SieveMeasureFactory;
+import gui.sieve.Sieve;
 import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
 import gui.util.LongList;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class BucketSieve extends EratosthenesianSieve {
-	public static final List<SieveCheckFactory> CHECKS
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets",
-							Bucket1Sieve::new,
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^1",
-							()->new BucketNSieve(1),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^2",
-							()->new BucketNSieve(2),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^3",
-							()->new BucketNSieve(3),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^4",
-							()->new BucketNSieve(4),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^5",
-							()->new BucketNSieve(5),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^6",
-							()->new BucketNSieve(6),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^7",
-							()->new BucketNSieve(7),
-							24),
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-buckets-2^8",
-							()->new BucketNSieve(8),
-							24)));
-	public static final List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets",
-							false,
-							Bucket1Sieve::new,
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^1",
-							false,
-							()->new BucketNSieve(1),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^2",
-							false,
-							()->new BucketNSieve(2),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^3",
-							false,
-							()->new BucketNSieve(3),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^4",
-							false,
-							()->new BucketNSieve(4),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^5",
-							false,
-							()->new BucketNSieve(5),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^6",
-							false,
-							()->new BucketNSieve(6),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^7",
-							false,
-							()->new BucketNSieve(7),
-							30, 1, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-buckets-2^8",
-							false,
-							()->new BucketNSieve(8),
-							30, 1, 20)));
+public abstract class BucketSieve extends SegmentedEratosthenesianSieve {
+	public static final List<Sieve.Descriptor> SIEVES;
+	
+	static {
+		List<Sieve.Descriptor> sieves=new ArrayList<>();
+		sieves.add(new Sieve.Descriptor(
+				Bucket1Sieve::new,
+				"Eratoszthenész szitája-edények",
+				"buckets",
+				30, 1, 20));
+		for (final int bits: new int[]{1, 2, 3, 4, 5, 6, 7, 8}) {
+			sieves.add(new Sieve.Descriptor(
+					()->new BucketNSieve(bits),
+					"Eratoszthenész szitája-edények-2^"+bits,
+					"buckets-"+bits,
+					30, 1, 20));
+		}
+		SIEVES=Collections.unmodifiableList(new ArrayList<>(sieves));
+	}
 	
 	public static class Bucket1Sieve extends BucketSieve {
 		public Bucket1Sieve() {

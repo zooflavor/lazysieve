@@ -1,10 +1,14 @@
 package gui.plotter;
 
+import gui.graph.PlotType;
 import gui.graph.Sample;
+import gui.io.Database;
 import gui.math.UnsignedLong;
+import gui.sieve.LongTable;
 import gui.sieve.Measure;
-import gui.sieve.SieveMeasure;
-import gui.sieve.SieveMeasureFactory;
+import gui.sieve.OperationCounter;
+import gui.sieve.Sieve;
+import gui.sieve.SieveTable;
 import gui.sieve.Sieves;
 import gui.ui.CloseButton;
 import gui.ui.Color;
@@ -64,16 +68,16 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 		}
 	}
 	
-	private class SieveModel implements ComboBoxModel<SieveMeasureFactory> {
-		private SieveMeasureFactory selected=Sieves.MEASURES.get(1);
+	private class SieveModel implements ComboBoxModel<Sieve.Descriptor> {
+		private Sieve.Descriptor selected=Sieves.SIEVES.get(0);
 		
 		@Override
 		public void addListDataListener(ListDataListener listener) {
 		}
 		
 		@Override
-		public SieveMeasureFactory getElementAt(int index) {
-			return Sieves.MEASURES.get(index);
+		public Sieve.Descriptor getElementAt(int index) {
+			return Sieves.SIEVES.get(index);
 		}
 		
 		@Override
@@ -83,7 +87,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 		
 		@Override
 		public int getSize() {
-			return Sieves.MEASURES.size();
+			return Sieves.SIEVES.size();
 		}
 		
 		@Override
@@ -92,7 +96,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 		
 		@Override
 		public void setSelectedItem(Object anItem) {
-			selected=(SieveMeasureFactory)anItem;
+			selected=(Sieve.Descriptor)anItem;
 		}
 	}
 	
@@ -102,7 +106,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 	private final UnsignedLongSpinner segments;
 	private final JSpinner segmentSize;
 	private final JLabel segmentSizeEditor;
-	private final JComboBox<SieveMeasureFactory> sieve;
+	private final JComboBox<Sieve.Descriptor> sieve;
 	private final UnsignedLongSpinner startSegment;
 	private final JCheckBox sum;
 	
@@ -179,25 +183,81 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 	}
 	
 	private void measureButton(ActionEvent event) throws Throwable {
-		SieveMeasureFactory sieveFactory
-				=Sieves.MEASURES.get(sieve.getSelectedIndex());
 		long segmentSize2=1l<<((Integer)segmentSize.getValue());
 		long segments2=segments.getNumber();
+		Sieve.Descriptor sieve2=Sieves.SIEVES.get(sieve.getSelectedIndex());
 		long startSegment2=startSegment.getNumber();
 		Measure measure2=Measure.values()[measure.getSelectedIndex()];
 		boolean sum2=sum.isSelected();
-		Color color=plotter.selectNewColor();
-		SieveMeasure sieve2=sieveFactory.create(color, measure2,
-				session.database, segments2, segmentSize2,
-				startSegment2, sum2);
 		new AddSampleProcess(plotter) {
 			@Override
 			protected Sample sample(Color color, Progress progress)
 					throws Throwable {
-				return sieve2.measure(progress);
+				return MeasureSieve.measureSieve(session.database, measure2,
+								progress, segments2, segmentSize2, sieve2,
+								startSegment2, sum2)
+						.create(sieve2.longName+"-"+measure2
+										+"-2^"+(63-Long.numberOfLeadingZeros(
+												segmentSize2))
+										+"x("+startSegment2
+										+"+"+segments2
+										+")-"+(sum2?"összesen":"szegmens"),
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
 			}
 		}.start(session.executor);
 		dialog.dispose();
+	}
+	
+	public static Sample.Builder measureSieve(Database database,
+			Measure measure, Progress progress, long segments,
+			long segmentSize, Sieve.Descriptor sieveDescriptor,
+			long startSegment, boolean sum) throws Throwable {
+		progress.progress(0.0);
+		Sieve sieve=sieveDescriptor.factory.get();
+		sieve.reset(
+				database,
+				progress.subProgress(0.0, "init", 0.05),
+				segmentSize,
+				startSegment*segmentSize+1l);
+		SieveTable table=new LongTable();
+		table.clear(sieve.defaultPrime());
+		Sample.Builder sample=Sample.builder((int)segments);
+		boolean time=Measure.NANOSECS.equals(measure);
+		OperationCounter counter
+				=time?OperationCounter.NOOP:OperationCounter.COUNTER;
+		counter.reset();
+		long sieveTime=0l;
+		Progress subProgress=progress.subProgress(0.05, "sieve", 1.0);
+		for (long ss=0; segments>ss; ++ss) {
+			subProgress.progress(1.0*ss/segments);
+			long start=(startSegment+ss)*segmentSize+1l;
+			long end=start+segmentSize;
+			long startTime=System.nanoTime();
+			sieve.sieve(counter, table);
+			long endTime=System.nanoTime();
+			long measure2;
+			if (time) {
+				if (sum) {
+					sieveTime+=endTime-startTime;
+					measure2=sieveTime;
+				}
+				else {
+					measure2=endTime-startTime;
+				}
+			}
+			else {
+				measure2=counter.get();
+				if (!sum) {
+					counter.reset();
+				}
+			}
+			sample.add(end, measure2);
+		}
+		subProgress.finished();
+		return sample;
 	}
 	
 	private void segmentSizeChanged(ChangeEvent event) {
@@ -209,12 +269,12 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 	}
 	
 	private void sieveChanged(ActionEvent event) throws Throwable {
-		SieveMeasureFactory factory
-				=Sieves.MEASURES.get(sieve.getSelectedIndex());
+		Sieve.Descriptor sieveDescriptor
+				=Sieves.SIEVES.get(sieve.getSelectedIndex());
 		segmentSize.setModel(new SpinnerNumberModel(
-				factory.smallSegmentSizeSuggestedLog2(),
-				factory.smallSegmentSizeMinLog2(),
-				factory.smallSegmentSizeMaxLog2(),
+				sieveDescriptor.smallSegmentSizeSuggestedLog2,
+				sieveDescriptor.smallSegmentSizeMinLog2,
+				sieveDescriptor.smallSegmentSizeMaxLog2,
 				1));
 		segmentSizeChanged(null);
 	}

@@ -3,8 +3,7 @@ package gui.sieve.eratosthenes;
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
-import gui.sieve.SieveCheckFactory;
-import gui.sieve.SieveMeasureFactory;
+import gui.sieve.Sieve;
 import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
@@ -13,24 +12,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SieveOfEratosthenes extends EratosthenesianSieve {
-	public static List<SieveCheckFactory> CHECKS
+public class SegmentedSieveOfEratosthenes
+		extends SegmentedEratosthenesianSieve {
+	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes",
-							SieveOfEratosthenes::new,
-							24)));
-	public static List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes",
-							true,
-							SieveOfEratosthenes::new,
-							30, 6, 20),
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-segmented",
-							false,
-							SieveOfEratosthenes::new,
+					new Sieve.Descriptor(
+							SegmentedSieveOfEratosthenes::new,
+							"Eratoszthenész szitája-szegmentált",
+							"eratosthenes-segmented",
 							30, 6, 20)));
 	
 	private final LongList positions
@@ -38,7 +27,7 @@ public class SieveOfEratosthenes extends EratosthenesianSieve {
 	private final IntList primes=new IntList(UnsignedLong.MAX_PRIME_COUNT);
 	private int sqrtIndex;
 	
-	public SieveOfEratosthenes() {
+	public SegmentedSieveOfEratosthenes() {
 		super(3l);
 	}
 	

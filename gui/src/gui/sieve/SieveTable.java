@@ -6,6 +6,7 @@ public interface SieveTable {
 		void prime(long prime) throws Throwable;
 	}
 	
+	void clear(boolean prime);
 	void flip(long number) throws Throwable;
 	boolean isPrime(long number) throws Throwable;
 	void listPrimes(long end, PrimeConsumer primeConsumer, long start)

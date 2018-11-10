@@ -13,8 +13,8 @@ public class Sample2DTest {
 				.add(3, 6)
 				.add(5, 4)
 				.add(7, 2)
-				.create(new Object(), "label", Color.YELLOW, PlotType.LINE,
-						Color.YELLOW, Color.YELLOW);
+				.create("label", Color.YELLOW, PlotType.LINE, Color.YELLOW,
+						Color.YELLOW);
 		for (int ii=0; 8>=ii; ++ii) {
 			int index0=sample.headToIndex(false, ii);
 			int index1=sample.headToIndex(true, ii);

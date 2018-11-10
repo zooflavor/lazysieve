@@ -67,7 +67,7 @@ public class RegressionTest {
 			}
 		};
 		Map<Double, Double> sample=new HashMap<>();
-		for (double xx=4.0; 32.0>xx; xx+=1.0/16.0) {
+		for (double xx=4.0; 64.0>xx; xx+=1.0/16.0) {
 			sample.put(xx, noisy.valueAt(xx));
 		}
 		LinearCombinationFunction regression=Regression.regression(functions,

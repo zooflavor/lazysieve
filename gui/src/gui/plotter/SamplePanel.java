@@ -372,8 +372,7 @@ final class SamplePanel {
 		Approximation approximation=new Approximation(
 				function,
 				error,
-				new Function(color, function, new Object(), label.toString(),
-						color));
+				new Function(color, function, label.toString(), color));
 		approximations.add(approximation);
 		plotter.addFunction(approximation.function);
 		fireApproximationsTableListeners();
@@ -426,10 +425,10 @@ final class SamplePanel {
 				new TableModelEvent(coefficientsTableModel)));
 	}
 	
-	public void graphIds(Consumer<Object> consumer) {
-		consumer.accept(sample.id);
+	public void graphObjects(Consumer<Object> consumer) {
+		consumer.accept(sample);
 		approximations.forEach(
-				(approximation)->consumer.accept(approximation.function.id));
+				(approximation)->consumer.accept(approximation.function));
 	}
 	
 	public String label() {

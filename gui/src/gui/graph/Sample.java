@@ -34,7 +34,7 @@ public class Sample {
 			}
 		}
 		
-		public Sample create(Object id, String label, Color lineColor,
+		public Sample create(String label, Color lineColor,
 			PlotType plotType, Color pointColor, Color toolTipColor) {
 			checkCreated();
 			if (xs.isEmpty()) {
@@ -73,8 +73,8 @@ public class Sample {
 					sampleMinY=yy;
 				}
 			}
-			Sample result=new Sample(id, label, lineColor, plotType,
-					pointColor, sampleMaxX, sampleMaxY, sampleMinX, sampleMinY,
+			Sample result=new Sample(label, lineColor, plotType, pointColor,
+					sampleMaxX, sampleMaxY, sampleMinX, sampleMinY,
 					toolTipColor, xs2, ys2);
 			return result;
 		}
@@ -140,7 +140,6 @@ public class Sample {
 		}
 	}
 	
-	public final Object id;
 	public final String label;
 	public final Color lineColor;
 	public final PlotType plotType;
@@ -153,7 +152,7 @@ public class Sample {
 	private final LongList xs;
 	private final DoubleList ys;
 
-	private Sample(Object id, String label, Color lineColor, PlotType plotType,
+	private Sample(String label, Color lineColor, PlotType plotType,
 			Color pointColor, long sampleMaxX, double sampleMaxY,
 			long sampleMinX, double sampleMinY, Color toolTipColor,
 			LongList xs, DoubleList ys) {
@@ -163,7 +162,6 @@ public class Sample {
 		if (xs.size()!=ys.size()) {
 			throw new IllegalArgumentException("sample size mismatch");
 		}
-		this.id=id;
 		this.label=label;
 		this.lineColor=lineColor;
 		this.plotType=plotType;
@@ -284,9 +282,8 @@ public class Sample {
 	
 	public Sample setColors(Color lineColor, Color pointColor,
 			Color toolTipColor) {
-		return new Sample(id, label, lineColor, plotType, pointColor,
-				sampleMaxX, sampleMaxY, sampleMinX, sampleMinY, toolTipColor,
-				xs, ys);
+		return new Sample(label, lineColor, plotType, pointColor, sampleMaxX,
+				sampleMaxY, sampleMinX, sampleMinY, toolTipColor, xs, ys);
 	}
 	
 	public int size() {

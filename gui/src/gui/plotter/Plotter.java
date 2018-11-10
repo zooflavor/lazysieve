@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -41,7 +42,7 @@ import javax.swing.table.TableModel;
 
 public class Plotter extends GuiWindow<JFrame> {
     public static final char MNEMONIC='g';
-    public static final String TITLE="Graph";
+    public static final String TITLE="Grafikon";
     
     private class PlotterListener implements GraphPlotter.Listener {
         @Override
@@ -134,6 +135,8 @@ public class Plotter extends GuiWindow<JFrame> {
     
 	private final JButton autoViewButton;
     private final JFrame frame;
+	private final JCheckBox logarithmicX;
+	private final JCheckBox logarithmicY;
     private final GraphPlotter plotter;
 	private final Random random=new Random();
 	private final List<SamplePanel> samplePanels=new ArrayList<>();
@@ -145,6 +148,8 @@ public class Plotter extends GuiWindow<JFrame> {
     
     public Plotter(Session session) {
 		super(session);
+		
+		Graph graph=Graph.EMPTY;
 		
         frame=new JFrame(TITLE);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -162,36 +167,49 @@ public class Plotter extends GuiWindow<JFrame> {
         plotterPanel.add(plotterHeader, BorderLayout.NORTH);
 		
         autoViewButton=new JButton("Auto view");
-        autoViewButton.addActionListener(this::autoViewButton);
+        autoViewButton.addActionListener(actionListener(
+				this::autoViewButton));
         plotterHeader.add(autoViewButton);
         
         JButton zoomViewInButton=new JButton("\u002b");
-        zoomViewInButton.addActionListener(this::zoomViewInButton);
+        zoomViewInButton.addActionListener(actionListener(
+				this::zoomViewInButton));
         plotterHeader.add(zoomViewInButton);
         
         JButton zoomViewOutButton=new JButton("\u2212");
-        zoomViewOutButton.addActionListener(this::zoomViewOutButton);
+        zoomViewOutButton.addActionListener(actionListener(
+				this::zoomViewOutButton));
         plotterHeader.add(zoomViewOutButton);
         
         JButton translateViewBottomButton=new JButton("\u2193");
-        translateViewBottomButton.addActionListener(
-                this::translateViewBottomButton);
+        translateViewBottomButton.addActionListener(actionListener(
+                this::translateViewBottomButton));
         plotterHeader.add(translateViewBottomButton);
         
         JButton translateViewLeftButton=new JButton("\u2190");
-        translateViewLeftButton.addActionListener(
-                this::translateViewLeftButton);
+        translateViewLeftButton.addActionListener(actionListener(
+                this::translateViewLeftButton));
         plotterHeader.add(translateViewLeftButton);
         
         JButton translateViewRightButton=new JButton("\u2192");
-        translateViewRightButton.addActionListener(
-                this::translateViewRightButton);
+        translateViewRightButton.addActionListener(actionListener(
+                this::translateViewRightButton));
         plotterHeader.add(translateViewRightButton);
         
         JButton translateViewTopButton=new JButton("\u2191");
-        translateViewTopButton.addActionListener(
-                this::translateViewTopButton);
+        translateViewTopButton.addActionListener(actionListener(
+                this::translateViewTopButton));
         plotterHeader.add(translateViewTopButton);
+		
+		logarithmicX=new JCheckBox("logX");
+		logarithmicX.setSelected(graph.logarithmicX);
+		logarithmicX.addActionListener(actionListener(this::logarithmicX));
+		plotterHeader.add(logarithmicX);
+        
+		logarithmicY=new JCheckBox("logY");
+		logarithmicY.setSelected(graph.logarithmicY);
+		logarithmicY.addActionListener(actionListener(this::logarithmicY));
+		plotterHeader.add(logarithmicY);
         
         plotter=new GraphPlotter(session.executor,
                 (throwable)->{
@@ -199,6 +217,7 @@ public class Plotter extends GuiWindow<JFrame> {
                             ()->SwingUtils.showError(frame, throwable));
                 });
         plotter.addListener(new PlotterListener());
+		plotter.setGraph(graph);
         plotterPanel.add(plotter, BorderLayout.CENTER);
         
 		JSplitPane splitPane1=new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -303,17 +322,28 @@ public class Plotter extends GuiWindow<JFrame> {
 		LoadSampleProcess.start(this);
 	}
 	
+	private void logarithmicX(ActionEvent event) throws Throwable {
+        plotter.setGraph(plotter.getGraph()
+				.logarithmicX(logarithmicX.isSelected()));
+	}
+	
+	private void logarithmicY(ActionEvent event) throws Throwable {
+        plotter.setGraph(plotter.getGraph()
+				.logarithmicY(logarithmicY.isSelected()));
+	}
+	
 	void removeFunction(Function function) {
 		plotter.setGraph(
 				plotter.getGraph()
-						.remove(function.id)
+						.remove(function)
 						.setViewAuto());
 	}
 	
 	void removeSample(SamplePanel samplePanel) {
 		samplePanels.remove(samplePanel);
 		List<Graph> graph=Arrays.asList(plotter.getGraph());
-		samplePanel.graphIds((id)->graph.set(0, graph.get(0).remove(id)));
+		samplePanel.graphObjects(
+				(object)->graph.set(0, graph.get(0).remove(object)));
 		plotter.setGraph(graph.get(0).setViewAuto());
 		fireTableModelListeners();
         if (0<samplePanels.size()) {

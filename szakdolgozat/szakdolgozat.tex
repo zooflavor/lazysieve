@@ -418,13 +418,47 @@ scripts$ ./check-segments test 0x1
 
 {\color{red}screenshot}
 
+\section{Sziták ellenőrzése}
+
+Az sebességek összehasonlításához írt sziták eredményét is lehet ellenőrizni,
+az összehasonlításhoz itt is a szegmensek ellenőrzésénél használt
+egyszerű szegmentált szita a referencia.
+
+A program grafikus felületén a "Sziták ellenőrzése" lehetőséget
+választva ki kell választani az ellenőrizendő szitát, és az ellenőrizni
+kívánt intervallum kezdő és végző számát.
+A folyamat az "Ellenőrzés" gomb megnyomásával indul.
+
+Parancssorból is ellenőrizhetőek a sziták a "check-sieve" scripttel.
+A script 3 paramétere a szita neve, és az intervallum kezdő-, és végszáma.
+Az ellenőrizhető sziták nevei:
+
+\begin{itemize}
+\item atkin: Atkin szitája
+\item cols: Cache optimized linear sieve
+\item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
+\item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
+	az bin-heap-inplace a kupac javítását helyben végzi
+\item buckets, buckets-n, buckets-inc: Eratoszthenész szitája edényekkel,
+	a buckets-inc inkremetális szita, a buckets-n -ben az n helyére 1-től 8-ig
+	a számrendszer bitjeit lehet megadni, pl. buckets-3 8as számrendszerben számol
+\item trial-division: próbaosztás
+\end{itemize}
+
+\tiny
+\begin{lstlisting}[language=bash]
+scripts$ ./check-sieve buckets-3 3000000000001 3010000000001
+100.0%: A szita helyes.
+\end{lstlisting}
+\small
+
+{\color{red}screenshot}
+
 \section{Minta megjelenítése}
 
 \section{Minta közelítése függvényekkel}
 
 \section{Minták generálása scriptekkel}
-
-\section{Sziták ellenőrzése scriptekkel}
 
 
 \chapter{Fejlesztői dokumentáció}

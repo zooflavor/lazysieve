@@ -66,7 +66,7 @@ public class LoadSampleProcess extends GuiProcess<Plotter, JFrame> {
 					String.format("empty sample file %1$s", path));
 		}
 		Color color=parent.selectNewColor();
-		sample=sample2.create(new Object(), path.getFileName().toString(),
+		sample=sample2.create(path.getFileName().toString(),
 				Colors.INTERPOLATION, plotType, color, color);
 		progress.finished();
 	}

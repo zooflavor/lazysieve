@@ -65,7 +65,8 @@ public class CheckSegments extends GuiWindow<JFrame> {
 		@Override
 		public void consume(ActionEvent value) throws Throwable {
 			ReferenceSegment referenceSegment
-					=(ReferenceSegment)referenceSegments.getSelectedItem();
+					=ReferenceSegment.REFERENCE_SEGMENTS
+							.get(referenceSegments.getSelectedIndex());
 			int[] selectedRows=table.getSelectedRows();
 			List<Long> segmentStarts=new ArrayList<>(selectedRows.length);
 			for (int ii=0; selectedRows.length>ii; ++ii) {

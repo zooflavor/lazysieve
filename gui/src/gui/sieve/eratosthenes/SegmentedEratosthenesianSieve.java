@@ -4,8 +4,8 @@ import gui.sieve.OperationCounter;
 import gui.sieve.SegmentedSieve;
 import gui.sieve.SieveTable;
 
-public abstract class EratosthenesianSieve extends SegmentedSieve {
-	public EratosthenesianSieve(long firstNumber) {
+public abstract class SegmentedEratosthenesianSieve extends SegmentedSieve {
+	public SegmentedEratosthenesianSieve(long firstNumber) {
 		super(firstNumber);
 	}
 	

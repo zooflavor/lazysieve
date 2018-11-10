@@ -22,8 +22,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.maxPrimeGaps(progress, reader))
-						.create(new Object(),
-								"max. prime gaps",
+						.create("max. prime gaps",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -39,13 +38,11 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.newPrimeGaps(progress, reader))
-						.create(
-							new Object(),
-							"new prime gaps",
-							Colors.INTERPOLATION,
-							PlotType.LINE,
-							color,
-							color);
+						.create("new prime gaps",
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color,
+								color);
 			}
 		}.start(plotter.session.executor);
 	}
@@ -56,8 +53,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime12Z11Counts(progress, reader)
-						.create(new Object(),
-								"prime 12Z+11 counts",
+						.create("prime 12Z+11 counts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -72,8 +68,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime4Z1Counts(progress, reader)
-						.create(new Object(),
-								"prime 4Z+1 counts",
+						.create("prime 4Z+1 counts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -88,8 +83,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime4Z3Counts(progress, reader)
-						.create(new Object(),
-								"prime 4Z+3 counts",
+						.create("prime 4Z+3 counts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -104,8 +98,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime6Z1Counts(progress, reader)
-						.create(new Object(),
-								"prime 6Z+1 counts",
+						.create("prime 6Z+1 counts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -120,8 +113,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsAbsoluteError(progress, reader)
-						.create(new Object(),
-								"prime counts abs. error",
+						.create("prime counts abs. error",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -136,8 +128,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsExpectedValue(progress, reader)
-						.create(new Object(),
-								"expected prime counts",
+						.create("expected prime counts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -152,8 +143,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsRelativeError(progress, reader)
-						.create(new Object(),
-								"prime counts rel. error",
+						.create("prime counts rel. error",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -168,8 +158,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCounts(progress, reader)
-						.create(new Object(),
-								"prime counts",
+						.create("prime counts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -185,8 +174,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.primeGapFrequencies(progress, reader))
-						.create(new Object(),
-								"prime gap frequencies",
+						.create("prime gap frequencies",
 								Colors.INTERPOLATION,
 								PlotType.BARS,
 								color,
@@ -202,8 +190,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.primeGapMerits(progress, reader))
-						.create(new Object(),
-								"prime gap merits",
+						.create("prime gap merits",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -219,8 +206,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.primeGapStarts(progress, reader))
-						.create(new Object(),
-								"prime gap starts",
+						.create("prime gap starts",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -234,8 +220,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.sieveNanos(progress, reader, sum)
-						.create(new Object(),
-								String.format("sieve nanos (%1$s)",
+						.create(String.format("sieve nanos (%1$s)",
 										sum?"sum":"segments"),
 								Colors.INTERPOLATION,
 								PlotType.LINE,

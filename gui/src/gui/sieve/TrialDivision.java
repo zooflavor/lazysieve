@@ -9,18 +9,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class TrialDivision extends AbstractSieve {
-	public static List<SieveCheckFactory> CHECKS
+	public static List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"Trial division",
+					new Sieve.Descriptor(
 							TrialDivision::new,
-							10)));
-	public static List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
-							"Trial division",
-							false,
-							TrialDivision::new,
+							"Próbaosztás",
+							"trial-division",
 							20, 1, 16)));
 	
 	private final IntList primes=new IntList(UnsignedLong.MAX_PRIME_COUNT);

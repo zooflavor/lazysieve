@@ -3,8 +3,7 @@ package gui.sieve.eratosthenes;
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
-import gui.sieve.SieveCheckFactory;
-import gui.sieve.SieveMeasureFactory;
+import gui.sieve.Sieve;
 import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
@@ -14,19 +13,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class CacheOptimizedLinearSieve extends EratosthenesianSieve {
-	public static List<SieveCheckFactory> CHECKS
+public class CacheOptimizedLinearSieve extends SegmentedEratosthenesianSieve {
+	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"COLS",
+					new Sieve.Descriptor(
 							CacheOptimizedLinearSieve::new,
-							24)));
-	public static List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
 							"COLS",
-							false,
-							CacheOptimizedLinearSieve::new,
+							"cols",
 							30, 6, 20)));
 	
 	private int[] brokenBuckets;

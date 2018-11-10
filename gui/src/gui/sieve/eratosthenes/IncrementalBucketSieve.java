@@ -3,27 +3,20 @@ package gui.sieve.eratosthenes;
 import gui.io.PrimesProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
-import gui.sieve.SieveCheckFactory;
-import gui.sieve.SieveMeasureFactory;
+import gui.sieve.Sieve;
 import gui.sieve.SieveTable;
 import gui.ui.progress.Progress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SimpleBucketSieve extends EratosthenesianSieve {
-	public static final List<SieveCheckFactory> CHECKS
+public class IncrementalBucketSieve extends SegmentedEratosthenesianSieve {
+	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
-					SieveCheckFactory.create(
-							"Sieve of Eratosthenes-simple buckets",
-							()->new SimpleBucketSieve(),
-							24)));
-	public static final List<SieveMeasureFactory> MEASURES
-			=Collections.unmodifiableList(Arrays.asList(
-					SieveMeasureFactory.create(
-							"Sieve of Eratosthenes-simple buckets",
-							false,
-							()->new SimpleBucketSieve(),
+					new Sieve.Descriptor(
+							()->new IncrementalBucketSieve(),
+							"Eratoszthenész szitája-edények-inkrementális",
+							"buckets-inc",
 							30, 1, 20)));
 	
 	private long addPrimePosition;
@@ -31,7 +24,7 @@ public class SimpleBucketSieve extends EratosthenesianSieve {
 	private final Bucket[] buckets=new Bucket[64];
 	private OperationCounter operationCounter;
 	
-	public SimpleBucketSieve() {
+	public IncrementalBucketSieve() {
 		super(3l);
 	}
 	
