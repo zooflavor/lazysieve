@@ -21,17 +21,17 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SpringLayout;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListDataListener;
 
-public class CheckSieves extends GuiWindow<JFrame> {
+public class CheckSieve extends GuiWindow<JFrame> {
 	public static final List<Command.Descriptor> COMMANDS
 			=Collections.unmodifiableList(Arrays.asList(
 					new Command.Descriptor(
@@ -42,20 +42,20 @@ public class CheckSieves extends GuiWindow<JFrame> {
 									Command.Argument.STRING,
 									Command.Argument.LONG,
 									Command.Argument.LONG),
-							CheckSieves::checkSieve,
-							"Main check sieve [szita] [kezdet] [vég]",
+							CheckSieve::checkSieve,
+							"Main check sieve [adatbázis könyvtár] [szita] [kezdet] [vég]",
 							null)));
 	public static final char MNEMONIC='s';
 	public static final String TITLE="Sziták ellenőrzése";
 	
-	private class CheckProcess extends GuiProcess<CheckSieves, JFrame> {
+	private class CheckProcess extends GuiProcess<CheckSieve, JFrame> {
 		private final long end;
 		private final Sieve.Descriptor sieveDescriptor;
 		private final long start;
 		
 		public CheckProcess(long end, Sieve.Descriptor sieveDescriptor,
 				long start) {
-			super(true, CheckSieves.this, TITLE);
+			super(true, CheckSieve.this, TITLE);
 			this.end=end;
 			this.sieveDescriptor=sieveDescriptor;
 			this.start=start;
@@ -63,23 +63,13 @@ public class CheckSieves extends GuiWindow<JFrame> {
 		
 		@Override
 		protected void background() throws Throwable {
-			CheckSieves.checkSieve(
+			CheckSieve.checkSieve(
 					session.database, end, progress, sieveDescriptor, start);
 		}
 		
 		@Override
 		protected void foreground() throws Throwable {
 			showMessage("A szita helyes.");
-		}
-	}
-	
-	private class EndListener implements UnsignedLongSpinner.Listener {
-		@Override
-		public void changed(long value) {
-			long start=startSpinner.getNumber();
-			if (0<Long.compareUnsigned(start, value)) {
-				startSpinner.setNumber(value);
-			}
 		}
 	}
 	
@@ -116,22 +106,12 @@ public class CheckSieves extends GuiWindow<JFrame> {
 		}
 	}
 	
-	private class StartListener implements UnsignedLongSpinner.Listener {
-		@Override
-		public void changed(long value) {
-			long end=endSpinner.getNumber();
-			if (0>Long.compareUnsigned(end, value)) {
-				endSpinner.setNumber(value);
-			}
-		}
-	}
-	
 	private final JComboBox<Sieve.Descriptor> sievesCombo;
 	private final UnsignedLongSpinner endSpinner;
 	private final JFrame frame;
 	private final UnsignedLongSpinner startSpinner;
 
-	public CheckSieves(Gui gui) {
+	public CheckSieve(Gui gui) {
 		super(gui.session);
 		
 		this.frame=new JFrame(TITLE);
@@ -149,33 +129,56 @@ public class CheckSieves extends GuiWindow<JFrame> {
 		buttons.add(CloseButton.create(frame));
 		
 		JPanel panel=new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        SpringLayout layout=new SpringLayout();
+		panel.setLayout(layout);
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		
-		JPanel sievesPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(sievesPanel);
 		sievesCombo=new JComboBox<>(new SievesModel());
 		sievesCombo.setSelectedIndex(0);
-		sievesPanel.add(sievesCombo);
+		panel.add(sievesCombo);
 		
-		JPanel startPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(startPanel);
 		JLabel startLabel=new JLabel("Kezdőszám:");
-		startPanel.add(startLabel);
+		panel.add(startLabel);
 		startSpinner=new UnsignedLongSpinner(
-				Segment.MAX, Segment.MIN, Segment.MIN, 2l);
-		startSpinner.addListener(new StartListener());
-		startPanel.add(startSpinner);
+				Segment.END_NUMBER, 3l, 3l, 2l);
+		panel.add(startSpinner);
 		
-		JPanel endPanel=new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.add(endPanel);
 		JLabel endLabel=new JLabel("Végszám:");
-		endPanel.add(endLabel);
+		panel.add(endLabel);
 		endSpinner=new UnsignedLongSpinner(
-				Segment.MAX, Segment.MIN, Segment.NUMBERS+1, 2l);
-		endSpinner.addListener(new EndListener());
-		endPanel.add(endSpinner);
+				Segment.END_NUMBER, 3l, Segment.NUMBERS+1, 2l);
+		panel.add(endSpinner);
 		
+		startSpinner.addListener(
+				new UnsignedLongSpinner.StartListener(endSpinner));
+		endSpinner.addListener(
+				new UnsignedLongSpinner.EndListener(startSpinner));
+        
+        layout.putConstraint(SpringLayout.NORTH, sievesCombo,
+                5, SpringLayout.NORTH, panel);
+        layout.putConstraint(SpringLayout.NORTH, startSpinner,
+                5, SpringLayout.SOUTH, sievesCombo);
+        layout.putConstraint(SpringLayout.NORTH, endSpinner,
+                5, SpringLayout.SOUTH, startSpinner);
+        layout.putConstraint(SpringLayout.SOUTH, panel,
+                5, SpringLayout.SOUTH, endSpinner);
+        layout.putConstraint(SpringLayout.WEST, sievesCombo,
+                5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.EAST, panel,
+                5, SpringLayout.EAST, sievesCombo);
+        layout.putConstraint(SpringLayout.EAST, startSpinner,
+                -5, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.EAST, endSpinner,
+                -5, SpringLayout.EAST, panel);
+        layout.putConstraint(SpringLayout.WEST, startLabel,
+                5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.WEST, endLabel,
+                5, SpringLayout.WEST, panel);
+        layout.putConstraint(SpringLayout.BASELINE, startLabel,
+                0, SpringLayout.BASELINE, startSpinner);
+        layout.putConstraint(SpringLayout.BASELINE, endLabel,
+                0, SpringLayout.BASELINE, endSpinner);
+        
 		frame.pack();
 	}
 	
@@ -187,17 +190,6 @@ public class CheckSieves extends GuiWindow<JFrame> {
 						Sieves.SIEVES.get(sievesCombo.getSelectedIndex()),
 						start)
 				.start(session.executor);
-	}
-	
-	public static void checkSieve(List<Object> arguments) throws Throwable {
-		Database database=new Database((Path)arguments.get(2));
-		Sieve.Descriptor sieveDescriptor
-				=Sieves.parse((String)arguments.get(3));
-		Long start=(Long)arguments.get(4);
-		Long end=(Long)arguments.get(5);
-		checkSieve(database, end,
-				new PrintStreamProgress(false, System.out),
-				sieveDescriptor, start);
 	}
 	
 	public static void checkSieve(Database database, long end,
@@ -275,8 +267,19 @@ public class CheckSieves extends GuiWindow<JFrame> {
 		progress.finished("A szita helyes.");
 	}
 	
+	public static void checkSieve(List<Object> arguments) throws Throwable {
+		Database database=new Database((Path)arguments.get(2));
+		Sieve.Descriptor sieveDescriptor
+				=Sieves.parse((String)arguments.get(3));
+		Long start=(Long)arguments.get(4);
+		Long end=(Long)arguments.get(5);
+		CheckSieve.checkSieve(database, end,
+				new PrintStreamProgress(false, System.out),
+				sieveDescriptor, start);
+	}
+	
 	public static void start(Gui gui) {
-		new CheckSieves(gui)
+		new CheckSieve(gui)
 				.show();
 	}
 	

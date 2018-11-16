@@ -9,7 +9,6 @@ import gui.ui.Color;
 import gui.ui.ColorRenderer;
 import gui.ui.GraphPlotter;
 import gui.ui.GuiWindow;
-import gui.ui.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -24,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -92,9 +90,9 @@ public class Plotter extends GuiWindow<JFrame> {
 		public String getColumnName(int columnIndex) {
 			switch (columnIndex) {
 				case 0:
-					return "Color";
+					return "Szín";
 				case 1:
-					return "Name";
+					return "Név";
 				default:
 					throw new IllegalArgumentException();
 			}
@@ -135,8 +133,7 @@ public class Plotter extends GuiWindow<JFrame> {
     
 	private final JButton autoViewButton;
     private final JFrame frame;
-	private final JCheckBox logarithmicX;
-	private final JCheckBox logarithmicY;
+    private final Object lock=new Object();
     private final GraphPlotter plotter;
 	private final Random random=new Random();
 	private final List<SamplePanel> samplePanels=new ArrayList<>();
@@ -166,7 +163,7 @@ public class Plotter extends GuiWindow<JFrame> {
 		JPanel plotterHeader=new JPanel(new FlowLayout(FlowLayout.CENTER));
         plotterPanel.add(plotterHeader, BorderLayout.NORTH);
 		
-        autoViewButton=new JButton("Auto view");
+        autoViewButton=new JButton("Auto.nézet");
         autoViewButton.addActionListener(actionListener(
 				this::autoViewButton));
         plotterHeader.add(autoViewButton);
@@ -200,22 +197,10 @@ public class Plotter extends GuiWindow<JFrame> {
         translateViewTopButton.addActionListener(actionListener(
                 this::translateViewTopButton));
         plotterHeader.add(translateViewTopButton);
-		
-		logarithmicX=new JCheckBox("logX");
-		logarithmicX.setSelected(graph.logarithmicX);
-		logarithmicX.addActionListener(actionListener(this::logarithmicX));
-		plotterHeader.add(logarithmicX);
-        
-		logarithmicY=new JCheckBox("logY");
-		logarithmicY.setSelected(graph.logarithmicY);
-		logarithmicY.addActionListener(actionListener(this::logarithmicY));
-		plotterHeader.add(logarithmicY);
         
         plotter=new GraphPlotter(session.executor,
-                (throwable)->{
-                    SwingUtilities.invokeLater(
-                            ()->SwingUtils.showError(frame, throwable));
-                });
+                (throwable)->
+						SwingUtilities.invokeLater(()->showError(throwable)));
         plotter.addListener(new PlotterListener());
 		plotter.setGraph(graph);
         plotterPanel.add(plotter, BorderLayout.CENTER);
@@ -239,7 +224,8 @@ public class Plotter extends GuiWindow<JFrame> {
                 =new JPanel(new FlowLayout(FlowLayout.CENTER));
         controlPanel.add(controlButtonsPanel, BorderLayout.CENTER);
         
-        JButton addSampleButton=new JButton("Add sample");
+        JButton addSampleButton=new JButton("Minta hozzáadása");
+		addSampleButton.setMnemonic('m');
         addSampleButton.addActionListener(actionListener(
                 this::addSampleButton));
         controlButtonsPanel.add(addSampleButton);
@@ -273,30 +259,39 @@ public class Plotter extends GuiWindow<JFrame> {
 	}
 	
 	void addSample(Sample sample) {
-		SamplePanel samplePanel=new SamplePanel(this, sample);
-		samplePanels.add(samplePanel);
-		plotter.setGraph(
-				plotter.getGraph()
-						.addSample(sample)
-						.setViewAuto());
+		addSamples(Arrays.asList(sample));
+	}
+	
+	void addSamples(Collection<Sample> samples) {
+		if (samples.isEmpty()) {
+			return;
+		}
+		Graph graph=plotter.getGraph();
+		for (Sample sample: samples) {
+			graph=graph.addSample(sample);
+			SamplePanel samplePanel=new SamplePanel(this, sample);
+			samplePanels.add(samplePanel);
+		}
+		plotter.setGraph(graph.setViewAuto());
 		fireTableModelListeners();
-		table.setRowSelectionInterval(samplePanels.size()-1, samplePanels.size()-1);
+		table.setRowSelectionInterval(
+				samplePanels.size()-1, samplePanels.size()-1);
 	}
     
     private void addSampleButton(ActionEvent event) throws Throwable {
         JPopupMenu menu=new JPopupMenu();
         
-        JMenuItem cancelItem=new JMenuItem("Cancel");
+        JMenuItem cancelItem=new JMenuItem("Mégsem");
 		cancelItem.addActionListener((event2)->{});
 		menu.add(cancelItem);
 		
-		JMenuItem loadSampleItem=new JMenuItem("Load sample");
+		JMenuItem loadSampleItem=new JMenuItem("Fájl beolvasása");
 		loadSampleItem.addActionListener(actionListener(this::loadSample));
 		menu.add(loadSampleItem);
 		
 		menu.add(AggregatesAddSampleProcess.menu(this));
 		
-		JMenuItem measureSievesItem=new JMenuItem("Measure sieves");
+		JMenuItem measureSievesItem=new JMenuItem("Szita mérése");
 		measureSievesItem.addActionListener(actionListener(
 				(event2)->new MeasureSieve(this).show()));
 		menu.add(measureSievesItem);
@@ -322,16 +317,6 @@ public class Plotter extends GuiWindow<JFrame> {
 		LoadSampleProcess.start(this);
 	}
 	
-	private void logarithmicX(ActionEvent event) throws Throwable {
-        plotter.setGraph(plotter.getGraph()
-				.logarithmicX(logarithmicX.isSelected()));
-	}
-	
-	private void logarithmicY(ActionEvent event) throws Throwable {
-        plotter.setGraph(plotter.getGraph()
-				.logarithmicY(logarithmicY.isSelected()));
-	}
-	
 	void removeFunction(Function function) {
 		plotter.setGraph(
 				plotter.getGraph()
@@ -340,31 +325,43 @@ public class Plotter extends GuiWindow<JFrame> {
 	}
 	
 	void removeSample(SamplePanel samplePanel) {
+        int selectedRow=table.getSelectedRow();
 		samplePanels.remove(samplePanel);
 		List<Graph> graph=Arrays.asList(plotter.getGraph());
 		samplePanel.graphObjects(
-				(object)->graph.set(0, graph.get(0).remove(object)));
+                (object)->graph.set(0, graph.get(0).remove(object)));
 		plotter.setGraph(graph.get(0).setViewAuto());
 		fireTableModelListeners();
         if (0<samplePanels.size()) {
-    		table.setRowSelectionInterval(samplePanels.size()-1, samplePanels.size()-1);
+            if (samplePanels.size()<=selectedRow) {
+                selectedRow=samplePanels.size()-1;
+            }
+    		table.setRowSelectionInterval(selectedRow, selectedRow);
         }
 	}
 	
-	void replaceFunction(Function function) {
-		plotter.setGraph(plotter.getGraph().replace(function));
+	void replaceFunction(Function oldFunction, Function newFunction) {
+		plotter.setGraph(plotter.getGraph().replace(oldFunction, newFunction));
 		table.repaint();
 	}
 	
-	void replaceSample(Sample sample) {
-		plotter.setGraph(plotter.getGraph().replace(sample));
+	void replaceSample(Sample oldSample, Sample newSample) {
+		plotter.setGraph(plotter.getGraph().replace(oldSample, newSample));
 		table.repaint();
 	}
 	
 	public Color selectNewColor() {
-		return Colors.selectNew(random,
-				(consumer)->samplePanels.forEach(
-						(sample)->sample.usedColors(consumer)));
+		return selectNewColors(1).get(0);
+	}
+	
+	public List<Color> selectNewColors(int size) {
+		synchronized (lock) {
+			return Colors.selectNew(random, size,
+					(consumer)->{
+						samplePanels.forEach(
+								(sample)->sample.usedColors(consumer));
+					});
+		}
 	}
     
     public static void start(Session session) throws Throwable {

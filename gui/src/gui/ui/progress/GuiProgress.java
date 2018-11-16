@@ -117,9 +117,9 @@ public class GuiProgress implements Progress {
 		south.setLayout(new FlowLayout());
 		dialog.getContentPane().add(south, BorderLayout.SOUTH);
 		
-		cancelButton=new JButton("Cancel");
+		cancelButton=new JButton("Megszakít");
         cancelButton.setEnabled(cancellable);
-		cancelButton.setMnemonic('c');
+		cancelButton.setMnemonic('m');
 		cancelButton.addActionListener(this::cancelButton);
 		south.add(cancelButton);
 		

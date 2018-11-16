@@ -1,7 +1,7 @@
 package gui;
 
 import gui.check.CheckSegments;
-import gui.check.CheckSieves;
+import gui.check.CheckSieve;
 import gui.io.Database;
 import gui.plotter.Plotter;
 import gui.ui.CloseButton;
@@ -86,10 +86,10 @@ public class Gui extends GuiWindow<JFrame> {
 		JPanel checkSievesPanel
 				=new JPanel(new FlowLayout(FlowLayout.CENTER));
 		frame.getContentPane().add(checkSievesPanel);
-		JButton checkSievesButton=new JButton(CheckSieves.TITLE);
-		checkSievesButton.setMnemonic(CheckSieves.MNEMONIC);
+		JButton checkSievesButton=new JButton(CheckSieve.TITLE);
+		checkSievesButton.setMnemonic(CheckSieve.MNEMONIC);
 		checkSievesButton.addActionListener(
-				actionListener((event)->CheckSieves.start(this)));
+				actionListener((event)->CheckSieve.start(this)));
 		checkSievesPanel.add(checkSievesButton);
 		
 		JPanel plotterPanel

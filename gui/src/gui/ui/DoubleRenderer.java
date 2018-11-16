@@ -16,7 +16,7 @@ public class DoubleRenderer implements TableCellRenderer {
 		JLabel label=new JLabel(
 				(null==value)
 						?""
-						:String.format("%1$,f", value));
+						:String.format("%1$,g", value));
 		label.setFont(label.getFont().deriveFont(Font.PLAIN));
 		panel.add(label);
 		if (isSelected) {

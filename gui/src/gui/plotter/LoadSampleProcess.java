@@ -2,79 +2,90 @@ package gui.plotter;
 
 import gui.graph.PlotType;
 import gui.graph.Sample;
+import gui.io.CSVReader;
 import gui.ui.Color;
 import gui.ui.GuiProcess;
 import gui.ui.MessageException;
-import gui.util.MeasuringInputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import gui.ui.progress.Progress;
+import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class LoadSampleProcess extends GuiProcess<Plotter, JFrame> {
-	private final Path path;
-	private Sample sample;
+	private final List<Path> paths;
+	private List<Sample> samples;
 	
-	private LoadSampleProcess(Plotter parent, Path path) {
+	private LoadSampleProcess(Plotter parent, List<Path> paths) {
 		super(true, parent, Plotter.TITLE);
-		this.path=path;
+		this.paths=paths;
 	}
 	
 	@Override
 	protected void background() throws Throwable {
-		long size=Files.size(path);
-		if (0>=size) {
-			return;
-		}
 		PlotType plotType=null;
-		Sample.Builder sample2=Sample.builder();
-		try (InputStream is=Files.newInputStream(path);
-				MeasuringInputStream mis=new MeasuringInputStream(is);
-				BufferedInputStream bis=new BufferedInputStream(mis);
-				Reader rd=new InputStreamReader(bis,
-						StandardCharsets.US_ASCII);
-				BufferedReader br=new BufferedReader(rd)) {
-			for (String line; null!=(line=br.readLine()); ) {
-				progress.progress(1.0*mis.count()/size);
-				int index=line.indexOf(",");
-				if (null==plotType) {
-					if (0>index) {
-						plotType=PlotType.valueOf(line);
+		samples=new ArrayList<>(paths.size());
+		List<Color> colors=parent.selectNewColors(paths.size());
+		for (int ii=0; paths.size()>ii; ++ii) {
+			Progress subProgress=progress.subProgress(
+					1.0*ii/paths.size(), null, 1.0*(ii+1)/paths.size());
+			Path path=paths.get(ii);
+			Sample.Builder sample2=Sample.builder();
+			try (CSVReader csv=CSVReader.open(path)) {
+				while (true) {
+					subProgress.progress(csv.progress());
+					List<String> row=csv.read();
+					if (null==row) {
+						break;
+					}
+					if (null==plotType) {
+						if (row.isEmpty()) {
+							plotType=PlotType.LINE;
+						}
+						else {
+							try {
+								plotType=PlotType.valueOf(row.get(0));
+								continue;
+							}
+							catch (IllegalArgumentException ex) {
+								plotType=PlotType.LINE;
+							}
+						}
+					}
+					if (2>row.size()) {
 						continue;
 					}
-					else {
-						plotType=PlotType.LINE;
+					try {
+						long key=Long.parseUnsignedLong(row.get(0));
+						double value=Double.parseDouble(row.get(1));
+						sample2.add(key, value);
+					}
+					catch (NumberFormatException ex) {
 					}
 				}
-				if (0>index) {
-					throw new MessageException(
-							String.format("malformed line %1$s", line));
-				}
-				long key=Long.parseLong(line.substring(0, index));
-				double value=Double.parseDouble(line.substring(index+1));
-				sample2.add(key, value);
 			}
+			if (0>=sample2.size()) {
+				throw new MessageException(
+						String.format("üres mintafájl %1$s", path));
+			}
+			Color color=colors.get(ii);
+			String label=path.getFileName().toString();
+			if (label.toLowerCase().endsWith(".csv")) {
+				label=label.substring(0, label.length()-4);
+			}
+			samples.add(sample2.create(
+					label, Colors.INTERPOLATION, plotType, color, color));
 		}
-		if (0>=sample2.size()) {
-			throw new MessageException(
-					String.format("empty sample file %1$s", path));
-		}
-		Color color=parent.selectNewColor();
-		sample=sample2.create(path.getFileName().toString(),
-				Colors.INTERPOLATION, plotType, color, color);
 		progress.finished();
 	}
 	
 	@Override
 	protected void foreground() throws Throwable {
-		if (null!=sample) {
-			parent.addSample(sample);
+		if (null!=samples) {
+			parent.addSamples(samples);
 		}
 	}
 	
@@ -82,15 +93,22 @@ public class LoadSampleProcess extends GuiProcess<Plotter, JFrame> {
         JFileChooser chooser=new JFileChooser(
 				plotter.session.database.rootDirectory.toFile());
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        if ((JFileChooser.APPROVE_OPTION
-						!=chooser.showOpenDialog(plotter.window()))
-                || (null==chooser.getSelectedFile())
-				|| (!Files.exists(chooser.getSelectedFile().toPath()))) {
+		chooser.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
+        chooser.setMultiSelectionEnabled(true);
+        if (JFileChooser.APPROVE_OPTION
+						!=chooser.showOpenDialog(plotter.window())) {
             return;
         }
-        new LoadSampleProcess(
-						plotter, chooser.getSelectedFile().toPath())
+		File[] files=chooser.getSelectedFiles();
+		if ((null==files)
+				|| (0>=files.length)) {
+			return;
+		}
+		List<Path> paths=new ArrayList<>(files.length);
+		for (File file: files) {
+			paths.add(file.toPath());
+		}
+        new LoadSampleProcess(plotter, paths)
                 .start(plotter.session.executor);
 	}
 }

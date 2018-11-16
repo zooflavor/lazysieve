@@ -22,13 +22,9 @@ public abstract class GuiWindow<W extends java.awt.Window> {
 				handler.consume(event);
 			}
 			catch (Throwable throwable) {
-				SwingUtils.showError(window(), throwable);
+				showError(throwable);
 			}
 		};
-	}
-	
-	public void setAllEnabled(boolean enabled) {
-		window().setEnabled(enabled);
 	}
 	
 	public void show() {
@@ -50,6 +46,10 @@ public abstract class GuiWindow<W extends java.awt.Window> {
 			keepAlive=session.keepAlive();
 			SwingUtils.show(window);
 		}
+	}
+	
+	public void showError(Throwable throwable) {
+		SwingUtils.showError(window(), throwable);
 	}
 	
 	public void showMessage(String message) {

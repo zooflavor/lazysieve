@@ -127,32 +127,47 @@ public class GraphRenderer implements Runnable {
 				=RenderedInterval.builder(Math.max(1, graph.componentWidth));
 		double pixelWidth=graph.viewWidth/graph.componentWidth;
 		check();
-		int leftIndex=sampleTailIndex(0, sample, sample.size(),
-				graph.pixelBorderX(0));
+		double leftBorder=graph.pixelBorderX(0);
+		int leftIndex=sampleTailIndex(0, sample, sample.size(), leftBorder);
 		if (0<leftIndex) {
 			long leftX=sample.xx(leftIndex-1);
-			renderSample(
-					sample.plotType,
-					result,
-					sample.asIterableSample(
-							sampleTailIndex(0, sample, leftIndex,
-									leftX-pixelWidth),
-							leftIndex),
-					graph.graphToPixelX(leftX-pixelWidth, leftX));
+			double leftY=sample.yy(leftIndex-1);
+			double leftXLimit=leftBorder-2.0*pixelWidth;
+			double leftX2=leftX;
+			if ((leftXLimit>leftX2)
+					&& (samples.size()>leftIndex)) {
+				long notSoLeftX=sample.xx(leftIndex);
+				double notSoLeftY=sample.yy(leftIndex);
+				leftY=((leftX-leftXLimit)*notSoLeftY
+								+(leftXLimit-notSoLeftX)*leftY)
+						/(leftX-notSoLeftX);
+				leftX2=leftXLimit;
+			}
+			leftY=graph.graphToPixelY(leftY);
+			result.add(graph.graphToPixelX(leftX2),
+					leftY, leftY, leftY, leftY);
 		}
 		check();
+		double rightBorder=graph.pixelBorderX(graph.componentWidth);
 		int rightIndex=sampleTailIndex(leftIndex, sample, sample.size(),
-				graph.pixelBorderX(graph.componentWidth));
+				rightBorder);
 		if (sample.size()>rightIndex) {
 			long rightX=sample.xx(rightIndex);
-			renderSample(
-					sample.plotType,
-					result,
-					sample.asIterableSample(
-							rightIndex,
-							sampleTailIndex(rightIndex, sample, sample.size(),
-									rightX+pixelWidth)),
-					graph.graphToPixelX(rightX, rightX+pixelWidth));
+			double rightY=sample.yy(rightIndex);
+			double rightXLimit=rightBorder+2.0*pixelWidth;
+			double rightX2=rightX;
+			if ((rightXLimit<rightX2)
+					&& (0<rightIndex)) {
+				long notSoRightX=sample.xx(rightIndex-1);
+				double notSoRightY=sample.yy(rightIndex-1);
+				rightY=((rightX-rightXLimit)*notSoRightY
+								+(rightXLimit-notSoRightX)*rightY)
+						/(rightX-notSoRightX);
+				rightX2=rightXLimit;
+			}
+			rightY=graph.graphToPixelY(rightY);
+			result.add(graph.graphToPixelX(rightX2),
+					rightY, rightY, rightY, rightY);
 		}
 		check();
 		renderSample(

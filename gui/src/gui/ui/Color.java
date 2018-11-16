@@ -7,20 +7,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class Color implements Comparable<Color> {
-	public static final Color BLACK=Color.create("black", 0xff000000);
-	public static final Color BLUE=Color.create("blue", 0xff0000ff);
+	public static final Color BLACK=Color.create("fekete", 0xff000000);
+	public static final Color BLUE=Color.create("kék", 0xff0000ff);
 	public static final List<Color> COLORS;
-	public static final Color CYAN=Color.create("cyan", 0xff00ffff);
-	public static final Color DARK_GRAY=Color.create("dark gray", 0xff3f3f3f);
-	public static final Color GRAY=Color.create("gray", 0xff7f7f7f);
-	public static final Color GREEN=Color.create("green", 0xff00ff00);
-	public static final Color LIGHT_GRAY=Color.create("light gray", 0xffbfbfbf);
-	public static final Color MAGENTA=Color.create("magenta", 0xffff00ff);
+	public static final Color CYAN=Color.create("cián", 0xff00ffff);
+	public static final Color DARK_GRAY=Color.create("sötét szürke", 0xff3f3f3f);
+	public static final Color GRAY=Color.create("szürke", 0xff7f7f7f);
+	public static final Color GREEN=Color.create("zöld", 0xff00ff00);
+	public static final Color LIGHT_GRAY=Color.create("világos szürke", 0xffbfbfbf);
+	public static final Color MAGENTA=Color.create("bíbor", 0xffff00ff);
 	public static final String NAMELESS="#";
-	public static final Color RED=Color.create("red", 0xffff0000);
-	public static final Color TRANSPARENT=Color.create("transparent", 0x00000000);
-	public static final Color YELLOW=Color.create("yellow", 0xffffff00);
-	public static final Color WHITE=Color.create("white", 0xffffffff);
+	public static final Color RED=Color.create("vörös", 0xffff0000);
+	public static final Color TRANSPARENT=Color.create("átlátszó", 0x00000000);
+	public static final Color YELLOW=Color.create("sárga", 0xffffff00);
+	public static final Color WHITE=Color.create("fehér", 0xffffffff);
 	
 	static {
 		try {

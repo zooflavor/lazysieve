@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -71,8 +72,8 @@ public class RegressionTest {
 			sample.put(xx, noisy.valueAt(xx));
 		}
 		LinearCombinationFunction regression=Regression.regression(functions,
-				Sum::priority, Progress.NULL, sample.entrySet(),
-				Sum::priority);
+				Function.identity(), Sum::priority, Progress.NULL,
+				sample.entrySet(), Sum::priority);
 		boolean backlist=false;
 		for (RealFunction function: functions) {
 			if (BLACKLIST.contains(function)) {

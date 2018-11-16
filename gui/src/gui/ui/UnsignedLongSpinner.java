@@ -33,6 +33,22 @@ public class UnsignedLongSpinner extends JSpinner {
 		}
 	}
 	
+	public static class EndListener implements UnsignedLongSpinner.Listener {
+		private final UnsignedLongSpinner startSpinner;
+		
+		public EndListener(UnsignedLongSpinner startSpinner) {
+			this.startSpinner=startSpinner;
+		}
+		
+		@Override
+		public void changed(long value) {
+			long start=startSpinner.getNumber();
+			if (0<Long.compareUnsigned(start, value)) {
+				startSpinner.setNumber(value);
+			}
+		}
+	}
+	
 	public static interface Listener {
 		void changed(long value);
 	}
@@ -78,6 +94,23 @@ public class UnsignedLongSpinner extends JSpinner {
 			}
 			UnsignedLongSpinner.this.value=value2;
 			fireListeners();
+		}
+	}
+	
+	public static class StartListener
+			implements UnsignedLongSpinner.Listener {
+		private final UnsignedLongSpinner endSpinner;
+		
+		public StartListener(UnsignedLongSpinner endSpinner) {
+			this.endSpinner=endSpinner;
+		}
+		
+		@Override
+		public void changed(long value) {
+			long end=endSpinner.getNumber();
+			if (0>Long.compareUnsigned(end, value)) {
+				endSpinner.setNumber(value);
+			}
 		}
 	}
 	

@@ -7,7 +7,6 @@ import gui.math.RealFunction;
 import gui.ui.Color;
 import gui.ui.ColorRenderer;
 import gui.ui.DoubleRenderer;
-import gui.ui.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -20,6 +19,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -74,11 +74,11 @@ final class SamplePanel {
 		public String getColumnName(int columnIndex) {
 			switch (columnIndex) {
 				case 0:
-					return "Color";
+					return "Szín";
 				case 1:
-					return "Approximation";
+					return "Alapfüggvények";
 				case 2:
-					return "Sum(error^2)";
+					return "<html>&Sigma;(hiba^2)</html>";
 				default:
 					throw new IllegalArgumentException();
 			}
@@ -146,9 +146,9 @@ final class SamplePanel {
 		public String getColumnName(int columnIndex) {
 			switch (columnIndex) {
 				case 0:
-					return "Function";
+					return "Függvény";
 				case 1:
-					return "Coefficient";
+					return "Együttható";
 				default:
 					throw new IllegalArgumentException();
 			}
@@ -158,8 +158,6 @@ final class SamplePanel {
 		public int getRowCount() {
 			int selected=approximationsTable.getSelectedRow();
 			if (0<=selected) {
-				LinearCombinationFunction function
-						=approximations.get(selected).approximation;
 				return approximations.get(selected).approximation
 						.coefficients.size();
 			}
@@ -270,20 +268,23 @@ final class SamplePanel {
 		JPanel northPanel=new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topPanel.add(northPanel, BorderLayout.NORTH);
 		
-		JButton saveSampleButton=new JButton("Save");
-		saveSampleButton.addActionListener(this::saveSampleButton);
-		northPanel.add(saveSampleButton);
-		
-		JButton removeSampleButton=new JButton("Remove");
-		removeSampleButton.addActionListener(this::removeSampleButton);
-		northPanel.add(removeSampleButton);
+		JLabel sampleLabel=new JLabel("Minta");
+		northPanel.add(sampleLabel);
 		
 		sampleColor=new JComboBox<>(new ComboModel(color()));
 		sampleColor.setRenderer(new ColorRenderer());
 		sampleColor.addActionListener(this::sampleColorChanged);
 		northPanel.add(sampleColor);
 		
-		JButton approximateButton=new JButton("Approximate");
+		JButton saveSampleButton=new JButton("Mentés");
+		saveSampleButton.addActionListener(this::saveSampleButton);
+		northPanel.add(saveSampleButton);
+		
+		JButton removeSampleButton=new JButton("Eltávolítás");
+		removeSampleButton.addActionListener(this::removeSampleButton);
+		northPanel.add(removeSampleButton);
+		
+		JButton approximateButton=new JButton("Közelítés");
 		approximateButton.addActionListener(this::approximateButton);
 		northPanel.add(approximateButton);
 		
@@ -316,17 +317,20 @@ final class SamplePanel {
 				=new JPanel(new FlowLayout(FlowLayout.CENTER));
 		bottomPanel.add(approximationHeaderPanel, BorderLayout.NORTH);
 		
-		removeApproximationButton=new JButton("Remove");
-		removeApproximationButton.addActionListener(
-				this::removeApproximationButton);
-		removeApproximationButton.setEnabled(false);
-		approximationHeaderPanel.add(removeApproximationButton);
+		JLabel approximationLabel=new JLabel("Közelítő fv.");
+		approximationHeaderPanel.add(approximationLabel);
 		
 		approximationColor=new JComboBox<>(new ComboModel(null));
 		approximationColor.setRenderer(new ColorRenderer());
 		approximationColor.setEnabled(false);
 		approximationColor.addActionListener(this::approximationColorChanged);
 		approximationHeaderPanel.add(approximationColor);
+		
+		removeApproximationButton=new JButton("Eltávolítás");
+		removeApproximationButton.addActionListener(
+				this::removeApproximationButton);
+		removeApproximationButton.setEnabled(false);
+		approximationHeaderPanel.add(removeApproximationButton);
 		
 		coefficientsTable=new JTable(coefficientsTableModel);
 		coefficientsTable.setSelectionMode(
@@ -346,7 +350,7 @@ final class SamplePanel {
 					.start();
 		}
 		catch (Throwable throwable) {
-			SwingUtils.showError(plotter.window(), throwable);
+			plotter.showError(throwable);
 		}
 	}
 	
@@ -384,9 +388,10 @@ final class SamplePanel {
 			if (0<=selected) {
 				Approximation approximation=approximations.get(selected);
 				Color color=(Color)approximationColor.getSelectedItem();
-				approximation.function
-						=approximation.function.setColors(color, color);
-				plotter.replaceFunction(approximation.function);
+				Function oldFunction=approximation.function;
+				Function newFunction=oldFunction.setColors(color, color);
+				approximation.function=newFunction;
+				plotter.replaceFunction(oldFunction, newFunction);
 			}
 		}
 	}
@@ -454,8 +459,11 @@ final class SamplePanel {
 	
 	private void sampleColorChanged(ActionEvent event) {
 		Color color=(Color)sampleColor.getSelectedItem();
-		sample=sample.setColors(Colors.INTERPOLATION, color, color);
-		plotter.replaceSample(sample);
+		Sample oldSample=sample;
+		Sample newSample
+				=oldSample.setColors(Colors.INTERPOLATION, color, color);
+		sample=newSample;
+		plotter.replaceSample(oldSample, newSample);
 	}
 	
 	private void saveSampleButton(ActionEvent event) {

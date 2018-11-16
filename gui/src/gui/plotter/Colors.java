@@ -38,7 +38,8 @@ public class Colors {
 	private Colors() {
 	}
 	
-	static Color selectNew(Random random, Consumer<Consumer<Color>> usedColors) {
+	static List<Color> selectNew(Random random, int size,
+			Consumer<Consumer<Color>> usedColors) {
 		Map<Color, Integer> counts=new TreeMap<>();
 		GRAPHS.forEach((color)->counts.put(color, 0));
 		usedColors.accept((color)->{
@@ -47,24 +48,31 @@ public class Colors {
 				counts.put(color, count+1);
 			}
 		});
-		List<Color> colors=new ArrayList<>();
-		int count=0;
-		for (Map.Entry<Color, Integer> entry: counts.entrySet()) {
-			Color color2=entry.getKey();
-			int count2=entry.getValue();
-			if (colors.isEmpty()
-					|| (count>count2)) {
-				colors.clear();
-				colors.add(color2);
-				count=count2;
+		List<Color> colors=new ArrayList<>(counts.size());
+		List<Color> result=new ArrayList<>(size);
+		while (result.size()<size) {
+			colors.clear();
+			int minCount=0;
+			for (Map.Entry<Color, Integer> entry: counts.entrySet()) {
+				Color color=entry.getKey();
+				int count=entry.getValue();
+				if (colors.isEmpty()
+						|| (minCount>count)) {
+					colors.clear();
+					colors.add(color);
+					minCount=count;
+				}
+				else if (minCount==count) {
+					colors.add(color);
+				}
 			}
-			else if (count==count2) {
-				colors.add(color2);
+			if (colors.isEmpty()) {
+				throw new IllegalStateException();
 			}
+			Color color=colors.get(random.nextInt(colors.size()));
+			result.add(color);
+			counts.put(color, counts.get(color)+1);
 		}
-		if (colors.isEmpty()) {
-			throw new IllegalStateException();
-		}
-		return colors.get(random.nextInt(colors.size()));
+		return result;
 	}
 }

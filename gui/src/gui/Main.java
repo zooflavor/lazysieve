@@ -1,8 +1,9 @@
 package gui;
 
 import gui.check.CheckSegments;
-import gui.check.CheckSieves;
+import gui.check.CheckSieve;
 import gui.io.DatabaseCommands;
+import gui.plotter.MeasureSieve;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +12,10 @@ public class Main {
 		try {
 			List<Command.Descriptor> commands=new ArrayList<>();
 			commands.addAll(CheckSegments.COMMANDS);
-			commands.addAll(CheckSieves.COMMANDS);
+			commands.addAll(CheckSieve.COMMANDS);
 			commands.addAll(DatabaseCommands.COMMANDS);
 			commands.addAll(Gui.COMMANDS);
+			commands.addAll(MeasureSieve.COMMANDS);
 			commands.sort((c0, c1)->c0.usage.compareTo(c1.usage));
 			outer: for (Command.Descriptor command: commands) {
 				if ((args.length<command.arguments.size())

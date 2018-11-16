@@ -1,7 +1,7 @@
 package gui.sieve;
 
 public enum Measure {
-	OPERATIONS("Operations"), NANOSECS("Nanosecs");
+	OPERATIONS("műveletek"), NANOSECS("nanoszekundum");
 	
 	public final String name;
 	

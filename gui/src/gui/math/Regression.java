@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Regression {
@@ -31,9 +32,16 @@ public class Regression {
 	
 	public static <X extends Number, Y extends Number>
 			LinearCombinationFunction regression(List<RealFunction> functions,
+					Function<RealFunction, RealFunction> functionTransform,
 					Supplier<Sum> functionSumFactory, Progress progress,
 					Collection<Map.Entry<X, Y>> sample,
 					Supplier<Sum> regressionSumFactory) throws Throwable {
+		List<RealFunction> transformedFunctions
+				=new ArrayList<>(functions.size());
+		for (int ii=0; functions.size()>ii; ++ii) {
+			transformedFunctions.add(
+					functionTransform.apply(functions.get(ii)));
+		}
 		double[][] xx=Matrix.create(sample.size(), functions.size());
 		double[][] yy=Matrix.create(sample.size(), 1);
 		Progress subProgress=progress.subProgress(0.0, null, 0.5);
@@ -44,7 +52,7 @@ public class Regression {
 			double sampleY=entry.getValue().doubleValue();
 			yy[rr][0]=sampleY;
 			for (int cc=functions.size()-1; 0<=cc; --cc) {
-				xx[rr][cc]=functions.get(cc).valueAt(sampleX);
+				xx[rr][cc]=transformedFunctions.get(cc).valueAt(sampleX);
 			}
 			++rr;
 		}

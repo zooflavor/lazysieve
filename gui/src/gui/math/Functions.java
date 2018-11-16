@@ -31,27 +31,6 @@ public class Functions {
 					return Math.log(Math.log(xx));
 				}
 			};
-	public static final RealFunction LNLNX_LNX
-			=new RealFunction() {
-				@Override
-				public boolean isDefined(double fromX, double toX) {
-					return 1.0<fromX;
-				}
-
-				@Override
-				public String toString() {
-					return "ln(ln(x))*ln(x)";
-				}
-				
-				@Override
-				public double valueAt(double xx) {
-					if (1.0>=xx) {
-						return Double.NaN;
-					}
-					double lnx=Math.log(xx);
-					return Math.log(lnx)*lnx;
-				}
-			};
 	public static final RealFunction LNX
 			=new RealFunction() {
 				@Override
@@ -93,6 +72,27 @@ public class Functions {
 					return lnx*lnx;
 				}
 			};
+	public static final RealFunction LNX_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
+				}
+
+				@Override
+				public String toString() {
+					return "ln(x)*ln(ln(x))";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
+					}
+					double lnx=Math.log(xx);
+					return lnx*Math.log(lnx);
+				}
+			};
 	public static final RealFunction ONE
 			=new RealFunction() {
 				@Override
@@ -114,12 +114,14 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 0.0<fromX;
+					return (1.0<fromX)
+                            && ((Math.E<fromX)
+                                    || (Math.E>toX));
 				}
 				
 				@Override
 				public String toString() {
-					return "1/ln(ln(e+x))";
+					return "1/ln(ln(x))";
 				}
 				
 				@Override
@@ -127,19 +129,21 @@ public class Functions {
 					if (0.0>=xx) {
 						return Double.NaN;
 					}
-					return 1.0/Math.log(Math.log(Math.E+xx));
+					return 1.0/Math.log(Math.log(xx));
 				}
 			};
 	public static final RealFunction ONE_PER_LNX
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 0.0<fromX;
+                    return (0.0<fromX)
+                            && ((1.0<fromX)
+                                    || (1.0>toX));
 				}
 				
 				@Override
 				public String toString() {
-					return "1/ln(1+x)";
+					return "1/ln(x)";
 				}
 				
 				@Override
@@ -147,7 +151,7 @@ public class Functions {
 					if (0.0>=xx) {
 						return Double.NaN;
 					}
-					return 1.0/Math.log(1.0+xx);
+					return 1.0/Math.log(xx);
 				}
 			};
 	public static final RealFunction ONE_PER_X

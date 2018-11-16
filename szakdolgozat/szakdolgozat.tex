@@ -153,32 +153,39 @@ de ezek a lassúságuk miatt csak igen rövid tartományok ellenőrzésére alka
 
 \section{A program telepítése és futtatása}
 
-A Java program futtatásához JRE8-ra van szükség,
-a fordításához JDK8-ra. A C program fordításához C99
-szabványú fordítóprogram kell. A program fejlesztése
-és tesztelése OpenJDK8-cal és GCC 7.3-mal történt
+A program futtatásához Windows vagy Linux operációs rendszer szükséges,
+legalább 4GB szabad memóriával.
+A Java program futtatásához JRE8 szükséges, a fordításához JDK8.
+A C program fordításához C99 szabványú fordítóprogram kell.
+A program fejlesztése és tesztelése OpenJDK8-cal és GCC 7.3-mal történt
 Linux operációs rendszeren.
 
 A tarball a Java programot lefordítva is tartalmazza,
 kicsomagolás után azonnal futtatható.
 A C programot a generator könyvtárban található Makefile segítségével lehet lefordítani:
+{\tiny
 \begin{lstlisting}[language=bash]
 generator$ make clean build
 \end{lstlisting}
+}
 
 A Java program a NetBeans 8-as verziójával készült,
 parancssorból a project ant fájlának segítségével lehet
 újrafordítani:
+{\tiny
 \begin{lstlisting}[language=bash]
 gui$ ant clean jar
 \end{lstlisting}
+}
 
 A program futtatásához több előkészített script is rendelkezésre áll,
 ezeket mind a scripts könyvtárból lehet indítani.
 Az előző két fordítást egyben is el lehet végezni a recompile scripttel:
+{\tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./recompile
 \end{lstlisting}
+}
 
 \section{Prímek keresése}
 
@@ -193,7 +200,7 @@ fájlrendszerben bittérképként tárolják, egy tábla kb. $64$Mb.
 
 Az első négymilliárd szám szitálása a következő képpen indítható el:
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 generator$ ./init.bin ../db
 szegmens 0 - kezdet             1 - felkészülés 159 906 063 ns - szitálás 1 122 878 403 ns
@@ -201,7 +208,7 @@ szegmens 1 - kezdet 1 073 741 825 - felkészülés   2 353 698 ns - szitálás 1
 szegmens 2 - kezdet 2 147 483 649 - felkészülés   2 344 515 ns - szitálás 1 188 330 478 ns
 szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1 199 900 603 ns
 \end{lstlisting}
-\small
+}
 
 Ennek eredmény 4 bittérképfájl, amit a db mappába ment.
 
@@ -215,7 +222,7 @@ Az egyik lehetőség fix számú szegmens megadása, decimálisan.
 A másik mód a háttértáron fenntartandó szabad hely átadása, decimálisan,
 vagy "0x" prefixszel hexadecimálisan.
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 generator$ ./generator.bin ../db start 0x100000001 segments 3
 szegmens kezdet: 4 294 967 297
@@ -231,11 +238,7 @@ szegmens 4 - kezdet 4 294 967 297 - felkészülés 8 162 031 487 ns - szitálás
 szegmens 5 - kezdet 5 368 709 121 - felkészülés           418 ns - szitálás 736 412 117 ns
 szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás 750 022 409 ns
 összes szitálás 2 216 348 896 ns
-\end{lstlisting}
-\small
 
-\tiny
-\begin{lstlisting}[language=bash]
 generator$ ./generator.bin ../db start 0x100000001 reserve-space 1000000000
 szegmens kezdet: 4 294 967 297
 fenntartandó hely: 1 000 000 000 byte 
@@ -251,7 +254,7 @@ szegmens 5 - kezdet 5 368 709 121 - felkészülés           418 ns - szitálás
 szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás 750 022 409 ns
 összes szitálás 2 216 348 896 ns
 \end{lstlisting}
-\small
+}
 
 Mindkét program kimenetében a start a szegmens kezdőszáma, a segment az indexe,
 $start=segment \cdot 2^{30}+1$, az init a szita incializálási ideje a szitálás előtt,
@@ -311,7 +314,7 @@ megváltoztatható.
 A szegmensinformációkat a grafikus felületen a "DB info" gomb megnyomásával lehet
 lekérdezni, parancssorból a "database info" kiadásával.
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./database info
 100.0%
@@ -345,7 +348,7 @@ szegmensfájlok: hiányzó szegmensek száma: 18,446,744,073,709,551,593
 
 crunch: ../generator/generator.bin ../db start 0x3d6840000001 segments 0x64
 \end{lstlisting}
-\small
+}
 
 A "crunch" utótag és szitálni kívánt szegmensek számának megadásával az utolsó sorban
 a következő futtatásra ajánlott parancsot is megjeleníti a program.
@@ -358,12 +361,12 @@ de az ott tárolt utolsó módosításnál újabb a szegmensfájl.
 Ezeket a "DB összesítés" gomb megnyomásával,
 vagy a "database reaggregate" paranccsal lehet összesíteni.
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./database reaggregate
 100.0%
 \end{lstlisting}
-\small
+}
 
 Lehetőség van egy másik adatbázisból statisztikák átvételére is.
 Az összefésülést a grafikus felületen a "DB import" megnyomása után
@@ -372,12 +375,12 @@ kiadásával. A megadott fájlból azokat a szegmeneseket veszi át a program,
 amik vagy nincsenek még meg az adatbázisban, vagy megvannak, de az importált
 statisztikák utolsó módosítási ideje nagyobb az adatbázisban lévőnél.
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./database import aggregates ../db/aggregates.large
 100.0%
 \end{lstlisting}
-\small
+}
 
 {\color{red}screenshot}
 
@@ -402,7 +405,7 @@ ami lehet "sieve", vagy "test", a paraméterek maradéke az ellenőrizendő
 szegmensek kezdőszáma kell legyen. Ha egy kezdet sincs megadva, akkor
 a program az adatbázis könyvtárban található összes szegmensfájlt ellenőrzi.
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./check-segments sieve
 100.0%: A szegmensek helyesek.             
@@ -414,7 +417,12 @@ scripts$ ./check-segments test 0x1
 100.0%: A szegmensek helyesek.             
 
 \end{lstlisting}
-\small
+}
+
+Ha a kezdőszám nagyobb, mint $1$, a szitával ellenőrzéshez szükséges,
+hogy az init program által előállított négy darab szegmensfájlt tartalmazza
+az adatbáziskönyvtár, mert a szita kezdőszámra pozícionálásához a prímszámokat
+innen olvassa fel a program.
 
 {\color{red}screenshot}
 
@@ -445,21 +453,124 @@ Az ellenőrizhető sziták nevei:
 \item trial-division: próbaosztás
 \end{itemize}
 
-\tiny
+{\tiny
 \begin{lstlisting}[language=bash]
 scripts$ ./check-sieve buckets-3 3000000000001 3010000000001
 100.0%: A szita helyes.
 \end{lstlisting}
-\small
+}
+
+Ha a kezdőszám nagyobb, mint egy, az ellenőrzéshez ilyenkor is szükséges,
+hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
 {\color{red}screenshot}
 
 \section{Minta megjelenítése}
 
-\section{Minta közelítése függvényekkel}
+A program a grafikus felületén képes mintákat ábrázolni, a mintákat függvényekkel
+közelíteni, és ezeket a függvényeket is ábrázolni, valamint kiszámolja a közelítések
+négyzetes hibáját a mintához képest.
+
+A grafikonábrázoló részt a gui-graph scripttel lehet indítani,
+vagy a gui scripttel, majd a "Grafikon" gomb megnyomásával.
+
+Az ablak bal oldalán jelennek meg a betöltött minták és közelítő függvények
+grafikonjai. Minta és függvény hozzáadása után a grafikon megjelenített részét
+a program úgy választja meg, hogy minden minta összes pontja ebbe a nézetbe essen.
+A nézet a grafikon feletti gombokkal, vagy egérrel mozgatható, nagyítható, vagy
+kicsinyíthető.
+Az "Auto.nézet" gombbal a nézet a minták teljes terjedelmére visszaállítható.
+
+Az ablak jobb oldala a betöltött minták kezelésére szolgál.
+A felső harmada az összes betöltött mintát mutatja.
+Az ablak jobb oldalának alsó két harmadában az itt kiválaszott minta részletei
+látszódnak.
+
+\subsection{Minta hozzáadása}
+
+A "Minta hozzáadásánál" három adatforrásból lehet választani.
+A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő,
+az első oszlopot x, a második oszlopot y értékeknek próbálja értelmezni,
+a fel nem ismert sorokat eldobja. Ha az első sor első oszlopa "BARS",
+akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
+
+A "Prímstatisztikák" a generator kimeneteléből összesített statisztikák,
+amiket az adatbáziskönyvtárban keres.
+A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
+A statisztikáknak három csoportja van. A prímek száma, és néhány kiemelt alakú prím száma
+a szegmensek végén. Ide tartozik ugyanezeken a helyeken a prímszámtétel
+becslése, és a becslés abszolút és relatív hibája is.
+A prímhézagok statisztikái a szegmensek teljes kezdőszeletére vonatkozik. Ezek
+az előfordult hézagok gyakorisága, első előfordulása, jósága, és az legnagyobb
+prímhézag adott számig.
+Ezeken kívül a szegmensek szitálásának ideje is betölthető. Az összesített
+idő a szegmensek végig az összes addigi szegmens összes ideje,
+a szegmensenkénti a szegmensek végéhez az adott szegmens szitálásának idejét rendeli.
+
+A minták harmadik forrása a programba épített sziták futási idejének mérése.
+Ehhez meg kell adni a szitát, a szitált intervallum elejét és végét,
+a szita belső szegmensméretét, a generálandó minták számát, és a mérések számát,
+a mértéket, és hogy az eredményt összesítse-e.
+A sziták listája ugyanaz, mint a sziták ellenőrzősénél.
+A mintákat a program a szitált intervallumon egyenletesen osztja el a megadott méretű
+szegmensek határainál. A teljes szitálást a megadott mérések számászor végzi el,
+és az eredményt átlagolja.
+Összesítést kiválasztva a minta értéke a szitált intervallum elejétől
+az adott számig szitálás teljes ideje, különben az előző minta helyétől.
+A mérték szabályozza, hogy a tényleges eltelt időt mérje a program nanoszekundumban,
+vagy az elvégzett műveletek számát.
+
+{\color{red}screenshot}
+
+\subsection{Minta közelítése}
+
+Az ablak jobb oldalának középső harmadában a kiválasztott minta részletei látszódnak.
+Itt változtatható meg a minta ábrázolásához használt szín, távolítható el a minta,
+vagy menthető CSV fájlba.
+
+A táblázat a minta közelítéseit mutatja,
+itt olvashatóak le a közelítés komponensfüggvényei, és a közelítés hibája.
+A "Közelítés" gombbal lehet új közelítést hozzáadni az ábrázoláshoz.
+A közelítéshez a lineáris legkisebb négyzetek módszerét használja a program,
+ehhez a lineáris kombináció elemi függvényeit meg kell adni.
+A függvények kiválaszthatóak az előre megadott listából,
+vagy javascript nyelven is megadhatóak.
+A közelítéshez csak olyan függvények használhatóak, amik a minta
+minden pontjában értélmezve vannak.
+
+Javascript függvényhez meg kell adni a függvény nevét és forráskódját.
+A forráskódban a függvény argumentumára az $x$ változóval lehet hivatkozni,
+és a script utolsó kifejezésének értéke lesz a függvény
+értéke $x$-ben. Pl. az $x \mapsto \frac{\ln{x}}{x}$ hozzárendelés
+forráskódja:
+
+{\small
+\begin{lstlisting}[language=Java]
+Math.log(x)/x
+\end{lstlisting}
+}
+
+A scriptben használható változó, és a szokásos vezérlőutasítások.
+Pl. az iterált logaritmus egy megadása:
+{\small
+\begin{lstlisting}[language=Java]
+var y=0;
+while (1<x) {
+  x=Math.log(x);
+  ++y;
+}
+y
+\end{lstlisting}
+}
+
+A kiválasztott közelítés részletei az ablak jobb alsó sarkában látszódnak,
+itt megváltoztatható a közelítéshez rendelt szín, és eltávolítható a közelítés.
+A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja
+a lineáris kombinációban.
+
+{\color{red}screenshot}
 
 \section{Minták generálása scriptekkel}
-
 
 \chapter{Fejlesztői dokumentáció}
 
@@ -475,6 +586,8 @@ scripts$ ./check-sieve buckets-3 3000000000001 3010000000001
 
 Egyenletrendszerek. Összeadás.
 Körül kéne írni, hogy igazán tudjuk, hogy hipotézisvizsgálatra nem vállalkozunk.
+A grafikonrajzolónak sokkal okosabbnak kéne lennie, hogy gyorsan változó függvényeket
+helyesen jelenítsen meg, reménytelenül okosnak.
 
 \section{Sziták}
 

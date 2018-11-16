@@ -9,22 +9,21 @@ import java.util.Objects;
 
 public class Graph {
 	public static final Graph EMPTY=new Graph(
-			Colors.BACKGROUND,
-			-1,
-			-1,
-			new ArrayList<>(0),
-			Colors.RULER.alpha(63),
-			8.0,
-			false,
-			false,
-			Colors.RULER,
-			new ArrayList<>(0),
-			Colors.TOOLTIP_BACKGROUND,
-			Colors.TOOLTIP_TEXT,
-			0.0,
-			0.0,
-			1.0,
-			1.0);
+					Colors.BACKGROUND,
+					-1,
+					-1,
+					new ArrayList<>(0),
+					Colors.RULER.alpha(63),
+					8.0,
+					Colors.RULER,
+					new ArrayList<>(0),
+					Colors.TOOLTIP_BACKGROUND,
+					Colors.TOOLTIP_TEXT,
+					0.0,
+					0.0,
+					1.0,
+					1.0)
+			.setViewAuto();
 	
 	public final Color backgroundColor;
 	public final int componentHeight;
@@ -32,8 +31,6 @@ public class Graph {
 	public final List<Function> functions;
 	public final Color incompleteColor;
 	public final double labelSize;
-	public final boolean logarithmicX;
-	public final boolean logarithmicY;
 	public final Color rulerColor;
 	public final List<Sample> samples;
 	public final Long samplesMaxX;
@@ -51,11 +48,10 @@ public class Graph {
 	
 	public Graph(Color backgroundColor, int componentHeight,
 			int componentWidth, List<Function> functions,
-			Color incompleteColor, double labelSize, boolean logarithmicX,
-			boolean logarithmicY, Color rulerColor, List<Sample> samples,
-			Color toolTipBackgroundColor, Color toolTipTextColor,
-			double viewBottom, double viewLeft, double viewRight,
-			double viewTop) {
+			Color incompleteColor, double labelSize, Color rulerColor,
+			List<Sample> samples, Color toolTipBackgroundColor,
+			Color toolTipTextColor, double viewBottom, double viewLeft,
+			double viewRight, double viewTop) {
 		this.backgroundColor=backgroundColor;
 		this.componentHeight=componentHeight;
 		this.componentWidth=componentWidth;
@@ -63,8 +59,6 @@ public class Graph {
 				=Collections.unmodifiableList(new ArrayList<>(functions));
 		this.incompleteColor=incompleteColor;
 		this.labelSize=labelSize;
-		this.logarithmicX=logarithmicX;
-		this.logarithmicY=logarithmicY;
 		this.rulerColor=rulerColor;
 		this.samples=Collections.unmodifiableList(new ArrayList<>(samples));
 		this.toolTipBackgroundColor=toolTipBackgroundColor;
@@ -109,9 +103,9 @@ public class Graph {
 		newFunctions.addAll(functions);
 		newFunctions.add(function);
 		return new Graph(backgroundColor, componentHeight, componentWidth,
-				newFunctions, incompleteColor, labelSize, logarithmicX,
-				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
-				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
+				newFunctions, incompleteColor, labelSize, rulerColor, samples,
+				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
+				viewRight, viewTop);
 	}
 	
 	public Graph addSample(Sample sample) {
@@ -120,9 +114,9 @@ public class Graph {
 		newSamples.addAll(samples);
 		newSamples.add(sample);
 		return new Graph(backgroundColor, componentHeight, componentWidth,
-				functions, incompleteColor, labelSize, logarithmicX,
-				logarithmicY, rulerColor, newSamples, toolTipBackgroundColor,
-				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
+				functions, incompleteColor, labelSize, rulerColor, newSamples,
+				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
+				viewRight, viewTop);
 	}
 	
 	public double graphToPixelHeight(double height) {
@@ -153,20 +147,6 @@ public class Graph {
                 && (viewTop==graph.viewTop);
     }
 	
-	public Graph logarithmicX(boolean logarithmicX) {
-		return new Graph(backgroundColor, componentHeight, componentWidth,
-				functions, incompleteColor, labelSize, logarithmicX,
-				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
-				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
-	}
-	
-	public Graph logarithmicY(boolean logarithmicY) {
-		return new Graph(backgroundColor, componentHeight, componentWidth,
-				functions, incompleteColor, labelSize, logarithmicX,
-				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
-				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
-	}
-	
 	public double pixelBorderX(int xx) {
 		return pixelBorderX(xx, componentWidth);
 	}
@@ -196,39 +176,52 @@ public class Graph {
 				samples2.add(sample2);
 			}
 		}
-		return new Graph(backgroundColor, componentHeight,
-				componentWidth, functions2, incompleteColor, labelSize,
-				logarithmicX, logarithmicY, rulerColor, samples2,
+		return new Graph(backgroundColor, componentHeight, componentWidth,
+				functions2, incompleteColor, labelSize, rulerColor, samples2,
 				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
 				viewRight, viewTop);
 	}
 	
-	public Graph replace(Function function) {
+	public Graph replace(Function oldFunction, Function newFunction) {
+		boolean found=false;
 		List<Function> functions2=new ArrayList<>(functions.size()+1);
 		for (Function function2: functions) {
-			if (function2!=function) {
+			if (function2==oldFunction) {
+				functions2.add(newFunction);
+				found=true;
+			}
+			else {
 				functions2.add(function2);
 			}
 		}
-		functions2.add(function);
+		if (!found) {
+			functions2.add(newFunction);
+		}
 		return new Graph(backgroundColor, componentHeight, componentWidth,
-				functions2, incompleteColor, labelSize, logarithmicX,
-				logarithmicY, rulerColor, samples, toolTipBackgroundColor,
-				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
+				functions2, incompleteColor, labelSize, rulerColor, samples,
+				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
+				viewRight, viewTop);
 	}
 	
-	public Graph replace(Sample sample) {
+	public Graph replace(Sample oldSample, Sample newSample) {
+		boolean found=false;
 		List<Sample> samples2=new ArrayList<>(samples.size()+1);
 		for (Sample sample2: samples) {
-			if (sample2!=sample) {
+			if (sample2==oldSample) {
+				samples2.add(newSample);
+				found=true;
+			}
+			else {
 				samples2.add(sample2);
 			}
 		}
-		samples2.add(sample);
+		if (!found) {
+			samples2.add(newSample);
+		}
 		return new Graph(backgroundColor, componentHeight, componentWidth,
-				functions, incompleteColor, labelSize, logarithmicX,
-				logarithmicY, rulerColor, samples2, toolTipBackgroundColor,
-				toolTipTextColor, viewBottom, viewLeft, viewRight, viewTop);
+				functions, incompleteColor, labelSize, rulerColor, samples2,
+				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
+				viewRight, viewTop);
 	}
 	
 	public Graph scale(double xScale, double yScale) {
@@ -238,13 +231,40 @@ public class Graph {
 	
 	public Graph scalePixels(double xCenterPixels, double xScale,
 			double yCenterPixels, double yScale) {
+		double height;
+		double width;
+		if ((null==samplesMaxX)
+				|| (null==samplesMaxY)
+				|| (null==samplesMinX)
+				|| (null==samplesMinY)
+				|| (samplesMaxX<samplesMinX)
+				|| (samplesMaxY<samplesMinY)) {
+			height=1.0;
+			width=1.0;
+		}
+		else {
+			height=samplesMaxY-samplesMinY+2.0;
+			width=samplesMaxX-samplesMinX+2.0;
+		}
 		double cx=viewLeft+xCenterPixels*viewWidth/componentWidth;
 		double cy=viewBottom+yCenterPixels*viewHeight/componentHeight;
-		return setView(
-				cy+(viewBottom-cy)*yScale,
-				cx+(viewLeft-cx)*xScale,
-				cx+(viewRight-cx)*xScale,
-				cy+(viewTop-cy)*yScale);
+		double bottom=cy+(viewBottom-cy)*yScale;
+		double left=cx+(viewLeft-cx)*xScale;
+		double right=cx+(viewRight-cx)*xScale;
+		double top=cy+(viewTop-cy)*yScale;
+		if (bottom+right<=left+top) {
+			double width2=(top-bottom)*width/height;
+			double centerX=0.5*(left+right);
+			left=centerX-0.5*width2;
+			right=centerX+0.5*width2;
+		}
+		else {
+			double height2=(right-left)*height/width;
+			double centerY=0.5*(bottom+top);
+			bottom=centerY-0.5*height2;
+			top=centerY+0.5*height2;
+		}
+		return setView(bottom, left, right, top);
 	}
 	
 	public Graph setComponentSize(int height, int width) {
@@ -253,16 +273,15 @@ public class Graph {
 			return this;
 		}
 		return new Graph(backgroundColor, height, width, functions,
-				incompleteColor, labelSize, logarithmicX, logarithmicY,
-				rulerColor, samples, toolTipBackgroundColor, toolTipTextColor,
-				viewBottom, viewLeft, viewRight, viewTop);
+				incompleteColor, labelSize, rulerColor, samples,
+				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
+				viewRight, viewTop);
 	}
 	
 	public Graph setView(double viewBottom, double viewLeft,
 			double viewRight, double viewTop) {
-		return new Graph(backgroundColor, componentHeight,
-				componentWidth, functions, incompleteColor, labelSize,
-				logarithmicX, logarithmicY, rulerColor, samples,
+		return new Graph(backgroundColor, componentHeight, componentWidth,
+				functions, incompleteColor, labelSize, rulerColor, samples,
 				toolTipBackgroundColor, toolTipTextColor, viewBottom, viewLeft,
 				viewRight, viewTop);
 	}

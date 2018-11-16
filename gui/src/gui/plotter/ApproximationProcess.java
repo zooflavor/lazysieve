@@ -1,5 +1,6 @@
 package gui.plotter;
 
+import gui.math.CheckedFunction;
 import gui.math.LinearCombinationFunction;
 import gui.math.RealFunction;
 import gui.math.Regression;
@@ -16,7 +17,7 @@ class ApproximationProcess extends GuiProcess<Plotter, JFrame> {
 	
 	ApproximationProcess(List<RealFunction> functions,
 			SamplePanel samplePanel) {
-		super(true, samplePanel.plotter, "Approximation");
+		super(true, samplePanel.plotter, "Közelítés");
 		this.functions=functions;
 		this.samplePanel=samplePanel;
 	}
@@ -25,6 +26,7 @@ class ApproximationProcess extends GuiProcess<Plotter, JFrame> {
 	protected void background() throws Throwable {
 		function=Regression.regression(
 				functions,
+				CheckedFunction::new,
 				Sum::priority,
 				progress.subProgress(0.0, null, 0.9),
 				samplePanel.sample().asList(),

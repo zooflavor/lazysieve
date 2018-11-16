@@ -202,9 +202,9 @@ public class GraphPlotter extends JComponent {
 						continue;
 					}
 					int ceilingIndex=sample.ceilingIndex(
-							Math.round(Math.ceil(graphX)));
+							Math.round(Math.max(0.0, Math.ceil(graphX))));
 					int floorIndex=sample.floorIndex(
-							Math.round(Math.floor(graphX)));
+							Math.round(Math.max(0.0, Math.floor(graphX))));
 					int sampleIndex;
 					if (0>ceilingIndex) {
 						if (0>floorIndex) {
@@ -366,8 +366,6 @@ public class GraphPlotter extends JComponent {
 	
 	private static void paint(Graph graph, RenderedGraph renderedGraph,
 			Graphics2D graphics) {
-		graphics.setColor(graph.backgroundColor.awt());
-		graphics.fillRect(0, 0, graph.componentWidth, graph.componentHeight);
 		boolean completed=false;
 		if (null!=renderedGraph) {
 			completed=renderedGraph.completed;
@@ -376,6 +374,11 @@ public class GraphPlotter extends JComponent {
 					(int)Math.round(graph.labelSize)));
 			for (int ii=0; renderedGraph.rulers.size()>ii; ++ii) {
 				paintRuler(graph, graphics, renderedGraph.rulers.get(ii));
+			}
+			for (int ii=0; renderedGraph.functions.size()>ii; ++ii) {
+				Function function=graph.functions.get(ii);
+				paintLine(graphics, function.color, null,
+						renderedGraph.functions.get(ii));
 			}
 			for (int ii=0; renderedGraph.samples.size()>ii; ++ii) {
 				Sample sample=graph.samples.get(ii);
@@ -394,21 +397,10 @@ public class GraphPlotter extends JComponent {
 								sample.plotType.toString());
 				}
 			}
-			for (int ii=0; renderedGraph.functions.size()>ii; ++ii) {
-				Function function=graph.functions.get(ii);
-				paintLine(graphics, function.color, null,
-						renderedGraph.functions.get(ii));
-			}
 		}
 		if (!completed) {
-			int radius=Math.min(graph.componentHeight, graph.componentWidth)/4;
-			graphics.setColor(graph.incompleteColor.awt());
-			graphics.setStroke(new BasicStroke(radius/4));
-			graphics.drawOval(
-					(graph.componentWidth-radius)/2,
-					(graph.componentHeight-radius)/2,
-					radius,
-					radius);
+			paintIncomplete(graph.incompleteColor, graphics,
+					graph.componentHeight, graph.componentWidth);
 		}
 	}
 	
@@ -435,6 +427,74 @@ public class GraphPlotter extends JComponent {
 				}
 			}
 		}
+	}
+	
+	@Override
+	protected void paintComponent(Graphics graphics) {
+		super.paintComponent(graphics);
+		Graph graph2;
+		Graph graph3;
+		RenderedGraph renderedGraph2;
+		int height=getHeight();
+		int width=getWidth();
+		synchronized (lock) {
+			graph2=this.graph;
+			renderedGraph2=this.renderedGraph;
+			graph3=graph2.setComponentSize(height, width);
+			if (graph3!=graph2) {
+				setGraph(graph3);
+			}
+		}
+		Graphics2D graphics2d=(Graphics2D)(graphics.create());
+		try {
+			graphics2d.setRenderingHint(
+					RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_ON);
+			graphics2d.setRenderingHint(
+					RenderingHints.KEY_STROKE_CONTROL,
+					RenderingHints.VALUE_STROKE_PURE);
+			graphics2d.setRenderingHint(
+					RenderingHints.KEY_TEXT_ANTIALIASING,
+					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			graphics2d.setColor(graph2.backgroundColor.awt());
+			graphics2d.fillRect(0, 0, width, height);
+			if (graph3!=graph2) {
+				paintIncomplete(
+						graph2.incompleteColor, graphics2d, height, width);
+			}
+			else {
+				paint(graph2,
+						((null!=renderedGraph2)
+										&& (renderedGraph2.graph==graph2))
+								?renderedGraph2
+								:null,
+						graphics2d);
+			}
+		}
+		finally {
+			graphics2d.dispose();
+		}
+		SwingUtilities.invokeLater(()->{
+			synchronized (lock) {
+				if ((graph2==this.graph)
+						&& (renderedGraph2==this.renderedGraph)) {
+					return;
+				}
+			}
+			repaint();
+		});
+	}
+	
+	private static void paintIncomplete(Color color, Graphics2D graphics,
+			int height, int width) {
+		int radius=Math.min(height, width)/4;
+		graphics.setColor(color.awt());
+		graphics.setStroke(new BasicStroke(radius/4));
+		graphics.drawOval(
+				(width-radius)/2,
+				(height-radius)/2,
+				radius,
+				radius);
 	}
 	
 	private static void paintLine(Graphics2D graphics, Color lineColor,
@@ -505,57 +565,6 @@ public class GraphPlotter extends JComponent {
 		}
 	}
 	
-	@Override
-	protected void paintComponent(Graphics graphics) {
-		super.paintComponent(graphics);
-		Graph graph2;
-		RenderedGraph renderedGraph2;
-		synchronized (lock) {
-			graph2=this.graph;
-			renderedGraph2=this.renderedGraph;
-		}
-		int height=getHeight();
-		int width=getWidth();
-		Graphics2D graphics2d=(Graphics2D)(graphics.create());
-		try {
-			graphics2d.setRenderingHint(
-					RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);
-			graphics2d.setRenderingHint(
-					RenderingHints.KEY_STROKE_CONTROL,
-					RenderingHints.VALUE_STROKE_PURE);
-			graphics2d.setRenderingHint(
-					RenderingHints.KEY_TEXT_ANTIALIASING,
-					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			if ((graph2.componentHeight!=height)
-					|| (graph2.componentWidth!=width)) {
-				graphics2d.setColor(graph2.backgroundColor.awt());
-				graphics2d.fillRect(0, 0, width, height);
-				rerenderGraph();
-			}
-			else {
-				paint(graph2,
-						((null!=renderedGraph2)
-										&& (renderedGraph2.graph==graph2))
-								?renderedGraph2
-								:null,
-						graphics2d);
-			}
-		}
-		finally {
-			graphics2d.dispose();
-		}
-		SwingUtilities.invokeLater(()->{
-			synchronized (lock) {
-				if ((graph2==this.graph)
-						&& (renderedGraph2==this.renderedGraph)) {
-					return;
-				}
-			}
-			repaint();
-		});
-	}
-	
 	private static void paintRuler(Graph graph, Graphics2D graphics,
 			Ruler ruler) {
 		graphics.setStroke(new BasicStroke(
@@ -596,25 +605,29 @@ public class GraphPlotter extends JComponent {
 		}
 	}
 	
-	public void rerenderGraph() {
-		setGraph(getGraph());
-	}
-	
 	public void setGraph(Graph newGraph) {
 		Objects.requireNonNull(graph, "graph");
+        synchronized (lock) {
+            if (this.graph==newGraph) {
+                return;
+            }
+            this.graph=newGraph;
+            this.renderedGraph=null;
+        }
 		SwingUtilities.invokeLater(()->{
-			Graph graph2=newGraph.setComponentSize(getHeight(), getWidth());
+			Graph newGraph2
+                    =newGraph.setComponentSize(getHeight(), getWidth());
 			synchronized (lock) {
-				if (this.graph==graph2) {
+				if (this.graph!=newGraph) {
 					return;
 				}
-				this.graph=graph2;
+				this.graph=newGraph2;
 				renderedGraph=null;
 			}
 			repaint();
             executor.execute(
-					new GraphRenderer(new CheckAndPostImpl(), graph2));
-			fireListeners((listener)->listener.graph(graph2));
+					new GraphRenderer(new CheckAndPostImpl(), newGraph2));
+			fireListeners((listener)->listener.graph(newGraph2));
 		});
 	}
 }

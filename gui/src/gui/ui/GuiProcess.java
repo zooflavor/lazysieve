@@ -7,6 +7,8 @@ import javax.swing.SwingUtilities;
 
 public abstract class GuiProcess<G extends GuiWindow<W>, W extends Window> {
 	private class RunnableImpl implements Runnable {
+		private volatile boolean backgroundCompleted;
+		
 		@Override
 		public void run() {
 			try {
@@ -14,28 +16,37 @@ public abstract class GuiProcess<G extends GuiWindow<W>, W extends Window> {
 					progress.progress(0.0);
 					SwingUtilities.invokeLater(()->{
 						progress.show();
-						parent.setAllEnabled(false);
 					});
 					background();
+					backgroundCompleted=true;
 					progress.finished();
 				}
 				finally {
-					SwingUtilities.invokeLater(progress::dispose);
+					SwingUtilities.invokeLater(()->{
+						try {
+							progress.dispose();
+							SwingUtilities.invokeLater(()->{
+								try {
+									if (backgroundCompleted) {
+										foreground();
+									}
+								}
+								catch (Throwable throwable) {
+									parent.showError(throwable);
+								}
+							});
+						}
+						catch (Throwable throwable) {
+							parent.showError(throwable);
+						}
+					});
 				}
-				SwingUtilities.invokeLater(()->{
-					try {
-						parent.setAllEnabled(true);
-						foreground();
-					}
-					catch (Throwable throwable) {
-						SwingUtils.showError(parent.window(), throwable);
-					}
-				});
 			}
 			catch (Throwable throwable) {
 				SwingUtilities.invokeLater(()->{
-					parent.setAllEnabled(true);
-                    SwingUtils.showError(parent.window(), throwable);
+					progress.dispose();
+					SwingUtilities.invokeLater(
+							()->parent.showError(throwable));
 				});
 			}
 		}

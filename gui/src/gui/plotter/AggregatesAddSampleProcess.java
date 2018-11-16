@@ -22,7 +22,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.maxPrimeGaps(progress, reader))
-						.create("max. prime gaps",
+						.create("Legnagyobb prímhézag",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -38,7 +38,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.newPrimeGaps(progress, reader))
-						.create("new prime gaps",
+						.create("Prímhézagok első előfordulása^(-1)",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -53,7 +53,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime12Z11Counts(progress, reader)
-						.create("prime 12Z+11 counts",
+						.create("12Z+11 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -68,7 +68,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime4Z1Counts(progress, reader)
-						.create("prime 4Z+1 counts",
+						.create("4Z+1 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -83,7 +83,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime4Z3Counts(progress, reader)
-						.create("prime 4Z+3 counts",
+						.create("4Z+3 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -98,7 +98,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime6Z1Counts(progress, reader)
-						.create("prime 6Z+1 counts",
+						.create("6Z+1 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -113,7 +113,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsAbsoluteError(progress, reader)
-						.create("prime counts abs. error",
+						.create("Prímszámtétel abszolút hiba",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -128,7 +128,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsExpectedValue(progress, reader)
-						.create("expected prime counts",
+						.create("Prímszámtétel",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -143,7 +143,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsRelativeError(progress, reader)
-						.create("prime counts rel. error",
+						.create("Prímszámtétel relatív hiba",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -158,7 +158,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCounts(progress, reader)
-						.create("prime counts",
+						.create("Prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -174,7 +174,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.primeGapFrequencies(progress, reader))
-						.create("prime gap frequencies",
+						.create("Prímhézagok gyakoriság",
 								Colors.INTERPOLATION,
 								PlotType.BARS,
 								color,
@@ -190,7 +190,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.primeGapMerits(progress, reader))
-						.create("prime gap merits",
+						.create("Prímhézagok jósága",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -206,7 +206,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Maps.toSample(
 							Aggregates.primeGapStarts(progress, reader))
-						.create("prime gap starts",
+						.create("Prímhézagok első előfordulása",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -220,8 +220,8 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.sieveNanos(progress, reader, sum)
-						.create(String.format("sieve nanos (%1$s)",
-										sum?"sum":"segments"),
+						.create(String.format("Szitálás ideje (ns)(%1$s)",
+										sum?"összesen":"szegmensenként"),
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color,
@@ -231,99 +231,99 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 	}
 	
 	public static JMenuItem menu(Plotter plotter) {
-		JMenu menu=new JMenu("Aggregates");
+		JMenu menu=new JMenu("Prímstatisztikák");
 		
         JMenuItem addPrime12Z11CountsItem
-                =new JMenuItem("Add prime 12Z11 counts");
+                =new JMenuItem("12Z+11 prímek száma");
 		addPrime12Z11CountsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrime12Z11CountsSample(plotter));
 		menu.add(addPrime12Z11CountsItem);
 		
 		JMenuItem addPrime4Z1CountsItem
-				=new JMenuItem("Add prime 4Z1 counts sample");
+				=new JMenuItem("4Z+1 prímek száma");
 		addPrime4Z1CountsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrime4Z1CountsSample(plotter));
 		menu.add(addPrime4Z1CountsItem);
 		
 		JMenuItem addPrime4Z3CountsItem
-				=new JMenuItem("Add prime 4Z3 counts sample");
+				=new JMenuItem("4Z+3 prímek száma");
 		addPrime4Z3CountsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrime4Z3CountsSample(plotter));
 		menu.add(addPrime4Z3CountsItem);
 		
 		JMenuItem addPrime6Z1CountsItem
-				=new JMenuItem("Add prime 6Z1 counts sample");
+				=new JMenuItem("6Z+1 prímek száma");
 		addPrime6Z1CountsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrime6Z1CountsSample(plotter));
 		menu.add(addPrime6Z1CountsItem);
 		
 		JMenuItem addPrimeCountsItem
-				=new JMenuItem("Add prime counts sample");
+				=new JMenuItem("Prímek száma");
 		addPrimeCountsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrimeCountsSample(plotter));
 		menu.add(addPrimeCountsItem);
 		
 		JMenuItem addPrimeCountsExcpectedItem
-				=new JMenuItem("Add expected prime counts sample");
+				=new JMenuItem("Prímszámtétel");
 		addPrimeCountsExcpectedItem.addActionListener((event2)->
 				AggregatesAddSampleProcess
 						.addPrimeCountsExpectedSample(plotter));
 		menu.add(addPrimeCountsExcpectedItem);
 		
 		JMenuItem addPrimeCountsAbsoluteErrorItem
-				=new JMenuItem("Add prime counts abs. error sample");
+				=new JMenuItem("Prímszámtétel abszolút hiba");
 		addPrimeCountsAbsoluteErrorItem.addActionListener((event2)->
 				AggregatesAddSampleProcess
 						.addPrimeCountsAbsoluteErrorSample(plotter));
 		menu.add(addPrimeCountsAbsoluteErrorItem);
 		
 		JMenuItem addPrimeCountsRelativeErrorItem
-				=new JMenuItem("Add prime counts rel. error sample");
+				=new JMenuItem("Prímszámtétel relatív hiba");
 		addPrimeCountsRelativeErrorItem.addActionListener((event2)->
 				AggregatesAddSampleProcess
 						.addPrimeCountsRelativeErrorSample(plotter));
 		menu.add(addPrimeCountsRelativeErrorItem);
 		
 		JMenuItem addPrimeGapFrequenciesItem
-				=new JMenuItem("Add prime gap frequencies sample");
+				=new JMenuItem("Prímhézagok gyakoriság");
 		addPrimeGapFrequenciesItem.addActionListener((event2)->
 				AggregatesAddSampleProcess
 						.addPrimeGapFrequenciesSample(plotter));
 		menu.add(addPrimeGapFrequenciesItem);
 		
 		JMenuItem addPrimeGapMeritsItem
-				=new JMenuItem("Add prime gap merits sample");
+				=new JMenuItem("Prímhézagok jósága");
 		addPrimeGapMeritsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrimeGapMeritsSample(plotter));
 		menu.add(addPrimeGapMeritsItem);
 		
 		JMenuItem addPrimeGapStartsItem
-				=new JMenuItem("Add prime gap starts sample");
+				=new JMenuItem("Prímhézagok első előfordulása");
 		addPrimeGapStartsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addPrimeGapStartsSample(plotter));
 		menu.add(addPrimeGapStartsItem);
 		
 		JMenuItem addMaxPrimeGapsItem
-				=new JMenuItem("Add max. prime gaps sample");
+				=new JMenuItem("Legnagyobb prímhézag");
 		addMaxPrimeGapsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addMaxPrimeGapsSample(plotter));
 		menu.add(addMaxPrimeGapsItem);
 		
 		JMenuItem addNewPrimeGapsItem
-				=new JMenuItem("Add new prime gaps sample");
+				=new JMenuItem("<html>Prímhézagok első előfordulása<sup>-1</sup></html>");
 		addNewPrimeGapsItem.addActionListener((event2)->
 				AggregatesAddSampleProcess.addNewPrimeGapsSample(plotter));
 		menu.add(addNewPrimeGapsItem);
 		
 		JMenuItem addSieveNanosItem
-				=new JMenuItem("Add sieve nanos sample (segments)");
+				=new JMenuItem("Szitálás ideje (szegmensenként)");
 		addSieveNanosItem.addActionListener((event2)->
 				AggregatesAddSampleProcess
 						.addSieveNanosSample(plotter, false));
 		menu.add(addSieveNanosItem);
 		
 		JMenuItem addSieveNanosSumItem
-				=new JMenuItem("Add sieve nanos sample (sum)");
+				=new JMenuItem("Szitálás ideje (összesen)");
 		addSieveNanosSumItem.addActionListener((event2)->
 				AggregatesAddSampleProcess
 						.addSieveNanosSample(plotter, true));

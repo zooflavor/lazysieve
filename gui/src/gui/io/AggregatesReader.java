@@ -5,9 +5,11 @@ import gui.util.MeasuringInputStream;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 
@@ -75,23 +77,6 @@ public abstract class AggregatesReader implements AutoCloseable {
 		}
 	}
 	
-	private static class Versionless extends Stream {
-		private Versionless(MeasuringInputStream measure, long size,
-				DataInputStream stream) {
-			super(measure, size, stream);
-		}
-		
-		@Override
-		protected AggregateBlock nextImpl() throws IOException {
-			try {
-				return new AggregateBlock(Aggregate.readFrom(stream));
-			}
-			catch (EOFException ex) {
-				return null;
-			}
-		}
-	}
-	
 	private long nextSegmentStart=1l;
 	private long progress0;
 	private long progress1;
@@ -149,25 +134,10 @@ public abstract class AggregatesReader implements AutoCloseable {
 			return new AggregatesReader.Empty();
 		}
 		long size=Files.size(path);
-		if (4l>size) {
-			throw new IllegalStateException("too small");
-		}
-		Integer version;
 		if (8l>size) {
-			version=null;
-		}
-		else {
-			try (InputStream fis=Files.newInputStream(path);
-					InputStream bis=new BufferedInputStream(fis, 8);
-					DataInputStream dis=new DataInputStream(bis)) {
-				int magic=dis.readInt();
-				if (Aggregates.MAGIC==magic) {
-					version=dis.readInt();
-				}
-				else {
-					version=null;
-				}
-			}
+			throw new IllegalStateException(String.format(
+					"A %1$s összesítő fájl túl kicsi",
+					path));
 		}
 		boolean error=true;
 		InputStream fis=Files.newInputStream(path);
@@ -176,53 +146,33 @@ public abstract class AggregatesReader implements AutoCloseable {
 			try {
 				MeasuringInputStream mis=new MeasuringInputStream(bis);
 				try {
-					if (null==version) {
-						InputStream gis=new GZIPInputStream(mis);
-						try {
-							DataInputStream dis=new DataInputStream(gis);
-							try {
-								dis.readInt();
-								AggregatesReader reader
-										=new AggregatesReader.Versionless(
-											mis, size, dis);
-								error=false;
-								return reader;
-							}
-							finally {
-								if (error) {
-									dis.close();
-								}
-							}
+					DataInputStream dis=new DataInputStream(mis);
+					try {
+						int magic=dis.readInt();
+						if (Aggregates.MAGIC!=magic) {
+							throw new IllegalArgumentException(String.format(
+									"A %1$s fájl nem összesítőfájl.",
+									path));
 						}
-						finally {
-							if (error) {
-								gis.close();
-							}
+						int version=dis.readInt();
+						AggregatesReader reader;
+						switch (version) {
+							case 0:
+								reader=new AggregatesReader.Version0(
+										mis, size, dis);
+								break;
+							default:
+								throw new RuntimeException(
+										String.format(
+											"ismeretlen verzió %1$,d",
+											version));
 						}
+						error=false;
+						return reader;
 					}
-					else {
-						DataInputStream dis=new DataInputStream(mis);
-						try {
-							dis.readLong();
-							AggregatesReader reader;
-							switch (version) {
-								case 0:
-									reader=new AggregatesReader.Version0(
-											mis, size, dis);
-									break;
-								default:
-									throw new RuntimeException(
-											String.format(
-												"unknown version %1$,d",
-												version));
-							}
-							error=false;
-							return reader;
-						}
-						finally {
-							if (error) {
-								dis.close();
-							}
+					finally {
+						if (error) {
+							dis.close();
 						}
 					}
 				}

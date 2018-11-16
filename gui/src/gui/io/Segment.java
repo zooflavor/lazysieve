@@ -20,8 +20,6 @@ public class Segment implements SieveTable {
 	public static final long END_NUMBER=1l-(1l<<34);
 	public static final long GENERATOR_START_NUMBER=(1l<<32)+1l;
 	public static final int LONGS=BITS>>6;
-	public static final long MAX=-(1l<<33)-1l;
-	public static final long MIN=3l;
 	public static final long NUMBERS=BITS<<1;
 	
 	public static class Info {

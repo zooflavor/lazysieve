@@ -42,7 +42,7 @@ public class Session implements AutoCloseable {
 						return;
 					}
 				}
-				executor.shutdown();
+				Session.this.close();
 			}
 		};
 		synchronized (lock) {
