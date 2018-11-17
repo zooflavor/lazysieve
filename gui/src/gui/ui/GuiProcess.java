@@ -9,6 +9,7 @@ public abstract class GuiProcess<G extends GuiWindow<W>, W extends Window> {
 	private class RunnableImpl implements Runnable {
 		private volatile boolean backgroundCompleted;
 		
+		//progress.show() and progess.dispose() switch the EventQueue
 		@Override
 		public void run() {
 			try {

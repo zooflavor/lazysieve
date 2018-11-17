@@ -20,7 +20,7 @@ class StartProcess extends GuiProcess<Gui, JFrame> {
 		@Override
 		protected void foreground() throws Throwable {
 			if (segments.segments.isEmpty()) {
-				parent.showMessage("no segments");
+				parent.showMessage("nincsenek szegmensfájlok");
 			}
 			else {
 				new CheckSegments(parent, segments)

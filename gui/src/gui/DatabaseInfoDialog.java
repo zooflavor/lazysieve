@@ -1,17 +1,14 @@
 package gui;
 
 import gui.io.DatabaseInfo;
-import gui.math.UnsignedLong;
 import gui.ui.GuiProcess;
 import gui.ui.GuiWindow;
-import gui.ui.SwingUtils;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Arrays;
 import java.util.List;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -50,7 +47,7 @@ public class DatabaseInfoDialog extends GuiWindow<JDialog> {
 	
 	private DatabaseInfoDialog(Gui gui, List<DatabaseInfo.Output> info) {
 		super(gui.session);
-		dialog=new JDialog(SwingUtils.window(gui.window()), TITLE);
+		dialog=new JDialog(gui.window(), TITLE);
 		dialog.getContentPane().setLayout(new BorderLayout());
 		
 		DefaultTableModel model=new DefaultTableModel() {
@@ -114,20 +111,6 @@ public class DatabaseInfoDialog extends GuiWindow<JDialog> {
 		okButton.setMnemonic('o');
 		okButton.addActionListener((event)->dialog.dispose());
 		south.add(okButton);
-	}
-	
-	private static JComponent label(int align, String text) {
-		JPanel panel=new JPanel(new FlowLayout(align));
-		panel.add(new JLabel(text));
-		return panel;
-	}
-	
-	private static JComponent labelLeft(String text) {
-		return label(FlowLayout.LEFT, text);
-	}
-    
-	private static JComponent labelRight(long value) {
-		return label(FlowLayout.RIGHT, UnsignedLong.format(value));
 	}
     
     public static void start(Gui gui) throws Throwable {

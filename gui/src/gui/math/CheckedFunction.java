@@ -1,7 +1,5 @@
 package gui.math;
 
-import gui.ui.MessageException;
-
 public class CheckedFunction implements RealFunction {
 	private final RealFunction function;
 	
@@ -29,7 +27,7 @@ public class CheckedFunction implements RealFunction {
 		}
 		catch (ArithmeticException ex) {
 		}
-		throw new MessageException(String.format(
+		throw new RuntimeException(String.format(
 				"A %1$s függvény nincs értelmezve a %2$,g pontban.",
 				function,
 				xx));

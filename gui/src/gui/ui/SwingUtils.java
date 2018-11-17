@@ -1,23 +1,17 @@
 package gui.ui;
 
-import gui.util.Consumer;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,61 +21,6 @@ import javax.swing.WindowConstants;
 
 public class SwingUtils {
 	private SwingUtils() {
-	}
-	
-	public static void ask(Consumer<Boolean> handler,
-			Consumer<Throwable> logger, Component owner, String question) {
-		JDialog dialog=new JDialog(window(owner));
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		
-		java.util.function.Consumer<Boolean> handler2=(result)->{
-			try {
-				try {
-					dialog.dispose();
-				}
-				finally {
-					handler.consume(result);
-				}
-			}
-			catch (Throwable throwable) {
-				try {
-					logger.consume(throwable);
-				}
-				catch (Throwable throwable2) {
-				}
-			}
-		};
-		
-		dialog.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent event) {
-				handler2.accept(Boolean.FALSE);
-			}
-
-			@Override
-			public void windowClosing(WindowEvent event) {
-				handler2.accept(Boolean.FALSE);
-			}
-		});
-		
-		JPanel panel=new JPanel(new BorderLayout());
-		dialog.getContentPane().add(panel);
-		
-		JLabel text=new JLabel(question);
-		panel.add(new JScrollPane(text), BorderLayout.CENTER);
-		
-		JPanel buttonPanel=new JPanel(new FlowLayout());
-		panel.add(buttonPanel, BorderLayout.SOUTH);
-		JButton yesButton=new JButton("Yes");
-		yesButton.setMnemonic('Y');
-		yesButton.addActionListener((event)->handler2.accept(Boolean.TRUE));
-		buttonPanel.add(yesButton);
-		JButton noButton=new JButton("No");
-		noButton.setMnemonic('N');
-		noButton.addActionListener((event)->handler2.accept(Boolean.FALSE));
-		buttonPanel.add(noButton);
-		
-		show(dialog);
 	}
 	
 	public static String error(boolean message, Throwable throwable) {
@@ -98,44 +37,6 @@ public class SwingUtils {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-	
-	public static void setupClose(Window window) {
-		if (window instanceof JDialog) {
-			((JDialog)window).setDefaultCloseOperation(
-					WindowConstants.DISPOSE_ON_CLOSE);
-		}
-		else if (window instanceof JFrame) {
-			((JFrame)window).setDefaultCloseOperation(
-					WindowConstants.DISPOSE_ON_CLOSE);
-		}
-		else {
-			throw new IllegalArgumentException(String.valueOf(window));
-		}
-	}
-	
-	public static void setupClosed(gui.util.Consumer<Void> handler,
-			Consumer<Throwable> logger, Window window) {
-		window.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent event) {
-				try {
-					handler.consume(null);
-				}
-				catch (Throwable throwable) {
-					try {
-						logger.consume(throwable);
-					}
-					catch (Throwable throwable2) {
-					}
-				}
-			}
-			
-			@Override
-			public void windowClosing(WindowEvent event) {
-				windowClosed(event);
-			}
-		});
 	}
 	
 	public static void show(Window window) {
@@ -160,7 +61,7 @@ public class SwingUtils {
 		SwingUtilities.invokeLater(window::requestFocus);
 	}
 	
-	public static void showError(Component owner, Throwable throwable) {
+	public static void showError(Window owner, Throwable throwable) {
 		System.out.flush();
 		throwable.printStackTrace(System.err);
 		System.err.flush();
@@ -171,7 +72,7 @@ public class SwingUtils {
             JOptionPane.showMessageDialog(owner, throwable.getMessage());
         }
         else {
-            JDialog dialog=new JDialog(window(owner));
+            JDialog dialog=new JDialog(owner);
             dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
             JPanel panel=new JPanel(new BorderLayout());
@@ -190,21 +91,5 @@ public class SwingUtils {
 
             show(dialog);
         }
-	}
-	
-	public static Window window(Component component) {
-		for (Component ii=component; null!=ii; ) {
-			if (ii instanceof Window) {
-				Window window=(Window)ii;
-				if (window.isVisible()) {
-					return window;
-				}
-				ii=window.getOwner();
-			}
-			else {
-				ii=ii.getParent();
-			}
-		}
-		return null;
 	}
 }

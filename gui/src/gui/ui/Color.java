@@ -8,18 +8,24 @@ import java.util.List;
 
 public class Color implements Comparable<Color> {
 	public static final Color BLACK=Color.create("fekete", 0xff000000);
-	public static final Color BLUE=Color.create("kék", 0xff0000ff);
+	public static final Color BLUE=Color.create("kék", 0xff0000aa);
+	public static final Color BRIGHT_BLUE=Color.create("világos kék", 0xff5555ff);
+	public static final Color BRIGHT_CYAN=Color.create("világos cián", 0xff55ffff);
+	public static final Color BRIGHT_GREEN=Color.create("világos zöld", 0xff55ff55);
+	public static final Color BRIGHT_MAGENTA=Color.create("világos bíbor", 0xffff55ff);
+	public static final Color BRIGHT_RED=Color.create("világos vörös", 0xffff5555);
+	public static final Color BRIGHT_YELLOW=Color.create("világos sárga", 0xffffff55);
+	public static final Color BROWN=Color.create("barna", 0xffaa5500);
 	public static final List<Color> COLORS;
-	public static final Color CYAN=Color.create("cián", 0xff00ffff);
-	public static final Color DARK_GRAY=Color.create("sötét szürke", 0xff3f3f3f);
+	public static final Color CYAN=Color.create("cián", 0xff00aaaa);
+	public static final Color DARK_GRAY=Color.create("sötét szürke", 0xff555555);
 	public static final Color GRAY=Color.create("szürke", 0xff7f7f7f);
-	public static final Color GREEN=Color.create("zöld", 0xff00ff00);
-	public static final Color LIGHT_GRAY=Color.create("világos szürke", 0xffbfbfbf);
-	public static final Color MAGENTA=Color.create("bíbor", 0xffff00ff);
+	public static final Color GREEN=Color.create("zöld", 0xff00aa00);
+	public static final Color LIGHT_GRAY=Color.create("világos szürke", 0xffaaaaaa);
+	public static final Color MAGENTA=Color.create("bíbor", 0xffaa00aa);
 	public static final String NAMELESS="#";
-	public static final Color RED=Color.create("vörös", 0xffff0000);
+	public static final Color RED=Color.create("vörös", 0xffaa0000);
 	public static final Color TRANSPARENT=Color.create("átlátszó", 0x00000000);
-	public static final Color YELLOW=Color.create("sárga", 0xffffff00);
 	public static final Color WHITE=Color.create("fehér", 0xffffffff);
 	
 	static {

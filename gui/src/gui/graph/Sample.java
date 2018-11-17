@@ -9,6 +9,7 @@ import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Sample {
 	public static class Builder {
@@ -30,15 +31,16 @@ public class Sample {
 		private void checkCreated() {
 			if ((null==xs)
 					|| (null==ys)) {
-				throw new RuntimeException("already created");
+				throw new RuntimeException(
+						"a minta egyszer már létre lett hozva");
 			}
 		}
 		
-		public Sample create(String label, Color lineColor,
-			PlotType plotType, Color pointColor, Color toolTipColor) {
+		public Sample create(String label, Color lineColor, PlotType plotType,
+				Color pointColor) {
 			checkCreated();
 			if (xs.isEmpty()) {
-				throw new RuntimeException("empty sample");
+				throw new RuntimeException("üres minta");
 			}
 			LongList xs2=xs;
 			DoubleList ys2=ys;
@@ -74,8 +76,7 @@ public class Sample {
 				}
 			}
 			Sample result=new Sample(label, lineColor, plotType, pointColor,
-					sampleMaxX, sampleMaxY, sampleMinX, sampleMinY,
-					toolTipColor, xs2, ys2);
+					sampleMaxX, sampleMaxY, sampleMinX, sampleMinY, xs2, ys2);
 			return result;
 		}
 		
@@ -96,14 +97,8 @@ public class Sample {
 		}
 		
 		@Override
-		public void forEachDouble(SampleIterable.DoubleConsumer consumer) {
-			for (int ii=from; to>ii; ++ii) {
-				consumer.next(xx(ii), yy(ii));
-			}
-		}
-		
-		@Override
-		public void forEachLong(SampleIterable.LongConsumer consumer) {
+		public void forEach(SampleIterable.Consumer consumer)
+				throws Throwable {
 			for (int ii=from; to>ii; ++ii) {
 				consumer.next(xx(ii), yy(ii));
 			}
@@ -148,35 +143,31 @@ public class Sample {
 	public final double sampleMaxY;
 	public final long sampleMinX;
 	public final double sampleMinY;
-	public final Color toolTipColor;
 	private final LongList xs;
 	private final DoubleList ys;
 
 	private Sample(String label, Color lineColor, PlotType plotType,
 			Color pointColor, long sampleMaxX, double sampleMaxY,
-			long sampleMinX, double sampleMinY, Color toolTipColor,
-			LongList xs, DoubleList ys) {
+			long sampleMinX, double sampleMinY, LongList xs, DoubleList ys) {
+		Objects.requireNonNull(xs);
+		Objects.requireNonNull(ys);
 		if (xs.isEmpty()) {
-			throw new IllegalArgumentException("empty sample");
+			throw new IllegalArgumentException("üres minta");
 		}
 		if (xs.size()!=ys.size()) {
-			throw new IllegalArgumentException("sample size mismatch");
+			throw new IllegalArgumentException(
+					"a minta x-y hozzárendelése hibás");
 		}
-		this.label=label;
-		this.lineColor=lineColor;
-		this.plotType=plotType;
-		this.pointColor=pointColor;
+		this.label=Objects.requireNonNull(label);
+		this.lineColor=Objects.requireNonNull(lineColor);
+		this.plotType=Objects.requireNonNull(plotType);
+		this.pointColor=Objects.requireNonNull(pointColor);
 		this.sampleMaxX=sampleMaxX;
 		this.sampleMaxY=sampleMaxY;
 		this.sampleMinX=sampleMinX;
 		this.sampleMinY=sampleMinY;
-		this.toolTipColor=toolTipColor;
 		this.xs=xs;
 		this.ys=ys;
-	}
-	
-	public IterableSample asIterableSample() {
-		return asIterableSample(0, size());
 	}
 	
 	public IterableSample asIterableSample(int from, int to) {
@@ -239,59 +230,13 @@ public class Sample {
 				to);
 	}
 	
-	public int headToIndex(boolean inclusive, long xx) {
-		return headToIndex(0, inclusive, size(), xx);
-	}
-	
-	public int headToIndex(int from, boolean inclusive, int to, long xx) {
-		return BinarySearch.search(
-				from,
-				inclusive
-						?(index)->0>Long.compareUnsigned(xx, xx(index))
-						:(index)->0>=Long.compareUnsigned(xx, xx(index)),
-				to);
-	}
-	
-	public int higherIndex(long xx) {
-		return higherIndex(0, size(), xx);
-	}
-	
-	public int higherIndex(int from, int to, long xx) {
-		return validateIndex(
-				from,
-				BinarySearch.search(
-						0,
-						(index)->0>Long.compareUnsigned(xx, xx(index)),
-						size()),
-				to);
-	}
-	
-	public int lowerIndex(long xx) {
-		return lowerIndex(0, size(), xx);
-	}
-	
-	public int lowerIndex(int from, int to, long xx) {
-		return validateIndex(
-				from,
-				BinarySearch.search(
-						0,
-						(index)->0>=Long.compareUnsigned(xx, xx(index)),
-						size())-1,
-				to);
-	}
-	
-	public Sample setColors(Color lineColor, Color pointColor,
-			Color toolTipColor) {
+	public Sample setColors(Color lineColor, Color pointColor) {
 		return new Sample(label, lineColor, plotType, pointColor, sampleMaxX,
-				sampleMaxY, sampleMinX, sampleMinY, toolTipColor, xs, ys);
+				sampleMaxY, sampleMinX, sampleMinY, xs, ys);
 	}
 	
 	public int size() {
 		return xs.size();
-	}
-	
-	public int tailFromIndex(boolean inclusive, long xx) {
-		return tailFromIndex(0, inclusive, size(), xx);
 	}
 	
 	public int tailFromIndex(int from, boolean inclusive, int to, long xx) {

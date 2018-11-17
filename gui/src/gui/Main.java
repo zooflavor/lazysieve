@@ -4,6 +4,7 @@ import gui.check.CheckSegments;
 import gui.check.CheckSieve;
 import gui.io.DatabaseCommands;
 import gui.plotter.MeasureSieve;
+import gui.sieve.Sieves;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class Main {
 			commands.addAll(DatabaseCommands.COMMANDS);
 			commands.addAll(Gui.COMMANDS);
 			commands.addAll(MeasureSieve.COMMANDS);
+			commands.addAll(Sieves.COMMANDS);
 			commands.sort((c0, c1)->c0.usage.compareTo(c1.usage));
 			outer: for (Command.Descriptor command: commands) {
 				if ((args.length<command.arguments.size())
@@ -51,7 +53,7 @@ public class Main {
 				command.command.execute(arguments);
 				return;
 			}
-			System.out.println("usage:");
+			System.out.println("használat:");
 			for (Command.Descriptor command: commands) {
 				System.out.println("\t"+command.usage);
 			}

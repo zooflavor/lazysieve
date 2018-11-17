@@ -25,20 +25,20 @@ public class Gui extends GuiWindow<JFrame> {
 									Command.Argument.constant("gui"),
 									Command.Argument.PATH),
 							Gui::main,
-							"Main gui [database-directory]"),
+							"Main gui [adatbázis könyvtár]"),
 					new Command.Descriptor(
 							Arrays.asList(
 									Command.Argument.constant("gui"),
 									Command.Argument.PATH,
 									Command.Argument.constant("graph")),
 							Gui::mainGraph,
-							"Main gui [database-directory] graph")));
+							"Main gui [adatbázis könyvtár] graph")));
 	
 	private final JFrame frame;
 	
 	public Gui(Session session) {
 		super(session);
-		frame=new JFrame("Zooflavor");
+		frame=new JFrame("Lusta szita");
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
 		frame.getContentPane().setLayout(

@@ -6,7 +6,7 @@ import gui.io.Aggregates;
 import gui.io.AggregatesReader;
 import gui.ui.Color;
 import gui.ui.progress.Progress;
-import gui.util.Maps;
+import java.util.Map;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -20,12 +20,10 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
-				return Maps.toSample(
-							Aggregates.maxPrimeGaps(progress, reader))
+				return toSample(Aggregates.maxPrimeGaps(progress, reader))
 						.create("Legnagyobb prímhézag",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -36,12 +34,10 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
-				return Maps.toSample(
-							Aggregates.newPrimeGaps(progress, reader))
+				return toSample(Aggregates.newPrimeGaps(progress, reader))
 						.create("Prímhézagok első előfordulása^(-1)",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -56,7 +52,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("12Z+11 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -71,7 +66,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("4Z+1 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -86,7 +80,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("4Z+3 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -101,7 +94,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("6Z+1 prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -116,7 +108,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("Prímszámtétel abszolút hiba",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -131,7 +122,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("Prímszámtétel",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -146,7 +136,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("Prímszámtétel relatív hiba",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -161,7 +150,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 						.create("Prímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -172,12 +160,11 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
-				return Maps.toSample(
+				return toSample(
 							Aggregates.primeGapFrequencies(progress, reader))
 						.create("Prímhézagok gyakoriság",
 								Colors.INTERPOLATION,
 								PlotType.BARS,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -188,12 +175,10 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
-				return Maps.toSample(
-							Aggregates.primeGapMerits(progress, reader))
+				return toSample(Aggregates.primeGapMerits(progress, reader))
 						.create("Prímhézagok jósága",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -204,12 +189,10 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			@Override
 			protected Sample sample(Color color, Progress progress,
 					AggregatesReader reader) throws Throwable {
-				return Maps.toSample(
-							Aggregates.primeGapStarts(progress, reader))
+				return toSample(Aggregates.primeGapStarts(progress, reader))
 						.create("Prímhézagok első előfordulása",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -224,7 +207,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 										sum?"összesen":"szegmensenként"),
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(plotter.session.executor);
@@ -343,4 +325,11 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 	
 	protected abstract Sample sample(Color color, Progress progress,
 			AggregatesReader reader) throws Throwable;
+	
+	private static Sample.Builder toSample(Map<Long, ? extends Number> map) {
+		Sample.Builder result=Sample.builder(map.size());
+		map.forEach((key, value)->
+				result.add(key, value.doubleValue()));
+		return result;
+	}
 }

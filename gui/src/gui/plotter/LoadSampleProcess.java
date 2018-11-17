@@ -77,7 +77,7 @@ public class LoadSampleProcess extends GuiProcess<Plotter, JFrame> {
 				label=label.substring(0, label.length()-4);
 			}
 			samples.add(sample2.create(
-					label, Colors.INTERPOLATION, plotType, color, color));
+					label, Colors.INTERPOLATION, plotType, color));
 		}
 		progress.finished();
 	}
@@ -90,8 +90,8 @@ public class LoadSampleProcess extends GuiProcess<Plotter, JFrame> {
 	}
 	
 	public static void start(Plotter plotter) {
-        JFileChooser chooser=new JFileChooser(
-				plotter.session.database.rootDirectory.toFile());
+		JFileChooser chooser=new JFileChooser(
+				plotter.session.database.samplesDirectory().toFile());
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
         chooser.setMultiSelectionEnabled(true);

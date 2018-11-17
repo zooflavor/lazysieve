@@ -48,7 +48,7 @@ public class SaveSampleProcess extends GuiProcess<Plotter, JFrame> {
 	
 	public static void start(Plotter plotter, Sample sample) {
         JFileChooser chooser=new JFileChooser(
-				plotter.session.database.rootDirectory.toFile());
+				plotter.session.database.samplesDirectory().toFile());
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setFileFilter(new FileNameExtensionFilter("CSV", "csv"));
         chooser.setMultiSelectionEnabled(false);

@@ -25,7 +25,7 @@ public class DatabaseImport {
         
         @Override
         protected void foreground() throws Throwable {
-			parent.showMessage("import completed");
+			parent.showMessage("import befejeződött");
         }
     }
     

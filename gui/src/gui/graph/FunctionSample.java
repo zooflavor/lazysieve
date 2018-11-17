@@ -26,16 +26,10 @@ public class FunctionSample implements IterableSample {
 	}
 	
 	@Override
-	public void forEachDouble(DoubleConsumer consumer) {
+	public void forEach(IterableSample.Consumer consumer)
+			throws Throwable {
 		for (int ii=0; xs.size()>ii; ++ii) {
 			consumer.next(xs.get(ii), ys.get(ii));
-		}
-	}
-	
-	@Override
-	public void forEachLong(LongConsumer consumer) {
-		for (int ii=0; xs.size()>ii; ++ii) {
-			consumer.next((long)xs.get(ii), ys.get(ii));
 		}
 	}
 	

@@ -2,7 +2,7 @@ package gui.util;
 
 import java.util.Arrays;
 
-public class DoubleList extends PrimitiveList<DoubleConsumer, DoubleList> {
+public class DoubleList extends PrimitiveList<DoubleList> {
 	private double[] values;
 	
 	private DoubleList(int size, double[] values) {
@@ -42,32 +42,9 @@ public class DoubleList extends PrimitiveList<DoubleConsumer, DoubleList> {
 		return new DoubleList(size, Arrays.copyOf(values, size));
 	}
 	
-	@Override
-	protected boolean forEach(DoubleConsumer consumer, int index)
-			throws Throwable {
-		return consumer.next(values[index]);
-	}
-	
 	public double get(int index) {
 		check(index);
 		return values[index];
-	}
-	
-	public void insert(int index, double value) {
-		checkInsert(index);
-		if (values.length<=size) {
-			values=Arrays.copyOf(values, 2*values.length);
-		}
-		System.arraycopy(values, index, values, index+1, size-index);
-		values[index]=value;
-		++size;
-	}
-	
-	public double set(int index, double value) {
-		check(index);
-		double result=values[index];
-		values[index]=value;
-		return result;
 	}
 	
 	@Override
@@ -75,15 +52,6 @@ public class DoubleList extends PrimitiveList<DoubleConsumer, DoubleList> {
 		double temp=values[index0];
 		values[index0]=values[index1];
 		values[index1]=temp;
-	}
-	
-	public void swapLastAndRemove(int index) {
-		check(index);
-		int size1=size-1;
-		if (index<size1) {
-			values[index]=values[size1];
-		}
-		size=size1;
 	}
 	
 	@Override

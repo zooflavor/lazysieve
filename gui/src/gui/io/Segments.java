@@ -43,7 +43,7 @@ public class Segments {
 		List<Long> newSegments=new ArrayList<>();
 		int ii=0;
 		for (Map.Entry<Long, Segment.Info> entry: segments.entrySet()) {
-			progress.progress("new segments", 1.0*ii/segments.size());
+			progress.progress("új szegmensfájlok", 1.0*ii/segments.size());
 			++ii;
 			Long start=entry.getKey();
 			Segment.Info segment=entry.getValue();

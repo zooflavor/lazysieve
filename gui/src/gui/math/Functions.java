@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Functions {
-	static Comparator<RealFunction> COMPARATOR
+	public static final Comparator<RealFunction> COMPARATOR
 			=(f0, f1)->f0.toString().compareTo(f1.toString());
 	public static final List<RealFunction> FUNCTIONS;
 	public static final RealFunction LNLNX

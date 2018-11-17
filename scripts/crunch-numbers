@@ -3,7 +3,7 @@ SEGMENTS=33
 DB=../db
 
 function database {
-	java -Xmx3584m -jar ../gui/dist/gui.jar database "${DB}" $@
+	java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar database "${DB}" $@
 	if [ "0" != "$?" ]; then
 		exit 1
 	fi

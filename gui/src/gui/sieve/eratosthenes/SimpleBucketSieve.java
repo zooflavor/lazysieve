@@ -10,13 +10,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class IncrementalBucketSieve extends SegmentedEratosthenesianSieve {
+public class SimpleBucketSieve extends SegmentedEratosthenesianSieve {
 	public static final List<Sieve.Descriptor> SIEVES
-			=Collections.unmodifiableList(Arrays.asList(
-					new Sieve.Descriptor(
-							()->new IncrementalBucketSieve(),
-							"Eratoszthenész szitája-edények-inkrementális",
-							"buckets-inc",
+			=Collections.unmodifiableList(Arrays.asList(new Sieve.Descriptor(
+							()->new SimpleBucketSieve(),
+							"Eratoszthenész szitája-egyszerű edények",
+							"buckets-simple",
 							30, 1, 20)));
 	
 	private long addPrimePosition;
@@ -24,7 +23,7 @@ public class IncrementalBucketSieve extends SegmentedEratosthenesianSieve {
 	private final Bucket[] buckets=new Bucket[64];
 	private OperationCounter operationCounter;
 	
-	public IncrementalBucketSieve() {
+	public SimpleBucketSieve() {
 		super(3l);
 	}
 	

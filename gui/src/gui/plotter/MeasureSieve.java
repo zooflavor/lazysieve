@@ -57,8 +57,26 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 									Command.Argument.STRING,
 									Command.Argument.STRING,
 									Command.Argument.PATH),
-							MeasureSieve::measureSieve,
+							MeasureSieve::measureSieve1,
 							"Main measure sieve [adatbázis könyvtár] [szita] [kezdet] [vég] [szegmens méret] [mérések száma] [minták száma] [nanosecs|operations] [segment|sum] [kimenet fájl]",
+							null),
+					new Command.Descriptor(
+							Arrays.asList(
+									Command.Argument.constant("measure"),
+									Command.Argument.constant("sieve"),
+									Command.Argument.PATH,
+									Command.Argument.STRING,
+									Command.Argument.LONG,
+									Command.Argument.LONG,
+									Command.Argument.LONG,
+									Command.Argument.LONG,
+									Command.Argument.LONG,
+									Command.Argument.PATH,
+									Command.Argument.PATH,
+									Command.Argument.PATH,
+									Command.Argument.PATH),
+							MeasureSieve::measureSieveAll,
+							"Main measure sieve [adatbázis könyvtár] [szita] [kezdet] [vég] [szegmens méret] [mérések száma] [minták száma] [szeg-ns fájl] [szum-ops fájl] [szeg-ns fájl] [szum-ops fájl]",
 							null)));
     public static final long MAX_MEASUREMENTS=100l;
     public static final long MAX_SAMPLES=100000l;
@@ -93,6 +111,21 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 		@Override
 		public void setSelectedItem(Object anItem) {
 			selected=(Measure)anItem;
+		}
+	}
+	
+	public static class SegmentsMeasure {
+		public final long measurements;
+		public final long[] nanosecs;
+		public final long[] operations;
+		public final long[] xs;
+		
+		public SegmentsMeasure(long measurements, long[] nanosecs,
+				long[] operations, long[] xs) {
+			this.measurements=measurements;
+			this.nanosecs=nanosecs;
+			this.operations=operations;
+			this.xs=xs;
 		}
 	}
 	
@@ -305,18 +338,128 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 										+")-"+(sum2?"összesen":"szegmens"),
 								Colors.INTERPOLATION,
 								PlotType.LINE,
-								color,
 								color);
 			}
 		}.start(session.executor);
 		dialog.dispose();
 	}
 	
-    @SuppressWarnings("UnusedAssignment")
 	public static Sample.Builder measureSieve(Database database, long end,
 			Measure measure, long measurements, Progress progress,
             long samples, long segmentSize, Sieve.Descriptor sieveDescriptor,
             long start, boolean sum) throws Throwable {
+		SegmentsMeasure result=measureSieveSegments(database, end,
+				measurements, progress, samples, segmentSize, sieveDescriptor,
+				start);
+		long[] segments;
+		switch (measure) {
+			case NANOSECS:
+				segments=result.nanosecs;
+				break;
+			case OPERATIONS:
+				segments=result.operations;
+				break;
+			default:
+				throw new IllegalStateException(String.format(
+						"ismeretlen mérték %1$s", measure));
+		}
+		if (sum) {
+			sum(segments);
+		}
+		return sample(result.measurements, result.xs, segments);
+	}
+    
+    public static void measureSieve1(List<Object> arguments) throws Throwable {
+		Database database=new Database((Path)arguments.get(2));
+		Sieve.Descriptor sieveDescriptor
+				=Sieves.parse((String)arguments.get(3));
+		Long start=(Long)arguments.get(4);
+		Long end=(Long)arguments.get(5);
+		Long segmentSize=(Long)arguments.get(6);
+		Long measurements=(Long)arguments.get(7);
+		Long samples=(Long)arguments.get(8);
+        Measure measure;
+        switch ((String)arguments.get(9)) {
+            case "nanosecs":
+                measure=Measure.NANOSECS;
+                break;
+            case "operations":
+                measure=Measure.OPERATIONS;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "ismeretlen mérték %1$s",
+                        arguments.get(9)));
+        }
+        boolean sum;
+        switch ((String)arguments.get(10)) {
+            case "segment":
+                sum=false;
+                break;
+            case "sum":
+                sum=true;
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "ismeretlen összesítés %1$s",
+                        arguments.get(10)));
+        }
+        Path outputPath=(Path)arguments.get(11);
+        Progress progress=new PrintStreamProgress(false, System.out);
+        Sample sample=measureSieve(database, end, measure, measurements,
+                        progress.subProgress(0.0, "mérés", 0.99),
+                        samples, segmentSize, sieveDescriptor, start, sum)
+                .create("", Color.BLACK, PlotType.LINE, Color.WHITE);
+        SaveSampleProcess.save(outputPath,
+                progress.subProgress(0.99, "mentés", 1.0),
+                sample);
+        progress.finished();
+    }
+    
+    public static void measureSieveAll(List<Object> arguments)
+			throws Throwable {
+		Database database=new Database((Path)arguments.get(2));
+		Sieve.Descriptor sieveDescriptor
+				=Sieves.parse((String)arguments.get(3));
+		Long start=(Long)arguments.get(4);
+		Long end=(Long)arguments.get(5);
+		Long segmentSize=(Long)arguments.get(6);
+		Long measurements=(Long)arguments.get(7);
+		Long samples=(Long)arguments.get(8);
+        Path outputPathSegNss=(Path)arguments.get(9);
+        Path outputPathSegOps=(Path)arguments.get(10);
+        Path outputPathSumNss=(Path)arguments.get(11);
+        Path outputPathSumOps=(Path)arguments.get(12);
+        Progress progress=new PrintStreamProgress(false, System.out);
+        SegmentsMeasure result=measureSieveSegments(
+				database, end, measurements,
+				progress.subProgress(0.0, "mérés", 0.96),
+					samples, segmentSize, sieveDescriptor, start);
+        SaveSampleProcess.save(outputPathSegNss,
+                progress.subProgress(0.96, "mentés", 0.97),
+                sample(result.measurements, result.xs, result.nanosecs)
+		                .create("", Color.BLACK, PlotType.LINE, Color.WHITE));
+        SaveSampleProcess.save(outputPathSegOps,
+                progress.subProgress(0.97, "mentés", 0.98),
+                sample(result.measurements, result.xs, result.operations)
+		                .create("", Color.BLACK, PlotType.LINE, Color.WHITE));
+		sum(result.nanosecs);
+		sum(result.operations);
+        SaveSampleProcess.save(outputPathSumNss,
+                progress.subProgress(0.98, "mentés", 0.99),
+                sample(result.measurements, result.xs, result.nanosecs)
+		                .create("", Color.BLACK, PlotType.LINE, Color.WHITE));
+        SaveSampleProcess.save(outputPathSumOps,
+                progress.subProgress(0.99, "mentés", 1.0),
+                sample(result.measurements, result.xs, result.operations)
+		                .create("", Color.BLACK, PlotType.LINE, Color.WHITE));
+        progress.finished();
+    }
+	
+	public static SegmentsMeasure measureSieveSegments(
+			Database database, long end, long measurements, Progress progress,
+            long samples, long segmentSize, Sieve.Descriptor sieveDescriptor,
+            long start) throws Throwable {
 		progress.progress(0.0);
 		if (0<=Long.compareUnsigned(start, end)) {
 			throw new IllegalArgumentException("üres intervallum");
@@ -395,7 +538,8 @@ public class MeasureSieve extends GuiWindow<JDialog> {
             samples=segments;
         }
         long[] sampleXs=new long[(int)samples];
-        long[] sampleYs=new long[sampleXs.length];
+        long[] sampleNanosecs=new long[sampleXs.length];
+        long[] sampleOperations=new long[sampleXs.length];
         long segmentsPerSample=Long.divideUnsigned(segments, samples);
         long lastSegment=endSegment;
         for (int ii=sampleXs.length-1;
@@ -406,9 +550,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
         
         Sieve sieve=sieveDescriptor.factory.get();
         SieveTable table=new LongTable();
-        boolean time=Measure.NANOSECS.equals(measure);
-        OperationCounter counter
-                =time?OperationCounter.NOOP:OperationCounter.COUNTER;
+        OperationCounter counter=OperationCounter.COUNTER;
         for (long mm=0; measurements>mm; ++mm) {
             Progress subProgress=progress.subProgress(
                     1.0*mm/measurements,
@@ -420,85 +562,37 @@ public class MeasureSieve extends GuiWindow<JDialog> {
                     segmentSize,
                     startSegment*segmentSize+1l);
             table.clear(sieve.defaultPrime());
-            Progress subProgress2=subProgress.subProgress(0.05, "sieve", 1.0);
-            long measureSum=0l;
+            Progress subProgress2
+					=subProgress.subProgress(0.05, "szitálás", 1.0);
             for (int ss=0; sampleXs.length>ss; ++ss) {
-                long measure2=0l;
+				counter.reset();
+				long nanosecs=0l;
                 while (0<Long.compareUnsigned(sampleXs[ss], sieve.start())) {
                     subProgress2.progress(
                             1.0*(sieve.start()-start)/(end-start));
-                    counter.reset();
                     long startTime=System.nanoTime();
                     sieve.sieve(counter, table);
                     long endTime=System.nanoTime();
-                    measure2+=time?(endTime-startTime):counter.get();
+                    nanosecs+=endTime-startTime;
                 }
-                if (sum) {
-                    measureSum+=measure2;
-                    measure2=measureSum;
-                }
-                sampleYs[ss]+=measure2;
+                sampleNanosecs[ss]+=nanosecs;
+                sampleOperations[ss]+=counter.get();
             }
             subProgress.finished();
         }
-        sieve=null;
-        table=null;
-        Sample.Builder sample=Sample.builder(sampleXs.length);
-        for (int ii=0; sampleXs.length>ii; ++ii) {
-            sample.add(sampleXs[ii], 1.0*sampleYs[ii]/measurements);
-        }
 		progress.finished();
+		return new SegmentsMeasure(
+				measurements, sampleNanosecs, sampleOperations, sampleXs);
+	}
+	
+	private static Sample.Builder sample(long measurements, long[] xs,
+			long[] ys) {
+		Sample.Builder sample=Sample.builder(xs.length);
+		for (int ii=0; xs.length>ii; ++ii) {
+			sample.add(xs[ii], 1.0*ys[ii]/measurements);
+		}
 		return sample;
 	}
-    
-    //[nanosec|operations] [segment|sum]",
-    public static void measureSieve(List<Object> arguments) throws Throwable {
-		Database database=new Database((Path)arguments.get(2));
-		Sieve.Descriptor sieveDescriptor
-				=Sieves.parse((String)arguments.get(3));
-		Long start=(Long)arguments.get(4);
-		Long end=(Long)arguments.get(5);
-		Long segmentSize=(Long)arguments.get(6);
-		Long measurements=(Long)arguments.get(7);
-		Long samples=(Long)arguments.get(8);
-        Measure measure;
-        switch ((String)arguments.get(9)) {
-            case "nanosecs":
-                measure=Measure.NANOSECS;
-                break;
-            case "operations":
-                measure=Measure.OPERATIONS;
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "ismeretlen mérték %1$s",
-                        arguments.get(9)));
-        }
-        boolean sum;
-        switch ((String)arguments.get(10)) {
-            case "segment":
-                sum=false;
-                break;
-            case "sum":
-                sum=true;
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "ismeretlen összesítés %1$s",
-                        arguments.get(10)));
-        }
-        Path outputPath=(Path)arguments.get(11);
-        Progress progress=new PrintStreamProgress(false, System.out);
-        Sample sample=measureSieve(database, end, measure, measurements,
-                        progress.subProgress(0.0, "mérés", 0.99),
-                        samples, segmentSize, sieveDescriptor, start, sum)
-                .create("", Color.BLACK, PlotType.LINE, Color.WHITE,
-                        Color.GRAY);
-        SaveSampleProcess.save(outputPath,
-                progress.subProgress(0.99, "mentés", 1.0),
-                sample);
-        progress.finished();
-    }
 	
 	private void segmentSizeChanged(ChangeEvent event) {
 		long value=UnsignedLong.unsignedInt((Integer)segmentSize.getValue());
@@ -506,6 +600,14 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 				"%1$s = 2^%2$2s",
 				UnsignedLong.format(1l<<value),
 				UnsignedLong.format(value)));
+	}
+	
+	private static void sum(long[] values) {
+		long sum=0l;
+		for (int ii=0; values.length>ii; ++ii) {
+			sum+=values[ii];
+			values[ii]=sum;
+		}
 	}
 	
 	private void sieveChanged(ActionEvent event) throws Throwable {

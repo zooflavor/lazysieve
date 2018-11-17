@@ -115,23 +115,6 @@ public class Matrix {
 		return bb;
 	}
 	
-	public static double[][] identity(int size) {
-		double[][] result=create(size, size);
-		for (int ii=size-1; 0<=ii; --ii) {
-			result[ii][ii]=1.0;
-		}
-		return result;
-	}
-	
-	public static double[][] invert(double[][] matrix, Progress progress,
-			boolean totalPivoting) throws Throwable {
-		return gaussianElimination(
-				matrix,
-				identity(matrix.length),
-				progress,
-				totalPivoting);
-	}
-	
 	public static double[][] multiply(double[][] matrix0, double[][] matrix1,
 			Progress progress, Sum sum) throws Throwable {
 		if (matrix0[0].length!=matrix1.length) {

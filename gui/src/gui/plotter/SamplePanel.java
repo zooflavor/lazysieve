@@ -376,7 +376,7 @@ final class SamplePanel {
 		Approximation approximation=new Approximation(
 				function,
 				error,
-				new Function(color, function, label.toString(), color));
+				new Function(color, function, label.toString()));
 		approximations.add(approximation);
 		plotter.addFunction(approximation.function);
 		fireApproximationsTableListeners();
@@ -389,7 +389,7 @@ final class SamplePanel {
 				Approximation approximation=approximations.get(selected);
 				Color color=(Color)approximationColor.getSelectedItem();
 				Function oldFunction=approximation.function;
-				Function newFunction=oldFunction.setColors(color, color);
+				Function newFunction=oldFunction.setColors(color);
 				approximation.function=newFunction;
 				plotter.replaceFunction(oldFunction, newFunction);
 			}
@@ -460,8 +460,7 @@ final class SamplePanel {
 	private void sampleColorChanged(ActionEvent event) {
 		Color color=(Color)sampleColor.getSelectedItem();
 		Sample oldSample=sample;
-		Sample newSample
-				=oldSample.setColors(Colors.INTERPOLATION, color, color);
+		Sample newSample=oldSample.setColors(Colors.INTERPOLATION, color);
 		sample=newSample;
 		plotter.replaceSample(oldSample, newSample);
 	}

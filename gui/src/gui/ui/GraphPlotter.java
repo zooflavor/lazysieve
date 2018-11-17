@@ -196,11 +196,8 @@ public class GraphPlotter extends JComponent {
 				double graphY=graph.pixelToGraphY(mouseY);
 				List<Row> rows=new ArrayList<>();
 				rows.add(new Row(graph.toolTipBackgroundColor,
-						"cursor", graphX, graphY));
+						"kurzor", graphX, graphY));
 				for (Sample sample: graph.samples) {
-					if (null==sample.toolTipColor) {
-						continue;
-					}
 					int ceilingIndex=sample.ceilingIndex(
 							Math.round(Math.max(0.0, Math.ceil(graphX))));
 					int floorIndex=sample.floorIndex(
@@ -230,16 +227,13 @@ public class GraphPlotter extends JComponent {
 							}
 						}
 					}
-					rows.add(new Row(sample.toolTipColor, sample.label,
+					rows.add(new Row(sample.pointColor, sample.label,
 							sample.xx(sampleIndex), sample.yy(sampleIndex)));
 				}
 				for (Function function: graph.functions) {
-					if (null==function.toolTipColor) {
-						continue;
-					}
 					double yy=function.function.valueAt(graphX);
 					if (Double.isFinite(yy)) {
-						rows.add(new Row(function.toolTipColor, function.label,
+						rows.add(new Row(function.color, function.label,
 								graphX, yy));
 					}
 				}

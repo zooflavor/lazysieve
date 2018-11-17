@@ -69,7 +69,7 @@ public class CheckSieve extends GuiWindow<JFrame> {
 		
 		@Override
 		protected void foreground() throws Throwable {
-			showMessage("A szita helyes.");
+			showMessage("A szita az intervallumon helyes.");
 		}
 	}
 	
@@ -264,7 +264,7 @@ public class CheckSieve extends GuiWindow<JFrame> {
 					sieveStart);
 			subProgress2.finished();
 		}
-		progress.finished("A szita helyes.");
+		progress.finished("A szita az intervallumon helyes.");
 	}
 	
 	public static void checkSieve(List<Object> arguments) throws Throwable {

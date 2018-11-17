@@ -18,14 +18,14 @@ public class DatabaseCommands {
 									Command.Argument.constant("aggregates"),
 									Command.Argument.PATH),
 							DatabaseCommands::importAggregates,
-							"Main database [database-directory] import aggregates [aggregates-file]"),
+							"Main database [adatbázis könyvtár] import aggregates [összesítőfájl]"),
 					new Command.Descriptor(
 							Arrays.asList(
 									Command.Argument.constant("database"),
 									Command.Argument.PATH,
 									Command.Argument.constant("info")),
 							DatabaseCommands::info,
-							"Main database [database-directory] info"),
+							"Main database [adatbázis könyvtár] info"),
 					new Command.Descriptor(
 							Arrays.asList(
 									Command.Argument.constant("database"),
@@ -34,14 +34,14 @@ public class DatabaseCommands {
 									Command.Argument.constant("crunch"),
 									Command.Argument.LONG),
 							DatabaseCommands::info,
-							"Main database [database-directory] info crunch [segments]"),
+							"Main database [adatbázis könyvtár] info crunch [szegmensek száma]"),
 					new Command.Descriptor(
 							Arrays.asList(
 									Command.Argument.constant("database"),
 									Command.Argument.PATH,
 									Command.Argument.constant("reaggregate")),
 							DatabaseCommands::reaggregate,
-							"Main database [database-directory] reaggregate")));
+							"Main database [adatbázis könyvtár] reaggregate")));
 	
 	private DatabaseCommands() {
 	}

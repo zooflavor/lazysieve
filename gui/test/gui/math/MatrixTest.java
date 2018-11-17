@@ -142,45 +142,6 @@ public class MatrixTest {
 	}
 	
 	@Test
-	public void testIdentity() throws Throwable {
-		assertEquals(
-				new double[][]{
-						{1.0, 0.0, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 1.0}},
-				Matrix.identity(3));
-	}
-	
-	@Test
-	public void testInvert() throws Throwable {
-		assertEquals(
-				new double[][]{{-0.125, 0.375}, {0.375, -0.125}},
-				Matrix.invert(
-						new double[][]{{1, 3}, {3, 1}},
-						Progress.NULL,
-						true));
-	}
-	
-	@Test
-	public void testMultiply() throws Throwable {
-		try {
-			Matrix.multiply(
-					Matrix.identity(1),
-					Matrix.identity(2),
-					Progress.NULL,
-					Sum.priority());
-			fail();
-		}
-		catch (ArithmeticException ex) {
-		}
-		assertEquals(
-				new double[][]{{10, 13}, {22, 29}, {34, 45}},
-				Matrix.multiply(
-						new double[][]{{1, 2}, {3, 4}, {5, 6}},
-						new double[][]{{2, 3}, {4, 5}},
-						Progress.NULL,
-						Sum.priority()));
-	}
-	
-	@Test
 	public void testSwapDouble() throws Throwable {
 		double[] array={1.0, 2.0, 3.0};
 		Matrix.swap(array, 1, 1);

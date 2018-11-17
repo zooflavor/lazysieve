@@ -2,7 +2,7 @@ package gui.util;
 
 import java.util.Arrays;
 
-public class LongList extends PrimitiveList<LongConsumer, LongList> {
+public class LongList extends PrimitiveList<LongList> {
 	private long[] values;
 	
 	private LongList(int size, long[] values) {
@@ -43,25 +43,9 @@ public class LongList extends PrimitiveList<LongConsumer, LongList> {
 		return new LongList(size, Arrays.copyOf(values, size));
 	}
 	
-	@Override
-	protected boolean forEach(LongConsumer consumer, int index)
-			throws Throwable {
-		return consumer.next(values[index]);
-	}
-	
 	public long get(int index) {
 		check(index);
 		return values[index];
-	}
-	
-	public void insert(int index, long value) {
-		checkInsert(index);
-		if (values.length<=size) {
-			values=Arrays.copyOf(values, 2*values.length);
-		}
-		System.arraycopy(values, index, values, index+1, size-index);
-		values[index]=value;
-		++size;
 	}
 	
 	public long set(int index, long value) {
@@ -76,15 +60,6 @@ public class LongList extends PrimitiveList<LongConsumer, LongList> {
 		long temp=values[index0];
 		values[index0]=values[index1];
 		values[index1]=temp;
-	}
-	
-	public void swapLastAndRemove(int index) {
-		check(index);
-		int size1=size-1;
-		if (index<size1) {
-			values[index]=values[size1];
-		}
-		size=size1;
 	}
 	
 	@Override

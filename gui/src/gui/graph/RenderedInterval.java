@@ -36,7 +36,7 @@ public class RenderedInterval {
 					|| (null==minValues)
 					|| (null==rightValues)
 					|| (null==xs)) {
-				throw new RuntimeException("already created");
+				throw new RuntimeException("már létre lett hozva");
 			}
 		}
 		
@@ -97,7 +97,7 @@ public class RenderedInterval {
 			DoubleList minValues, DoubleList rightValues, DoubleList xs) {
 		int size=leftValues.size();
 		if (0>=size) {
-			throw new IllegalArgumentException("empty");
+			throw new IllegalArgumentException("üres");
 		}
 		if (maxValues.size()!=size) {
 			throw new IllegalArgumentException(String.format(

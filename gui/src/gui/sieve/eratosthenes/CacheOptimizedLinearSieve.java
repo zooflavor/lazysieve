@@ -18,7 +18,7 @@ public class CacheOptimizedLinearSieve extends SegmentedEratosthenesianSieve {
 			=Collections.unmodifiableList(Arrays.asList(
 					new Sieve.Descriptor(
 							CacheOptimizedLinearSieve::new,
-							"COLS",
+							"Cache-optimalizált lineáris szita",
 							"cols",
 							30, 6, 20)));
 	

@@ -2,7 +2,6 @@ package gui.io;
 
 import gui.graph.Sample;
 import gui.ui.progress.Progress;
-import gui.util.Maps;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -163,8 +162,7 @@ public class Aggregates {
 		NavigableMap<Long, Double> result=new TreeMap<>();
 		Comparator<Double> comparator=Double::compare;
 		primeGapStarts(progress, reader)
-				.forEach((gap, start)->
-					Maps.min(result, gap, gap/Math.log(start), comparator));
+				.forEach((gap, start)->result.put(gap, gap/Math.log(start)));
 		return result;
 	}
 	

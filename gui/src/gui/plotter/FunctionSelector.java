@@ -62,8 +62,7 @@ public class FunctionSelector extends GuiWindow<JDialog> {
 		super(plotter.session);
 		this.handler=handler;
 		
-		dialog=new JDialog(SwingUtils.window(plotter.window()),
-				"Alapfüggvények");
+		dialog=new JDialog(plotter.window(), "Alapfüggvények");
 		dialog.getContentPane().setLayout(new BorderLayout());
 		
 		JPanel northPanel=new JPanel(new BorderLayout());

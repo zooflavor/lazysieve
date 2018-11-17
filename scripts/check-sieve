@@ -1,4 +1,4 @@
 #!/bin/bash
 DB=../db
-java -Xmx3584m -jar ../gui/dist/gui.jar check sieve ${DB} "$@"
+java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar check sieve ${DB} "$@"
 exit $?

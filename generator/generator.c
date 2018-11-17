@@ -23,15 +23,11 @@ struct Bucket {
 char *databaseDirectory;
 struct Bucket buckets[BUCKETS];
 struct Block *freeBlocks=0;
-uint64_t initStart;
-uint64_t initEnd;
 
 uint64_t segment[SEGMENT_SIZE_UINT64_T];
 uint64_t segmentCount=-1;
 uint64_t segmentStart;
 
-uint64_t sieveStart;
-uint64_t sieveEnd;
 int64_t spaceToReserve=-1;
 
 struct PrimePosition smallPrimes[SEGMENT_SMALL_SIZE_BITS>>1];
@@ -285,7 +281,7 @@ int main(int argv, char *argc[]) {
 	segmentStart>>=1;
 	printf("kis szegmensek mérete: %d\n", SEGMENT_SMALL_SIZE_BITS_LOG2);
 	printf("elágazások bitjei: %d\n", BUCKET_BITS);
-	initStart=nanoTime();
+	uint64_t initStart=nanoTime();
 	init();
 	uint64_t allSieveNanos=0l;
 	for (int first=1;
@@ -299,14 +295,14 @@ int main(int argv, char *argc[]) {
 		else {
 			initStart=nanoTime();
 		}
-		initEnd=nanoTime();
-		sieveStart=nanoTime();
+		uint64_t initEnd=nanoTime();
+		uint64_t sieveStart=nanoTime();
 		sieve();
-		sieveEnd=nanoTime();
+		uint64_t sieveEnd=nanoTime();
 		uint64_t initNanos=initEnd-initStart;
 		uint64_t sieveNanos=sieveEnd-sieveStart;
-		writeSegment(databaseDirectory, segment,
-				2*segmentStart+1, initEnd-initStart, sieveEnd-sieveStart);
+		writeSegment(databaseDirectory, segment, 2*segmentStart+1,
+				initNanos, sieveNanos);
 		allSieveNanos+=sieveNanos;
 		printSegmentStats(2*segmentStart+1, initNanos, sieveNanos);
 		segmentStart+=SEGMENT_SIZE_BITS;

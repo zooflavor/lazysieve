@@ -5,13 +5,10 @@ import gui.util.MeasuringInputStream;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.zip.GZIPInputStream;
 
 public abstract class AggregatesReader implements AutoCloseable {
 	private static class Empty extends AggregatesReader {

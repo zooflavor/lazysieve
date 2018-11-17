@@ -61,7 +61,7 @@ public class Segment implements SieveTable {
 					long gap2=prime-maxPrime;
 					if (gap2>=primeGapFrequencies.length) {
 						throw new IllegalStateException(String.format(
-								"prime gap %1$,d is too large", gap2));
+								"a %1$,d prímhézag túl nagy", gap2));
 					}
 					int gap=(int)gap2;
 					++primeGapFrequencies[gap];
@@ -79,17 +79,17 @@ public class Segment implements SieveTable {
 		for (int ii=0; primeCounts.length>ii; ii+=2) {
 			if (0l!=primeCounts[ii]) {
 				throw new IllegalStateException(String.format(
-						"prime congruent to %1$,d (mod 12)", ii));
+						"létezik prím, ami kongruens %1$,d (mod 12)", ii));
 			}
 		}
 		if (0l!=primeCounts[9]) {
 			throw new IllegalStateException(String.format(
-					"prime congruent to %1$,d (mod 12)", 9));
+					"létezik prím, ami kongruens %1$,d (mod 12)", 9));
 		}
 		if ((1l<segmentStart)
 				&& (0l!=primeCounts[3])) {
 			throw new IllegalStateException(String.format(
-					"prime congruent to %1$,d (mod 12)", 3));
+					"létezik prím, ami kongruens %1$,d (mod 12)", 3));
 		}
 		Map<Long, Long> primeGapStarts2=new HashMap<>();
 		Map<Long, Long> primeGapFrequencies2=new HashMap<>();
@@ -196,8 +196,8 @@ public class Segment implements SieveTable {
 			progress.progress(1.0*(maxBits-bits)/maxBits);
 			if (isPrime(bitIndex)!=reference.isPrime(bitIndex)) {
 				throw new MessageException(String.format(
-						"segments differ at %1$,d"
-								+"; this: %2$s, reference: %3$s",
+						"a szegmensek különböznek %1$,d-nél"
+								+"; ez: %2$s, referencia: %3$s",
 						number(bitIndex),
 						isPrime(bitIndex),
 						reference.isPrime(bitIndex)));
@@ -216,8 +216,8 @@ public class Segment implements SieveTable {
 				}
 				bitIndex=(bitIndex&(~7))+bit;
 				throw new MessageException(String.format(
-						"segments differ at %1$,d"
-								+"; this: %2$s, reference: %3$s",
+						"a szegmensek különböznek %1$,d-nél"
+								+"; ez: %2$s, referencia: %3$s",
 						number(bitIndex),
 						isPrime(bitIndex),
 						reference.isPrime(bitIndex)));
@@ -227,8 +227,8 @@ public class Segment implements SieveTable {
 			progress.progress(1.0*(maxBits-bits)/maxBits);
 			if (isPrime(bitIndex)!=reference.isPrime(bitIndex)) {
 				throw new MessageException(String.format(
-						"segments differ at %1$,d"
-								+"; this: %2$s, reference: %3$s",
+						"a szegmensek különböznek %1$,d-nél"
+								+"; ez: %2$s, referencia: %3$s",
 						number(bitIndex),
 						isPrime(bitIndex),
 						reference.isPrime(bitIndex)));
@@ -315,7 +315,7 @@ public class Segment implements SieveTable {
 		initNanos=readLong(stream);
 		sieveNanos=readLong(stream);
 		if (0<=stream.read()) {
-			throw new IOException("no eof");
+			throw new IOException("a szegmensfájl túl nagy");
 		}
 	}
 	

@@ -90,5 +90,6 @@ public interface Sum {
 		return new SimpleSum();
 	}
 	
+	//this is destructive
 	double sum();
 }

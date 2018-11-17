@@ -2,10 +2,10 @@ package gui.ui.progress;
 
 import gui.ui.SwingUtils;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -87,10 +87,10 @@ public class GuiProgress implements Progress {
 	private final JProgressBar progressBar;
 	private final Runnable showState=new ShowState();
 	
-	public GuiProgress(boolean cancellable, Component owner, String title) {
+	public GuiProgress(boolean cancellable, Window owner, String title) {
         this.cancellable=cancellable;
         
-		dialog=new JDialog(SwingUtils.window(owner), title);
+		dialog=new JDialog(owner, title);
 		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		dialog.addWindowListener(new WindowListenerImpl());
 		dialog.getContentPane().setLayout(new BorderLayout());

@@ -25,12 +25,9 @@
 #define SEGMENT_SMALL_SIZE_BITS_LOG2 22
 #endif
 #define SEGMENT_SMALL_SIZE_BITS (1l<<SEGMENT_SMALL_SIZE_BITS_LOG2)
-#define SEGMENT_SMALL_SIZE_UINT8_T (SEGMENT_SMALL_SIZE_BITS>>3)
 #define SEGMENT_SMALL_SIZE_UINT64_T (SEGMENT_SMALL_SIZE_BITS>>6)
 #define END_NUMBER ((uint64_t)(1l-(1l<<34)))
 #define GENERATOR_START_NUMBER ((1l<<32)+1l)
-
-#define CMALLOC(size) cmalloc(__FILE__, __LINE__, size)
 
 struct PrimePosition {
 	uint64_t position;
@@ -39,13 +36,10 @@ struct PrimePosition {
 
 char digits[]="0123456789abcdef";
 
-void *cmalloc(char *file, int line, size_t size);
 void deleteIfExists(char *file);
 int fileExists(char *file);
 void fixEndianness(uint64_t *segment);
 uint64_t freeSpace(char *databaseDirectory);
-void makeDirectoryIfDoesntExist(char *file, int line,
-		char *directory, mode_t mode);
 uint64_t nanoTime();
 void printErrorPrefix(char *file, int line, char *message);
 void printSegmentStats(uint64_t segmentStart, uint64_t initNanos,
@@ -55,18 +49,9 @@ void printUint64(int length, uint64_t value);
 void readFully(int file, void *buffer, size_t length);
 void readSegment(char *databaseDirectory, void *segment, uint64_t start);
 void segmentFile(char *result, char *databaseDirectory, uint64_t segmentStart);
-uint64_t sqrt64(int64_t value);
 void writeFully(int file, void *buffer, size_t length);
 void writeSegment(char *databaseDirectory, void *segment, uint64_t start,
 		uint64_t initNanos, uint64_t sieveNanos);
-
-void *cmalloc(char *file, int line, size_t size) {
-	void *result=malloc(size);
-	if (0==result) {
-		printStdError(file, line, "malloc");
-	}
-	return result;
-}
 
 void deleteIfExists(char *file) {
 	if (0!=unlink(file)) {
@@ -102,18 +87,6 @@ uint64_t freeSpace(char *databaseDirectory) {
 		printStdError(__FILE__, __LINE__, "statvfs");
 	}
 	return stat.f_bsize*stat.f_bavail;
-}
-
-void makeDirectoryIfDoesntExist(char *file, int line,
-		char *directory, mode_t mode) {
-	if (0!=mkdir(directory, mode)) {
-		int rr=errno;
-		if (EEXIST==rr) {
-			return;
-		}
-		errno=rr;
-		printStdError(file, line, "mkdir");
-	}
 }
 
 uint64_t nanoTime() {
@@ -218,24 +191,6 @@ void segmentFile(char *result, char *databaseDirectory,
 			"%s/primes.%016lx",
 			databaseDirectory,
 			segmentStart);
-}
-
-uint64_t sqrt64(int64_t value) {
-	if (1>=value) {
-		return value;
-	}
-	uint64_t ll=1;
-	uint64_t uu=(INT64_MAX>>32)+1;
-	while (ll+1<uu) {
-		uint64_t mm=(ll+uu)>>1;
-		if (value>=mm*mm) {
-			ll=mm;
-		}
-		else {
-			uu=mm;
-		}
-	}
-	return ll;
 }
 
 void writeFully(int file, void *buffer, size_t length) {

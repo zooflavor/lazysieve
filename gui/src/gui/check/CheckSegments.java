@@ -3,7 +3,6 @@ package gui.check;
 import gui.Command;
 import gui.Gui;
 import gui.io.Database;
-import gui.io.LargePrimesProducer;
 import gui.io.PrimesProducer;
 import gui.io.Segment;
 import gui.io.Segments;
@@ -129,7 +128,7 @@ public class CheckSegments extends GuiWindow<JFrame> {
 		
 		@Override
 		public String getColumnName(int columnIndex) {
-			return "Segment start";
+			return "Szegmens kezdete";
 		}
 		
 		@Override
@@ -225,7 +224,7 @@ public class CheckSegments extends GuiWindow<JFrame> {
 			return;
 		}
 		segmentStarts.forEach(Segment::checkSegmentStart);
-		PrimesProducer largePrimes=new LargePrimesProducer(database);
+		PrimesProducer largePrimes=database;
 		PrimesProducer smallPrimes=new SmallPrimesProducer();
 		Segment readSegment=new Segment();
 		Segment generatedSegment=new Segment();

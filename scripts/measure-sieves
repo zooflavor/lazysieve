@@ -1,0 +1,53 @@
+#!/bin/bash
+DB=../db
+MEASURES=3
+SAMPLES=10000
+
+function measure {
+	SIEVE="$1"
+	END="$2"
+	SEGMENT_SIZE="$3"
+	DIR0="../samples/segments-nanosecs"
+	DIR1="../samples/segments-operations"
+	DIR2="../samples/sum-nanosecs"
+	DIR3="../samples/sum-operations"
+	FILE0="${DIR0}/${SIEVE}.csv"
+	FILE1="${DIR1}/${SIEVE}.csv"
+	FILE2="${DIR2}/${SIEVE}.csv"
+	FILE3="${DIR3}/${SIEVE}.csv"
+	mkdir -p "${DIR0}"
+	mkdir -p "${DIR1}"
+	mkdir -p "${DIR2}"
+	mkdir -p "${DIR3}"
+	echo $SIEVE
+	java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar measure sieve "${DB}" \
+		"${SIEVE}" 1 "${END}" "${SEGMENT_SIZE}" "${MEASURES}" "${SAMPLES}" \
+		"${FILE0}" "${FILE1}" "${FILE2}" "${FILE3}"
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+}
+
+END3="0x1000001"
+SEGMENT_SIZE3="0x1000"
+measure trial-division "${END3}" "${SEGMENT_SIZE3}"
+
+END3="0x1000000001"
+SEGMENT_SIZE3="0x100000"
+measure eratosthenes-segmented "${END3}" "${SEGMENT_SIZE3}"
+measure bin-heap "${END3}" "${SEGMENT_SIZE3}"
+measure bin-heap-inplace "${END3}" "${SEGMENT_SIZE3}"
+measure buckets-inc "${END3}" "${SEGMENT_SIZE3}"
+
+END3="0x1000000001"
+SEGMENT_SIZE3="0x100000"
+measure cols "${END3}" "${SEGMENT_SIZE3}"
+for BB in "" "-1" "-2" "-3" "-4" "-5" "-6" "-7" "-8"
+do
+	measure "buckets${BB}" "${END3}" "${SEGMENT_SIZE3}"
+done
+
+END3="0x1000000001"
+SEGMENT_SIZE3="0x100000"
+measure atkin "${END3}" "${SEGMENT_SIZE3}"
+exit 0

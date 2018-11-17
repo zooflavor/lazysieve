@@ -435,7 +435,7 @@ egyszerű szegmentált szita a referencia.
 A program grafikus felületén a "Sziták ellenőrzése" lehetőséget
 választva ki kell választani az ellenőrizendő szitát, és az ellenőrizni
 kívánt intervallum kezdő és végző számát.
-A folyamat az "Ellenőrzés" gomb megnyomásával indul.
+A folyamat az "Ellenőrzés" gomb megnyomásával indítható.
 
 Parancssorból is ellenőrizhetőek a sziták a "check-sieve" scripttel.
 A script 3 paramétere a szita neve, és az intervallum kezdő-, és végszáma.
@@ -447,11 +447,15 @@ Az ellenőrizhető sziták nevei:
 \item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
 \item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
 	az bin-heap-inplace a kupac javítását helyben végzi
-\item buckets, buckets-n, buckets-inc: Eratoszthenész szitája edényekkel,
-	a buckets-inc inkremetális szita, a buckets-n -ben az n helyére 1-től 8-ig
-	a számrendszer bitjeit lehet megadni, pl. buckets-3 8as számrendszerben számol
+\item buckets, buckets-n, buckets-simple: Eratoszthenész szitája edényekkel,
+	a buckets-simple nem szegmentált, a buckets, és a buckets-n szegmentált.
+	a buckets-n -ben az n helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
+	pl. buckets-3 8as számrendszerben számol
 \item trial-division: próbaosztás
 \end{itemize}
+
+A sziták nevei listázhatóak a list-sieves scripttel, a describe-sieves script rövid leírást
+is ad.
 
 {\tiny
 \begin{lstlisting}[language=bash]
@@ -563,14 +567,57 @@ y
 \end{lstlisting}
 }
 
-A kiválasztott közelítés részletei az ablak jobb alsó sarkában látszódnak,
+Az így megadott függvények visszatérési értéke mindig double kell legyen,
+és a függvény azokban a pontokban értelmezett, ahol ez az érték véges.
+
+Egy kiválasztott közelítés részletei az ablak jobb alsó sarkában látszódnak,
 itt megváltoztatható a közelítéshez rendelt szín, és eltávolítható a közelítés.
 A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja
 a lineáris kombinációban.
 
 {\color{red}screenshot}
 
-\section{Minták generálása scriptekkel}
+\section{Sziták mérése scriptekkel}
+
+A sziták futási idejének mintáit parancssorból is elő lehet állítani
+a measure-sieve scripttel, paraméterként meg kell adni ebben a sorrendben:
+
+\begin{itemize}
+\item a szita nevét, ezek ugyan azok lehetnek, mint a check-sieve scriptnél
+\item a számot, ahol a szitálás kezdedődik, ez páratlan szám kell legyen
+\item a szitálás végét, ez páratlan szám kell legyen
+\item a szegmensek méretét
+\item a mérések számát
+\item a minták számát
+\item hogy nanoszekundumban ("nanosecs"), vagy műveletek számában ("operations") mérjen
+\item összesítse az időket ("sum"), vagy szegmensenként külön számolja ("segment")
+\item a fájlt, ahova az eredményt mentse CSV-ben
+\end{itemize}
+
+A számokat meg lehet adni decimálisan, és hexadecimálisan is "0x" előtaggal.
+Ha a kezdőszám nagyobb, mint 1, akkor az adatbáziskönyvtárnak tartalmaznia
+kell az init program generálta első négy szegmenst.
+
+Lehetőség van a mérték és az összesítés mind a négy kombinációját egy
+méréssel előállítani, ehhez mind a négy kimeneti fájl meg kell adni külön.
+
+{\tiny
+\begin{lstlisting}[language=bash]
+scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 nanosecs sum out1.csv
+100.0%
+scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 operations segment out2.csv
+100.0%
+scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 seg-ns.csv seg-ops.csv sum-ns.csv sum-ops.csv
+100.0%
+\end{lstlisting}
+}
+
+A mérések megkönnyítéséhez a measure-sieves script az összes szitét megméri,
+és az eredményt a samples könyvtárba menti.
+
+teljes.
+
+generator.
 
 \chapter{Fejlesztői dokumentáció}
 

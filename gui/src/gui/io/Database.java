@@ -6,6 +6,7 @@ import gui.util.IntList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -60,7 +61,7 @@ public class Database implements PrimesProducer {
 							hasMore1=false;
 						}
 					}
-					progress.progress("importing aggregates",
+					progress.progress("összesítés importálása",
 							0.5*(reader0.progress()+reader1.progress()));
 					if (null==block0) {
 						if (null==block1) {
@@ -112,13 +113,13 @@ public class Database implements PrimesProducer {
 		NavigableMap<Long, Long> lastModifications;
 		try (AggregatesReader reader=aggregatesReader()) {
 			lastModifications=Aggregates.lastModifications(
-					progress.subProgress(0.0, "read aggregates", 0.6),
+					progress.subProgress(0.0, "összesítés olvasása", 0.6),
 					reader);
 		}
 		Segments segments=readSegments(
-				progress.subProgress(0.6, "read segments", 0.99));
+				progress.subProgress(0.6, "szegemensfájlok olvasása", 0.99));
 		int newSegments=segments.newSegments(lastModifications,
-						progress.subProgress(0.99, "new segments", 1.0))
+						progress.subProgress(0.99, "új szegmensfájlok", 1.0))
 				.size();
 		progress.finished();
 		return new DatabaseInfo(
@@ -158,14 +159,6 @@ public class Database implements PrimesProducer {
 				consumer.prime(lastPrime);
 			}
 		}
-	}
-	
-	public IntList readPrimes(Progress progress) throws Throwable {
-		IntList result=new IntList(UnsignedLong.MAX_PRIME_COUNT);
-		primes((prime)->result.add((int)prime),
-				UnsignedLong.MAX_PRIME,
-				progress);
-		return result;
 	}
 	
 	public Segments readSegments(Progress progress) throws Throwable {
@@ -210,7 +203,8 @@ public class Database implements PrimesProducer {
 	public void reaggregate(Progress progress) throws Throwable {
 		Deque<Segment.Info> segmentInfos=new ArrayDeque<>(
 				readSegments(
-						progress.subProgress(0.0, "reading segments", 0.2))
+						progress.subProgress(
+								0.0, "szegmensfájlok olvasása", 0.2))
 						.segments
 						.values());
 		Segment segment=new Segment();
@@ -257,10 +251,10 @@ public class Database implements PrimesProducer {
 							}
 						},
 						null,
-						progress.subProgress(0.2, "reaggregating", 0.6));
+						progress.subProgress(0.2, "összesítés", 0.6));
 			}
 			Progress subProgress
-					=progress.subProgress(0.6, "reaggregating", 1.0);
+					=progress.subProgress(0.6, "összesítés", 1.0);
 			for (int ii=0, ss=segmentInfos.size(); ss>ii; ++ii) {
 				subProgress.progress(1.0*ii/ss);
 				Segment.Info segmentInfo=segmentInfos.pollFirst();
@@ -270,6 +264,13 @@ public class Database implements PrimesProducer {
 			writer.setSuccessful();
 		}
 		progress.finished();
+	}
+	
+	public Path samplesDirectory() {
+		Path directory=Paths.get("../samples").toAbsolutePath();
+		return Files.exists(directory)
+				?directory
+				:rootDirectory;
 	}
 	
 	public Path segmentFile(long segmentStart) {

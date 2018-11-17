@@ -88,7 +88,8 @@ public class AggregatesWriter implements AutoCloseable {
 	public void write(AggregateBlock aggregateBlock) throws Throwable {
 		long segmentStart2=aggregateBlock.get().segmentStart;
 		if (0<=Long.compareUnsigned(segmentStart, segmentStart2)) {
-			throw new IllegalArgumentException("non-monotonic segment start");
+			throw new IllegalArgumentException(
+					"a szegmenskezdetek nem nőnek monoton");
 		}
 		segmentStart=segmentStart2;
 		aggregateBlock.writeTo(stream);

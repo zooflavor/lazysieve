@@ -29,7 +29,7 @@ public class GraphRenderer implements Runnable {
 				completed, functions, graph, rulers, samples));
 	}
 	
-	private RenderedSample renderFunction(Function function) {
+	private RenderedSample renderFunction(Function function) throws Throwable {
 		check();
 		List<RenderedInterval> intervals=new ArrayList<>();
 		RenderedInterval.Builder result
@@ -121,7 +121,7 @@ public class GraphRenderer implements Runnable {
 		}
 	}
 	
-	private RenderedSample renderSample(Sample sample) {
+	private RenderedSample renderSample(Sample sample) throws Throwable {
 		check();
 		RenderedInterval.Builder result
 				=RenderedInterval.builder(Math.max(1, graph.componentWidth));
@@ -186,7 +186,7 @@ public class GraphRenderer implements Runnable {
 	private void renderSample(int leftIndex, int leftPixel,
 			double leftPixelBorder, int rightIndex, int rightPixel,
 			double rightPixelBorder, RenderedInterval.Builder result,
-			Sample sample) {
+			Sample sample) throws Throwable {
 		check();
 		if (leftIndex>=rightIndex) {
 			return;
@@ -213,12 +213,12 @@ public class GraphRenderer implements Runnable {
 	
 	private <X extends Number, Y extends Number> void renderSample(
 			PlotType plotType, RenderedInterval.Builder result,
-			IterableSample sample, double xx) {
+			IterableSample sample, double xx) throws Throwable {
 		check();
 		if (sample.isEmpty()) {
 			return;
 		}
-		class ConsumerImpl implements IterableSample.DoubleConsumer {
+		class ConsumerImpl implements IterableSample.Consumer {
             double left;
             boolean hasLeft;
 			double max=-Double.MAX_VALUE;
@@ -237,7 +237,7 @@ public class GraphRenderer implements Runnable {
 			}
 		}
 		ConsumerImpl consumer=new ConsumerImpl();
-		sample.forEachDouble(consumer);
+		sample.forEach(consumer);
 		switch (plotType) {
 			case BARS:
 				if (0.0>consumer.max) {

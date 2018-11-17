@@ -13,10 +13,9 @@ public class LongTable implements SieveTable {
 
 	@Override
 	public void flip(long number) throws Throwable {
-		number=(number-1l)>>>1;
-		int index=(int)(number>>>6);
-		if (bits.length>index) {
-			bits[index]^=1l<<(number&0x3fl);
+		if (0<=Long.compareUnsigned(UnsignedLong.MAX_PRIME, number)) {
+			number=(number-1l)>>>1;
+			bits[(int)(number>>>6)]^=1l<<(number&0x3fl);
 		}
 	}
 
@@ -63,19 +62,17 @@ public class LongTable implements SieveTable {
 
 	@Override
 	public void setComposite(long number) throws Throwable {
-		number=(number-1l)>>>1;
-		int index=(int)(number>>>6);
-		if (bits.length>index) {
-			bits[index]|=1l<<(number&0x3fl);
+		if (0<=Long.compareUnsigned(UnsignedLong.MAX_PRIME, number)) {
+			number=(number-1l)>>>1;
+			bits[(int)(number>>>6)]|=1l<<(number&0x3fl);
 		}
 	}
 
 	@Override
 	public void setPrime(long number) throws Throwable {
-		number=(number-1l)>>>1;
-		int index=(int)(number>>>6);
-		if (bits.length>index) {
-			bits[index]&=~(1l<<(number&0x3fl));
+		if (0<=Long.compareUnsigned(UnsignedLong.MAX_PRIME, number)) {
+			number=(number-1l)>>>1;
+			bits[(int)(number>>>6)]&=~(1l<<(number&0x3fl));
 		}
 	}
 }

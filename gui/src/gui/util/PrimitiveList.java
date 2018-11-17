@@ -1,6 +1,6 @@
 package gui.util;
 
-public abstract class PrimitiveList<C, L extends PrimitiveList<C, L>> {
+public abstract class PrimitiveList<L extends PrimitiveList<L>> {
 	protected int size;
 	
 	public PrimitiveList(int size) {
@@ -34,16 +34,6 @@ public abstract class PrimitiveList<C, L extends PrimitiveList<C, L>> {
 	}
 	
 	public abstract L copy();
-	
-	public void foreach(C consumer) throws Throwable {
-		for (int ii=0, ss=size; ss>ii; ++ii) {
-			if (!forEach(consumer, ii)) {
-				return;
-			}
-		}
-	}
-	
-	protected abstract boolean forEach(C consumer, int index) throws Throwable;
 	
 	public boolean isEmpty() {
 		return 0>=size;
