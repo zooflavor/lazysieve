@@ -12,16 +12,15 @@ public class Regression {
 	private Regression() {
 	}
 	
-	public static <X extends Number, Y extends Number> double distanceSquared(
-			RealFunction function, Progress progress,
-			Collection<Map.Entry<X, Y>> sample, Supplier<Sum> sumFactory)
-			throws Throwable {
+	public static double distanceSquared(RealFunction function,
+			Progress progress, Collection<Map.Entry<Double, Double>> sample,
+			Supplier<Sum> sumFactory) throws Throwable {
 		Sum sum=sumFactory.get();
 		int ii=0;
-		for (Map.Entry<X, Y> entry: sample) {
+		for (Map.Entry<Double, Double> entry: sample) {
 			progress.progress(1.0*ii/sample.size());
-			double xx=entry.getKey().doubleValue();
-			double yy=entry.getValue().doubleValue();
+			double xx=entry.getKey();
+			double yy=entry.getValue();
 			double dy=yy-function.valueAt(xx);
 			sum.add(dy*dy);
 			++ii;
@@ -30,12 +29,12 @@ public class Regression {
 		return sum.sum();
 	}
 	
-	public static <X extends Number, Y extends Number>
-			LinearCombinationFunction regression(List<RealFunction> functions,
-					Function<RealFunction, RealFunction> functionTransform,
-					Supplier<Sum> functionSumFactory, Progress progress,
-					Collection<Map.Entry<X, Y>> sample,
-					Supplier<Sum> regressionSumFactory) throws Throwable {
+	public static LinearCombinationFunction regression(
+			List<RealFunction> functions,
+			Function<RealFunction, RealFunction> functionTransform,
+			Supplier<Sum> functionSumFactory, Progress progress,
+			Collection<Map.Entry<Double, Double>> sample,
+			Supplier<Sum> regressionSumFactory) throws Throwable {
 		List<RealFunction> transformedFunctions
 				=new ArrayList<>(functions.size());
 		for (int ii=0; functions.size()>ii; ++ii) {
@@ -46,10 +45,10 @@ public class Regression {
 		double[][] yy=Matrix.create(sample.size(), 1);
 		Progress subProgress=progress.subProgress(0.0, null, 0.5);
 		int rr=0;
-		for (Map.Entry<X, Y> entry: sample) {
+		for (Map.Entry<Double, Double> entry: sample) {
 			subProgress.progress(1.0*rr/sample.size());
-			double sampleX=entry.getKey().doubleValue();
-			double sampleY=entry.getValue().doubleValue();
+			double sampleX=entry.getKey();
+			double sampleY=entry.getValue();
 			yy[rr][0]=sampleY;
 			for (int cc=functions.size()-1; 0<=cc; --cc) {
 				xx[rr][cc]=transformedFunctions.get(cc).valueAt(sampleX);

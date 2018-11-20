@@ -501,9 +501,10 @@ akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 A "Prímstatisztikák" a generator kimeneteléből összesített statisztikák,
 amiket az adatbáziskönyvtárban keres.
 A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
-A statisztikáknak három csoportja van. A prímek száma, és néhány kiemelt alakú prím száma
+A statisztikáknak négy csoportja van. A prímek száma, és néhány kiemelt alakú prím száma
 a szegmensek végén. Ide tartozik ugyanezeken a helyeken a prímszámtétel
 becslése, és a becslés abszolút és relatív hibája is.
+Az ikerprímek száma a szegmensek végén.
 A prímhézagok statisztikái a szegmensek teljes kezdőszeletére vonatkozik. Ezek
 az előfordult hézagok gyakorisága, első előfordulása, jósága, és az legnagyobb
 prímhézag adott számig.
@@ -589,7 +590,7 @@ a measure-sieve scripttel, paraméterként meg kell adni ebben a sorrendben:
 \item a szegmensek méretét
 \item a mérések számát
 \item a minták számát
-\item hogy nanoszekundumban ("nanosecs"), vagy műveletek számában ("operations") mérjen
+\item hogy időt (nanosecs), vagy műveleteket (operations) mérjen
 \item összesítse az időket ("sum"), vagy szegmensenként külön számolja ("segment")
 \item a fájlt, ahova az eredményt mentse CSV-ben
 \end{itemize}
@@ -603,11 +604,12 @@ méréssel előállítani, ehhez mind a négy kimeneti fájl meg kell adni kül�
 
 {\tiny
 \begin{lstlisting}[language=bash]
-scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 nanosecs sum out1.csv
+scripts$ ./measure-sieve buckets-3 1 0x10000001 0x10000 3 1000 nanosecs sum out1.csv
 100.0%
-scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 operations segment out2.csv
+scripts$ ./measure-sieve buckets-3 1 0x10000001 0x10000 3 1000 operations segment out2.csv
 100.0%
-scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 seg-ns.csv seg-ops.csv sum-ns.csv sum-ops.csv
+scripts$ ./measure-sieve buckets-3 1 0x10000001 0x10000 3 1000
+seg-ns.csv seg-ops.csv sum-ns.csv sum-ops.csv
 100.0%
 \end{lstlisting}
 }
@@ -615,13 +617,61 @@ scripts$ ./measure-sieve buckets-3 1 0x10000001 0x100000 3 1000 seg-ns.csv seg-o
 A mérések megkönnyítéséhez a measure-sieves script az összes szitét megméri,
 és az eredményt a samples könyvtárba menti.
 
-teljes.
-
-generator.
+{\color{red}teljes. generator. atkin szegmens méret.}
 
 \chapter{Fejlesztői dokumentáció}
 
 \section{A feladat leírása}
+
+A program fő feladata, hogy lehetővé tegye prímsziták futási idejének összehasonlítását.
+Ehhez keretet kell adjon, hogy azonos paraméterekkel lehessen a sziták futási idejét mérni,
+és egyszerű, egymáshoz hasonlóan optimalizált szitákat kell implementálni,
+hogy a futási időket a fő algoritmusok határozzák meg, mivel a szitálást felgyorsító
+egyes ötletek nem minden szitán alkalmazhatóak.
+Elvárás, hogy a futási időt eltelt időben, és összeszámolt műveletekben is lehessen mérni.
+
+A szitákat szegmentáltan kell megvalósítani, és szabályozhatóvá kell tenni
+a szegmensek méretét, és a szitálás kezdő és végszegmensét. A megvalósítandó sziták:
+\begin{itemize}
+\item Atkin szitája
+\item Eratoszthenész szitája
+\begin{itemize}
+\item egyszerű tömbbel
+\item bináris kupaccal
+\item edényekkel
+\item edények monoton sorával
+\end{itemize}
+\end{itemize}
+
+A programnak grafikusan ábrázolnia kell a futási időket, és lehetőséget kell adjon
+ezek közelítésére függvényekkel. A közelítéshez a legkisebb négyzetek módszerét
+kell használni, és az elemi függvények legyenek megválaszthatóak.
+Elemi függvényt lehessen megadni JavaScript nyelven is.
+
+A grafikus ábrázolás legyen képes külső forrásokból származó minták megjelenítésére
+és közelítésére is. A prímszámok néhány statisztikájának megjelenítéséhez elő kell tudni
+állítani ezeket a statisztikákat nagyobb intervallumokon is.
+Ehhez adni kell egy szitát, ami hatékonyan képes $2^{64}$-ig szitálni,
+és ennek az eredményét összesíteni kell. Az előállítható statisztikák
+adott $n$-ig szitálva legyenek:
+\begin{itemize}
+\item a prímek száma
+\item a $4\mathbb{Z}+1, 4\mathbb{Z}+3, 6\mathbb{Z}+1, 12\mathbb{Z}+11$
+	alakú prímek száma
+\item az ikerprímek száma
+\item az előforduló prímhézagok első előfordulásának helye
+\item a prímhézagok előfordulásának száma
+\item a szitálásra fordított idő
+\end{itemize}
+
+A prímek számát, az ikerprímek számát, és a szitálás idejét
+nem csak a szitált intervallum végén
+kell előállítani, hanem az intervallum belsejében is több ponton.
+
+A sziták sebességének mérését, és a statisztikák előállítását
+parancssorból is el kell tudni végezni, hogy szkriptekkel ez automatizálható legyen.
+A statisztikák előállításánál ezen túl még elvárás, hogy a folyamat leállítható,
+és később folytatható legyen.
 
 \section{A program komponensei}
 

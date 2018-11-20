@@ -1,5 +1,6 @@
 package gui.graph;
 
+import gui.math.UnsignedLong;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -289,6 +290,6 @@ public class GraphRenderer implements Runnable {
 	
 	private int sampleTailIndex(int from, Sample sample, int to, double xx) {
 		return sample.tailFromIndex(from, true, to,
-				Math.round(Math.ceil(Math.max(0.0, xx))));
+				UnsignedLong.round(Math.ceil(Math.max(0.0, xx))));
 	}
 }

@@ -197,6 +197,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 			}
 		}.start(plotter.session.executor);
 	}
+	
 	public static void addSieveNanosSample(Plotter plotter, boolean sum) {
 		new AggregatesAddSampleProcess(plotter) {
 			@Override
@@ -205,6 +206,20 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 				return Aggregates.sieveNanos(progress, reader, sum)
 						.create(String.format("Szitálás ideje (ns)(%1$s)",
 										sum?"összesen":"szegmensenként"),
+								Colors.INTERPOLATION,
+								PlotType.LINE,
+								color);
+			}
+		}.start(plotter.session.executor);
+	}
+	
+	public static void addTwinPrimes(Plotter plotter) {
+		new AggregatesAddSampleProcess(plotter) {
+			@Override
+			protected Sample sample(Color color, Progress progress,
+					AggregatesReader reader) throws Throwable {
+				return Aggregates.twinPrimes(progress, reader)
+						.create("Ikerprímek száma",
 								Colors.INTERPOLATION,
 								PlotType.LINE,
 								color);
@@ -310,6 +325,13 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 				AggregatesAddSampleProcess
 						.addSieveNanosSample(plotter, true));
 		menu.add(addSieveNanosSumItem);
+		
+		JMenuItem addTwinPrimesItem
+				=new JMenuItem("Ikerprímek száma");
+		addTwinPrimesItem.addActionListener((event2)->
+				AggregatesAddSampleProcess
+						.addTwinPrimes(plotter));
+		menu.add(addTwinPrimesItem);
 		
 		return menu;
 	}

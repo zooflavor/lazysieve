@@ -29,12 +29,12 @@ class ApproximationProcess extends GuiProcess<Plotter, JFrame> {
 				CheckedFunction::new,
 				Sum::priority,
 				progress.subProgress(0.0, null, 0.9),
-				samplePanel.sample().asList(),
+				samplePanel.sample().asDoubles(),
 				Sum::priority);
 		error=Regression.distanceSquared(
 				function,
 				progress.subProgress(0.9, null, 1.0),
-				samplePanel.sample().asList(),
+				samplePanel.sample().asDoubles(),
 				Sum::priority);
 	}
 	

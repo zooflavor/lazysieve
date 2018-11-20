@@ -97,6 +97,6 @@ public class AggregatesWriter implements AutoCloseable {
 	
 	private void writeHeader() throws IOException {
 		stream.writeInt(Aggregates.MAGIC);
-		stream.writeInt(0);
+		stream.writeInt(Aggregates.VERSION);
 	}
 }

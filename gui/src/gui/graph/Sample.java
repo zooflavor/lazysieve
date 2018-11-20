@@ -1,5 +1,6 @@
 package gui.graph;
 
+import gui.math.UnsignedLong;
 import gui.ui.Color;
 import gui.util.BinarySearch;
 import gui.util.DoubleList;
@@ -7,7 +8,7 @@ import gui.util.LongList;
 import gui.util.QuickSort;
 import java.util.AbstractList;
 import java.util.AbstractMap;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
@@ -110,28 +111,17 @@ public class Sample {
 		}
 	}
 	
-	private class SampleList extends AbstractList<Map.Entry<Long, Double>> {
-		private final int from;
-		private final int size;
-		
-		public SampleList(int from, int to) {
-			this.from=from;
-			size=to-from;
-		}
-		
+	private class DoublesList extends AbstractList<Map.Entry<Double, Double>> {
 		@Override
-		public Map.Entry<Long, Double> get(int index) {
-			if ((0>index)
-					|| (size<=index)) {
-				throw new IndexOutOfBoundsException();
-			}
+		public Map.Entry<Double, Double> get(int index) {
 			return new AbstractMap.SimpleImmutableEntry<>(
-					xx(from+index), yy(from+index));
+					UnsignedLong.toDouble(xs.get(index)),
+					ys.get(index));
 		}
 		
 		@Override
 		public int size() {
-			return size;
+			return xs.size();
 		}
 	}
 	
@@ -174,24 +164,8 @@ public class Sample {
 		return new SampleIterable(from, to);
 	}
 	
-	public List<Map.Entry<Long, Double>> asList() {
-		return new SampleList(0, size());
-	}
-	
-	public List<Map.Entry<Long, Double>> asList(int from, int to) {
-		if (0>from) {
-			from=0;
-		}
-		if (size()<from) {
-			from=size();
-		}
-		if (from>to) {
-			to=from;
-		}
-		if (size()<to) {
-			to=size();
-		}
-		return new SampleList(from, to);
+	public Collection<Map.Entry<Double, Double>> asDoubles() {
+		return new DoublesList();
 	}
 	
 	public static Sample.Builder builder() {

@@ -10,6 +10,7 @@ import gui.graph.RenderedSample;
 import gui.graph.RendererDeathException;
 import gui.graph.Ruler;
 import gui.graph.Sample;
+import gui.math.UnsignedLong;
 import gui.util.Consumer;
 import java.awt.BasicStroke;
 import java.awt.Font;
@@ -199,9 +200,11 @@ public class GraphPlotter extends JComponent {
 						"kurzor", graphX, graphY));
 				for (Sample sample: graph.samples) {
 					int ceilingIndex=sample.ceilingIndex(
-							Math.round(Math.max(0.0, Math.ceil(graphX))));
+							UnsignedLong.round(Math.max(0.0,
+									Math.ceil(graphX))));
 					int floorIndex=sample.floorIndex(
-							Math.round(Math.max(0.0, Math.floor(graphX))));
+							UnsignedLong.round(Math.max(0.0,
+									Math.floor(graphX))));
 					int sampleIndex;
 					if (0>ceilingIndex) {
 						if (0>floorIndex) {
@@ -216,8 +219,10 @@ public class GraphPlotter extends JComponent {
 							sampleIndex=ceilingIndex;
 						}
 						else {
-							long ceilingX=sample.xx(ceilingIndex);
-							long floorX=sample.xx(floorIndex);
+							double ceilingX=UnsignedLong.toDouble(
+									sample.xx(ceilingIndex));
+							double floorX=UnsignedLong.toDouble(
+									sample.xx(floorIndex));
 							if (Math.abs(ceilingX-graphX)
 									<=Math.abs(floorX-graphX)) {
 								sampleIndex=ceilingIndex;
@@ -228,7 +233,8 @@ public class GraphPlotter extends JComponent {
 						}
 					}
 					rows.add(new Row(sample.pointColor, sample.label,
-							sample.xx(sampleIndex), sample.yy(sampleIndex)));
+							UnsignedLong.toDouble(sample.xx(sampleIndex)),
+							sample.yy(sampleIndex)));
 				}
 				for (Function function: graph.functions) {
 					double yy=function.function.valueAt(graphX);

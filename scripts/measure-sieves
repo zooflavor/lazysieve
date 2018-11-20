@@ -5,12 +5,13 @@ SAMPLES=10000
 
 function measure {
 	SIEVE="$1"
-	END="$2"
-	SEGMENT_SIZE="$3"
-	DIR0="../samples/segments-nanosecs"
-	DIR1="../samples/segments-operations"
-	DIR2="../samples/sum-nanosecs"
-	DIR3="../samples/sum-operations"
+	START="$2"
+	END="$3"
+	SEGMENT_SIZE="$4"
+	DIR0="../samples/segments-nanosecs/${START}"
+	DIR1="../samples/segments-operations/${START}"
+	DIR2="../samples/sum-nanosecs/${START}"
+	DIR3="../samples/sum-operations/${START}"
 	FILE0="${DIR0}/${SIEVE}.csv"
 	FILE1="${DIR1}/${SIEVE}.csv"
 	FILE2="${DIR2}/${SIEVE}.csv"
@@ -21,33 +22,79 @@ function measure {
 	mkdir -p "${DIR3}"
 	echo $SIEVE
 	java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar measure sieve "${DB}" \
-		"${SIEVE}" 1 "${END}" "${SEGMENT_SIZE}" "${MEASURES}" "${SAMPLES}" \
-		"${FILE0}" "${FILE1}" "${FILE2}" "${FILE3}"
+		"${SIEVE}" "${START}" "${END}" "${SEGMENT_SIZE}" "${MEASURES}" \
+		"${SAMPLES}" "${FILE0}" "${FILE1}" "${FILE2}" "${FILE3}"
 	if [ "0" != "$?" ]; then
 		exit 1
 	fi
 }
 
-END3="0x1000001"
+START3="0x1"
+END3="0x2000001"
 SEGMENT_SIZE3="0x1000"
-measure trial-division "${END3}" "${SEGMENT_SIZE3}"
+#measure trial-division "${START3}" "${END3}" "${SEGMENT_SIZE3}"
 
 END3="0x1000000001"
 SEGMENT_SIZE3="0x100000"
-measure eratosthenes-segmented "${END3}" "${SEGMENT_SIZE3}"
-measure bin-heap "${END3}" "${SEGMENT_SIZE3}"
-measure bin-heap-inplace "${END3}" "${SEGMENT_SIZE3}"
-measure buckets-inc "${END3}" "${SEGMENT_SIZE3}"
+#measure eratosthenes-segmented "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure bin-heap "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure bin-heap-inplace "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-simple "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#for BB in "" "-1" "-2" "-3" "-4" "-5" "-6" "-7" "-8"
+#do
+#	measure "buckets${BB}" "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#done
+#measure atkin "${START3}" "${END3}" "${SEGMENT_SIZE3}"
 
-END3="0x1000000001"
-SEGMENT_SIZE3="0x100000"
-measure cols "${END3}" "${SEGMENT_SIZE3}"
-for BB in "" "-1" "-2" "-3" "-4" "-5" "-6" "-7" "-8"
+START3="0x10000000001"
+END3="0x11000000001"
+#measure eratosthenes-segmented "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure bin-heap-inplace "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-simple "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-1 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-8 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+
+START3="0x100000000001"
+END3="0x101000000001"
+#measure eratosthenes-segmented "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-8 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+
+START3="0x10000000000001"
+END3="0x10001000000001"
+#measure eratosthenes-segmented "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-8 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+
+START3="0x1000000000000001"
+END3="0x1000001000000001"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-8 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+
+START3="0x8000000000000001"
+END3="0x8000001000000001"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-8 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+
+START3="0xffff000000000001"
+END3="0xffff010000000001"
+#measure cols "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+#measure buckets-8 "${START3}" "${END3}" "${SEGMENT_SIZE3}"
+
+mkdir -p "../samples/atkin"
+for SEGMENT_SIZE4 in "0x100000" "0x1000000" "0x10000000" "0x40000000"
 do
-	measure "buckets${BB}" "${END3}" "${SEGMENT_SIZE3}"
+	echo atkin "${SEGMENT_SIZE4}"
+	java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar measure sieve "${DB}" \
+			atkin 0x1 0x1000000001 "${SEGMENT_SIZE4}" 3 1000 nanosecs sum \
+			"../samples/atkin/${SEGMENT_SIZE4}.csv"
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
 done
 
-END3="0x1000000001"
-SEGMENT_SIZE3="0x100000"
-measure atkin "${END3}" "${SEGMENT_SIZE3}"
 exit 0

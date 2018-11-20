@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 public class Aggregates {
 	static final int MAGIC=0xd1d1b0b0;
+	static final int VERSION=1;
 	
 	@FunctionalInterface
 	private static interface PrimeGapConsumer {
@@ -252,5 +253,34 @@ public class Aggregates {
 				},
 				null, progress);
 		return sample;
+	}
+	
+	public static Sample.Builder twinPrimes(Progress progress,
+			AggregatesReader reader) throws Throwable {
+		Sample.Builder result=Sample.builder();
+		reader.consume(true,
+				new AggregatesConsumer() {
+					private long lastPrime;
+					private long twinPrimes;
+					
+					@Override
+					public void consume(AggregateBlock aggregateBlock,
+							Progress progress) throws Throwable {
+						Aggregate aggregate=aggregateBlock.get();
+						twinPrimes+=aggregate.twinPrimes;
+						if ((0l!=lastPrime)
+								&& (0l!=aggregate.minPrime)
+								&& (lastPrime+2l==aggregate.minPrime)) {
+							++twinPrimes;
+						}
+						if (0l!=aggregate.maxPrime) {
+							lastPrime=aggregate.maxPrime;
+						}
+						result.add(aggregate.segmentEnd-1l, twinPrimes);
+					}
+				},
+				null,
+				progress);
+		return result;
 	}
 }

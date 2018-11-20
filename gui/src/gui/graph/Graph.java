@@ -1,5 +1,6 @@
 package gui.graph;
 
+import gui.math.UnsignedLong;
 import gui.plotter.Colors;
 import gui.ui.Color;
 import java.util.ArrayList;
@@ -73,7 +74,7 @@ public class Graph {
 		Double minY=null;
 		for (Sample sample: this.samples) {
 			if ((null==maxX)
-					|| (maxX<sample.sampleMaxX)) {
+					|| (0>Long.compareUnsigned(maxX, sample.sampleMaxX))) {
 				maxX=sample.sampleMaxX;
 			}
 			if ((null==maxY)
@@ -81,7 +82,7 @@ public class Graph {
 				maxY=sample.sampleMaxY;
 			}
 			if ((null==minX)
-					|| (minX>sample.sampleMinX)) {
+					|| (0<Long.compareUnsigned(minX, sample.sampleMinX))) {
 				minX=sample.sampleMinX;
 			}
 			if ((null==minY)
@@ -291,21 +292,21 @@ public class Graph {
 				|| (null==samplesMaxY)
 				|| (null==samplesMinX)
 				|| (null==samplesMinY)
-				|| (samplesMaxX<samplesMinX)
+				|| (0>Long.compareUnsigned(samplesMaxX, samplesMinX))
 				|| (samplesMaxY<samplesMinY)) {
 			return setView(0.0, 0.0, 1.0, 1.0);
 		}
 		final double margin=0.05;
-		double dx=samplesMaxX-samplesMinX;
+		double dx=UnsignedLong.toDouble(samplesMaxX-samplesMinX);
 		double left;
 		double right;
 		if (0.0>=dx) {
-			left=samplesMaxX-1.0;
-			right=samplesMaxX+1.0;
+			left=UnsignedLong.toDouble(samplesMaxX)-1.0;
+			right=UnsignedLong.toDouble(samplesMaxX)+1.0;
 		}
 		else {
-			left=samplesMinX-margin*dx;
-			right=samplesMaxX+margin*dx;
+			left=UnsignedLong.toDouble(samplesMinX)-margin*dx;
+			right=UnsignedLong.toDouble(samplesMaxX)+margin*dx;
 		}
 		double dy=samplesMaxY-samplesMinY;
 		double bottom;

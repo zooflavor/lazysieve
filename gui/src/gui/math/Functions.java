@@ -423,7 +423,7 @@ public class Functions {
 					return xx/Math.log(Math.log(xx));
 				}
 			};
-	public static final RealFunction X2_PER_LNLNX
+	public static final RealFunction X_PER_LNLNX_LNX
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
@@ -432,7 +432,7 @@ public class Functions {
 				
 				@Override
 				public String toString() {
-					return "x^2/ln(ln(x))";
+					return "x/(ln(ln(x))*ln(x))";
 				}
 				
 				@Override
@@ -440,7 +440,8 @@ public class Functions {
 					if (1.0>=xx) {
 						return Double.NaN;
 					}
-					return xx*xx/Math.log(Math.log(xx));
+					double lnx=Math.log(xx);
+					return xx/(Math.log(lnx)*lnx);
 				}
 			};
 	public static final RealFunction X_PER_LNX
@@ -461,6 +462,47 @@ public class Functions {
 						return Double.NaN;
 					}
 					return xx/Math.log(xx);
+				}
+			};
+	public static final RealFunction X_PER_LN2X
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 0.0<fromX;
+				}
+				
+				@Override
+				public String toString() {
+					return "x/ln^2(x)";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (0.0>=xx) {
+						return Double.NaN;
+					}
+					double lnx=Math.log(xx);
+					return xx/(lnx*lnx);
+				}
+			};
+	public static final RealFunction X2_PER_LNLNX
+			=new RealFunction() {
+				@Override
+				public boolean isDefined(double fromX, double toX) {
+					return 1.0<fromX;
+				}
+				
+				@Override
+				public String toString() {
+					return "x^2/ln(ln(x))";
+				}
+				
+				@Override
+				public double valueAt(double xx) {
+					if (1.0>=xx) {
+						return Double.NaN;
+					}
+					return xx*xx/Math.log(Math.log(xx));
 				}
 			};
 	public static final RealFunction X2_PER_LNX

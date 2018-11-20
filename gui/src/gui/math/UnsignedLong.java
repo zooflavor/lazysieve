@@ -118,6 +118,21 @@ public class UnsignedLong {
 		return Long.parseUnsignedLong(value);
 	}
 	
+	public static long round(double value) {
+		if (!Double.isFinite(value)) {
+			throw new IllegalArgumentException(Double.toString(value));
+		}
+		if (0.0>=value) {
+			return 0l;
+		}
+		long result=Math.round(value);
+		if ((Long.MAX_VALUE==result)
+				&& (Long.MAX_VALUE<value)) {
+			result+=Math.round(value-Long.MAX_VALUE);
+		}
+		return result;
+	}
+	
 	public static long square(long value) {
 		if (!squareExists(value)) {
 			throw new ArithmeticException(format(value));
@@ -145,6 +160,15 @@ public class UnsignedLong {
 			}
 		}
 		return floor;
+	}
+	
+	public static double toDouble(long value) {
+		long value2=value&Long.MAX_VALUE;
+		double result=value2;
+		if (value2!=value) {
+			result+=2.0*(1l<<62);
+		}
+		return result;
 	}
 	
 	public static long unsignedInt(int value) {

@@ -39,7 +39,7 @@ public class SaveSampleProcess extends GuiProcess<Plotter, JFrame> {
 			for (int ii=0; sample.size()>ii; ++ii) {
 				progress.progress(1.0*ii/sample.size());
 				csv.write(Arrays.asList(
-						Long.toString(sample.xx(ii)),
+						Long.toUnsignedString(sample.xx(ii)),
 						Double.toString(sample.yy(ii))));
 			}
 		}
