@@ -95,14 +95,15 @@ A prímszámok statisztikáinak előállításához a programhoz tartozik egy op
 szita-implementáció, amivel $2^{64}$-ig lehet szitálni, és az eredményt rögzíteni.
 Az elmentett eredményeket a program egy külön része összesíti néhány alapstatisztikára.  %%%EMIL: "...összesíti alapstatisztikára..." ezzel a kifejezéssel nem tudom találkoztam-e... nyelvi kérdés, és világos mit jelent, lehet hogy az én hiányosságom... nem tudom így használják-e.
 
-%%% EMIL: Ezt lehet érdemes összevonni az előző bekezdéssel, ott is emlegetsz implementációkat.
+%%%EMIL: Ezt lehet érdemes összevonni az előző bekezdéssel, ott is emlegetsz implementációkat.
 Különböző szita-algoritmusok futási idejének összehasonlításához a program tartalmazza
 Atkin szitájának egy implementációját, és Eratosztenész szitájának néhány variációját.
 
 \section{Felhasznált módszerek}
 
-A program két rész fő részből áll.
-A prímszámok generátora C-99 nyelven készült el.
+A program két fő részből áll.
+%%%EMIL: Ide egy \subsection{Első rész/Első program}???
+A prímszámok generátora C-99 nyelven készült el.  %%%EMIL: A '-99' fontos? Simán C nem elég? Esetleg: "C nyelve (C-99 szabvány)..."? (a másik rész az Java... úgy hogy...)
 A program csak parancssorból futtatható, és a sztenderd könvytári függvényekből
 is csak néhányat használ a memóriájában előállítótt eredmények fájlba írásához.
 A C nyelv választását a hatékony végrehajtás és memórafelhasználás, és
@@ -121,13 +122,13 @@ résszegemensekre osztja,
 Továbbá nagyobb prímeknek csak harminccal relatív prím többszöröseit veszi figyelembe.
 
 A program többi része a Java környezethez készült, a képzésben betöltött szerepe és
-a hordozhatósága miatt.
+a hordozhatósága miatt.  %%%EMIL: Ez a mondat mintha kicsit túl lenne rizsázva.
 A minták és függvények ábrázolásához használt Swing grafikus könyvtár
 a Java környezet része, egyszerű, hordozható, támogatja az élsimítást,
 és a sebessége elfogadható a feladatra.
 A Java sztenderd konténerosztájai habár kényelmesen használhatóak, és változatosak,
 de sebesség és memóriakihasználtsági problémák miatt több helyen is alacsonyabb szintű
-megoldást kellett választani.
+megoldást kellett választani.  %%%EMIL: Most kezdek azon morfondírozni hogy itt sokat írsz a fejlesztői döntésekről és keveset a program felhasználásáról. Ezt majd érdemes lesz figyelembe venni.
 
 A program a mintákat alapfüggvények lineáris kombinációjával képes közelíteni,
 a legkisebb négyzetek módszerével. A minták elemeinek nagy száma, és a mintaértékek
@@ -146,7 +147,7 @@ A sziták helyességének ellenőrzéséhez a sziták eredménye egymással öss
 A programhoz elkészült Atkin szitája, és Eratoszthenész szitájának több variációja:
 az algoritmus legegyszerűbb implementációja a teljes szitatáblán jelöli meg
 a prímek többszöröseit, a többi a táblát rövidebb szegmensekre osztja fel,
-és ezeket sorban szitálja. A szegmentálás szükségessé teszi, hogy eldüntsük,
+és ezeket sorban szitálja. A szegmentálás szükségessé teszi, hogy eldöntsük,
 hogy mely szegmensben mely prímek szitálnak. A legegyszerűbb megvalósítás
 minden szegmensben minden prímmel megpróbál szitálni, a próbaosztáshoz hasonlóan.
 Ennél hatékonyabb a két elsőbbségi sorral megvalósított szita, és a harmadik,
@@ -154,6 +155,8 @@ edényekbe csoportosító megoldás.
 
 A sziták között kapott helyet a próbaosztás, és az erős pszeudo-prím teszt is,
 de ezek a lassúságuk miatt csak igen rövid tartományok ellenőrzésére alkalmasak.
+
+%%%EMIL: Ez nem teljesen világos, szóval van egy nagy és gyors szita C-ben és több kisebb és lassabb szita plusz egy megjelenítő a Java programban. Ez nagyon alacsony prioritású megjegyzés, azaz szinte csak kérdés. Jó gondolom hogy talán "szebb" lenne ha a szitálást egyik program csinálná, a megjelenítést meg a másik - vagy valamit nem veszek figyelembe?
 
 \section{A program telepítése és futtatása}
 
