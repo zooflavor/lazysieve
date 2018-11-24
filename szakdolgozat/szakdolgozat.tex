@@ -201,6 +201,7 @@ scripts$ ./recompile
 
 \section{Prímek keresése}
 
+%%% EMIL: Az 'init' a 'generátor' és hasonló programokat érdemes lett volna a legelején definiálni (ott ahol írod hogy két részből áll a dolog stb).
 A prímek keresését két program végzi, az init program
 $2^{32}$-ig keresi meg és tárolja el a prímeket,
 a generator $2^{32}$-től $2^{64}-2^{43}$-ig.
@@ -208,7 +209,7 @@ Az init készítette szitattáblák a generator futásához szükségesek.
 
 Mindkét program a számokat $2^{30}$ hosszú táblánkként szitálja,
 minden tábla első száma $2^{30}k+1$ alakú. A szitatáblákat a programok a
-fájlrendszerben bittérképként tárolják, egy tábla kb. $64$Mb.
+fájlrendszerben bittérképként tárolják, egy tábla kb. $64$Mb.  %%% EMIL: Nem inkább bitvektór?
 
 Az első négymilliárd szám szitálása a következő képpen indítható el:
 
@@ -222,7 +223,7 @@ szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1
 \end{lstlisting}
 }
 
-Ennek eredmény 4 bittérképfájl, amit a db mappába ment.
+Ennek eredmény 4 bittérképfájl, amit a db mappába ment.  %%% EMIL: Az előző üres sort kitörölném, mert ez a mondat az előző bekezdéshez tartozik.
 
 A generator programot több féle képpen is lehet indítani.
 Mindegyik esetben két paramétert kell megadni az indításhoz,
@@ -232,7 +233,7 @@ A kezdő számot meg lehet adni decimálisan is, vagy hexadecimálisan is,
 "0x" prefixszel. A szegmensek számát is kétféle képpen lehet szabályozni.
 Az egyik lehetőség fix számú szegmens megadása, decimálisan.
 A másik mód a háttértáron fenntartandó szabad hely átadása, decimálisan,
-vagy "0x" prefixszel hexadecimálisan.
+vagy "0x" prefixszel hexadecimálisan.  %%% EMIL: Ezt nem árt részletezni, hogy a 'segments' (ami 'numsegments' is lehetne) és a 'reserve-space' paraméterrel lehet megadni.  Ezek viselkedését lehet nem árt pontosabban megadni.
 
 {\tiny
 \begin{lstlisting}[language=bash]
