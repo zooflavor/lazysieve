@@ -74,14 +74,14 @@ Budapest, 2018
 
 \chapter{Bevezetés}
 
-%%%EMIL: Ezeket a mondatokat feltételezem majd kifejted rendesen.
+%%% EMIL: Ezeket a mondatokat feltételezem majd kifejted rendesen.
 Sziták összehasonlítása azonos környezetben.
 Hatékonyság összehasonlítása az elmélet szerint várható értékekkel.
 Ellenőrzésként a prímek néhány statisztikájának összevetése az elméleti értékekkel,
 és az ismert eredményekkel.
 Hatékonyság és implementálhatóság.
 
-%%%EMIL: Ötlet/javaslat: szétszedni kisebb fájlokba a dolgot include-okkal.
+%%% EMIL: Ötlet/javaslat: szétszedni kisebb fájlokba a dolgot include-okkal.
 \chapter{Felhasználói dokumentáció}
 
 \section{A megoldott feladat}
@@ -90,20 +90,20 @@ A program lehetővé teszi különböző sziták futási idejének ábrázolás�
 és összevetését elméleti becsült értékekkel.
 A programmal egyéb forrásból származó minták megjelenítése is lehetséges.
 
-%%%EMIL: Helyesírás ellenőrzős van az editorodban? Ha nincs akkor legyen! Ha emacs akkor könnyen tudok segíteni ebben a kérdésben. (ld hiányzó 'l' betű).
+%%% EMIL: Helyesírás ellenőrzős van az editorodban? Ha nincs akkor legyen! Ha emacs akkor könnyen tudok segíteni ebben a kérdésben. (ld hiányzó 'l' betű).
 A prímszámok statisztikáinak előállításához a programhoz tartozik egy optimalizált
 szita-implementáció, amivel $2^{64}$-ig lehet szitálni, és az eredményt rögzíteni.
-Az elmentett eredményeket a program egy külön része összesíti néhány alapstatisztikára.  %%%EMIL: "...összesíti alapstatisztikára..." ezzel a kifejezéssel nem tudom találkoztam-e... nyelvi kérdés, és világos mit jelent, lehet hogy az én hiányosságom... nem tudom így használják-e.
+Az elmentett eredményeket a program egy külön része összesíti néhány alapstatisztikára.  %%% EMIL: "...összesíti alapstatisztikára..." ezzel a kifejezéssel nem tudom találkoztam-e... nyelvi kérdés, és világos mit jelent, lehet hogy az én hiányosságom... nem tudom így használják-e.
 
-%%%EMIL: Ezt lehet érdemes összevonni az előző bekezdéssel, ott is emlegetsz implementációkat.
+%%% EMIL: Ezt lehet érdemes összevonni az előző bekezdéssel, ott is emlegetsz implementációkat.
 Különböző szita-algoritmusok futási idejének összehasonlításához a program tartalmazza
 Atkin szitájának egy implementációját, és Eratosztenész szitájának néhány variációját.
 
 \section{Felhasznált módszerek}
 
 A program két fő részből áll.
-%%%EMIL: Ide egy \subsection{Első rész/Első program}???
-A prímszámok generátora C-99 nyelven készült el.  %%%EMIL: A '-99' fontos? Simán C nem elég? Esetleg: "C nyelve (C-99 szabvány)..."? (a másik rész az Java... úgy hogy...)
+%%% EMIL: Ide egy \subsection{Első rész/Első program}???
+A prímszámok generátora C-99 nyelven készült el.  %%% EMIL: A '-99' fontos? Simán C nem elég? Esetleg: "C nyelve (C-99 szabvány)..."? (a másik rész az Java... úgy hogy...)
 A program csak parancssorból futtatható, és a sztenderd könvytári függvényekből
 is csak néhányat használ a memóriájában előállítótt eredmények fájlba írásához.
 A C nyelv választását a hatékony végrehajtás és memórafelhasználás, és
@@ -122,13 +122,14 @@ résszegemensekre osztja,
 Továbbá nagyobb prímeknek csak harminccal relatív prím többszöröseit veszi figyelembe.
 
 A program többi része a Java környezethez készült, a képzésben betöltött szerepe és
-a hordozhatósága miatt.  %%%EMIL: Ez a mondat mintha kicsit túl lenne rizsázva.
+a hordozhatósága miatt.  %%% EMIL: Ez a mondat mintha kicsit túl lenne rizsázva.
 A minták és függvények ábrázolásához használt Swing grafikus könyvtár
 a Java környezet része, egyszerű, hordozható, támogatja az élsimítást,
 és a sebessége elfogadható a feladatra.
 A Java sztenderd konténerosztájai habár kényelmesen használhatóak, és változatosak,
 de sebesség és memóriakihasználtsági problémák miatt több helyen is alacsonyabb szintű
-megoldást kellett választani.  %%%EMIL: Most kezdek azon morfondírozni hogy itt sokat írsz a fejlesztői döntésekről és keveset a program felhasználásáról. Ezt majd érdemes lesz figyelembe venni.
+megoldást kellett választani.  %%% EMIL: Most kezdek azon morfondírozni hogy itt sokat írsz a fejlesztői döntésekről és keveset a program felhasználásáról. Ezt majd érdemes lesz figyelembe venni.
+%%% EMIL: Itt ha gondolod inkább ilyen Gauss és hasonló prímek eloszlására vonatkozó rizsát lehet írni és valahogy összekötni azzal hogy mit old meg a program (ahelyett hogy leírod hogy HOGYAN oldja meg ezeket)
 
 A program a mintákat alapfüggvények lineáris kombinációjával képes közelíteni,
 a legkisebb négyzetek módszerével. A minták elemeinek nagy száma, és a mintaértékek
@@ -156,17 +157,19 @@ edényekbe csoportosító megoldás.
 A sziták között kapott helyet a próbaosztás, és az erős pszeudo-prím teszt is,
 de ezek a lassúságuk miatt csak igen rövid tartományok ellenőrzésére alkalmasak.
 
-%%%EMIL: Ez nem teljesen világos, szóval van egy nagy és gyors szita C-ben és több kisebb és lassabb szita plusz egy megjelenítő a Java programban. Ez nagyon alacsony prioritású megjegyzés, azaz szinte csak kérdés. Jó gondolom hogy talán "szebb" lenne ha a szitálást egyik program csinálná, a megjelenítést meg a másik - vagy valamit nem veszek figyelembe?
+%%% EMIL: Ez nem teljesen világos, szóval van egy nagy és gyors szita C-ben és több kisebb és lassabb szita plusz egy megjelenítő a Java programban. Ez nagyon alacsony prioritású megjegyzés, azaz szinte csak kérdés. Jó gondolom hogy talán "szebb" lenne ha a szitálást egyik program csinálná, a megjelenítést meg a másik - vagy valamit nem veszek figyelembe?
 
 \section{A program telepítése és futtatása}
 
 A program futtatásához Windows vagy Linux operációs rendszer szükséges,
 legalább 4GB szabad memóriával.
 A Java program futtatásához JRE8 szükséges, a fordításához JDK8.
-A C program fordításához C99 szabványú fordítóprogram kell.
+A C program fordításához C99 szabványú fordítóprogram kell.  %%% EMIL: Konzisztensen C-99 vagy C99-et használj (vagy sima C-t)
 A program fejlesztése és tesztelése OpenJDK8-cal és GCC 7.3-mal történt
 Linux operációs rendszeren.
 
+%%% EMIL: A "tarball"-t tökéletesen tudom micsoda, nem tom hogy mennyire "magyar" kifejezés és gondold meg hogy akarod-e használni a dolgozatban (nekem tetszik, én támogatom használatát).  És azt is lehet érdemes oda írni hogy milyen/melyik tarball-ról beszélünk, "Programot tartalmazó tarball", "CDn mellékleten található tarball" "Githubról letölthető tarball".
+%%% EMIL: A másik dolog amit támogatok hogy beírod a github repo url-jét is.
 A tarball a Java programot lefordítva is tartalmazza,
 kicsomagolás után azonnal futtatható.
 A C programot a generator könyvtárban található Makefile segítségével lehet lefordítani:
@@ -175,6 +178,8 @@ A C programot a generator könyvtárban található Makefile segítségével leh
 generator$ make clean build
 \end{lstlisting}
 }
+
+%%% EMIL: Ez a szöveg is a \tiny{..}ban van, és furcsák a sortávolságok.  A listings bash beállításait érdemes piszkálni, hogy automatikusan azt csinálja amit szeretnél. https://tex.stackexchange.com/questions/180222/how-to-change-font-size-for-specific-lstlisting
 
 A Java program a NetBeans 8-as verziójával készült,
 parancssorból a project ant fájlának segítségével lehet
