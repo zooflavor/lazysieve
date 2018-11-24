@@ -416,7 +416,7 @@ folyamatot.
 
 Az ellenőrzést parancssorból is lehet futtatni a check-segments scripttel.
 A script első paraméterében a referencia módszerét várja,
-ami lehet "sieve", vagy "test", a paraméterek maradéke az ellenőrizendő
+ami lehet "sieve", vagy "test", a paraméterek maradéka az ellenőrizendő
 szegmensek kezdőszáma kell legyen. Ha egy kezdet sincs megadva, akkor
 a program az adatbázis könyvtárban található összes szegmensfájlt ellenőrzi.
 
@@ -458,6 +458,7 @@ Az ellenőrizhető sziták nevei:
 
 \begin{itemize}
 \item atkin: Atkin szitája
+  %%% EMIL: Ezeket amikor először említed akkor \cite{} paranccsal hivatkozz rájuk https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex
 \item cols: Cache optimized linear sieve
 \item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
 \item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
@@ -468,6 +469,7 @@ Az ellenőrizhető sziták nevei:
 	pl. buckets-3 8as számrendszerben számol
 \item trial-division: próbaosztás
 \end{itemize}
+%%% EMIL: Ezeket a módszereket definiáltad? Akár mennyire triviális és jól ismertek is (mint pl. a SOE - sieve of eratosthenese) akkor is le kell írni mit csinál (és lehet hogy ezt pl a fejlesztői dokumentációban kell, és itt meg hivatkozni hogy "pontos leírást pásd itt és itt").
 
 A sziták nevei listázhatóak a list-sieves scripttel, a describe-sieves script rövid leírást
 is ad.
@@ -484,7 +486,7 @@ hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
 {\color{red}screenshot}
 
-\section{Minta megjelenítése}
+\section{Minta megjelenítése} %%% EMIL: a "minta" nem tudom a legjobb elnevezés-e, prímek eloszlásáról beszélünk, nem?  Esetleg a $\pi(x)$ függvényt is bevezethetnéd 
 
 A program a grafikus felületén képes mintákat ábrázolni, a mintákat függvényekkel
 közelíteni, és ezeket a függvényeket is ábrázolni, valamint kiszámolja a közelítések
@@ -505,7 +507,7 @@ A felső harmada az összes betöltött mintát mutatja.
 Az ablak jobb oldalának alsó két harmadában az itt kiválaszott minta részletei
 látszódnak.
 
-\subsection{Minta hozzáadása}
+\subsection{Minta hozzáadása}  %%% EMIL: Ez itt "hozzáadása" nem inkább beolvasása... betöltése... hmm... nem tom.
 
 A "Minta hozzáadásánál" három adatforrásból lehet választani.
 A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő,
@@ -513,7 +515,7 @@ az első oszlopot x, a második oszlopot y értékeknek próbálja értelmezni,
 a fel nem ismert sorokat eldobja. Ha az első sor első oszlopa "BARS",
 akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 
-A "Prímstatisztikák" a generator kimeneteléből összesített statisztikák,
+A "Prímstatisztiák" a generator kimeneteléből összesített statisztikák,
 amiket az adatbáziskönyvtárban keres.
 A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
 A statisztikáknak négy csoportja van. A prímek száma, és néhány kiemelt alakú prím száma
@@ -590,11 +592,13 @@ Egy kiválasztott közelítés részletei az ablak jobb alsó sarkában látszó
 itt megváltoztatható a közelítéshez rendelt szín, és eltávolítható a közelítés.
 A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja
 a lineáris kombinációban.
+%%% EMIL: Ezeket egy kicsit matekossan is leírhatod... megadod az f1 f2 függvényeket és a program megkeresi a lambda1 lambda2 skalárokat...
 
 {\color{red}screenshot}
 
 \section{Sziták mérése scriptekkel}
 
+%%% EMLI: Ez nem inkonzisztens? Eddi úgy volt hogy egy szekcióban egy funkció (csoportot) írtál le, és ott volt a GUI és CLI végrehajtás is, nem így külön szekcióban, nem? (és hogy a francba mondják magyarul a "sectiont"?)
 A sziták futási idejének mintáit parancssorból is elő lehet állítani
 a measure-sieve scripttel, paraméterként meg kell adni ebben a sorrendben:
 
@@ -629,7 +633,7 @@ seg-ns.csv seg-ops.csv sum-ns.csv sum-ops.csv
 \end{lstlisting}
 }
 
-A mérések megkönnyítéséhez a measure-sieves script az összes szitét megméri,
+A mérések megkönnyítéséhez a measure-sieves script az összes szitát megméri,
 és az eredményt a samples könyvtárba menti.
 
 {\color{red}teljes. generator. atkin szegmens méret.}
