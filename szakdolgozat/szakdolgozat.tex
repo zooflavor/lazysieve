@@ -277,8 +277,8 @@ táblafájlokból is kiolvashatóak.
 \section{Mintaadatbázis karbantartása}
 
 A mintaadatbázis a lementett szitatáblák összesített statisztikáit tárolja.
-A program az adatbázis könyvtárában kétfajta fájlt vesz figyelembe.
-A "primes\textbackslash.[0-9a-f]\{16\}" reguláris kifejezésnek megfelelő nevű
+A program az adatbázis könyvtárában kétfajta fájlt vesz figyelembe.  %%% EMLI: A MELYIK program?
+A "primes\textbackslash.[0-9a-f]\{16\}" reguláris kifejezésnek megfelelő nevű  %%% EMIL: \fonttt{...} parancsot ismered?
 fájlok a szegmensek szitatáblái.
 A fájlnév második fele a szegmens kezdőszáma hexadecimálisan.
 A fájl a páratlan számok bittérképe mellett tartalmazza a szegmens
@@ -286,7 +286,7 @@ szitálásának megkezdésére, és a szitálására fordított időt,
 valamint ellenőrzésképpen a szegmens kezdőszámát is.
 
 A szitatáblák mellett az adatbázis tartalmazhatja szegmensek összesített
-statisztikáit is, "aggregates" néven. Ez a fájl az eddig összesített
+statisztikáit is, "aggregates" néven. Ez a fájl az eddig összesített  %%% EMIL: LaTeX-ben a "helyett" ``ilyet'' szokás írni.  Az output sokkal szebb
 szegmensről a kövekező információkat tartja nyilván:
 \begin{itemize}
 \item a szegmens kezdőszáma
@@ -300,6 +300,7 @@ $12\mathbb{Z}11$, $4\mathbb{Z}1$, $4\mathbb{Z}3$, $6\mathbb{Z}1$ alakok szerinti
 \item a szegmensben előforduló prímhézagok első előfordulásának helyét,
 és az előfordulások számát.
 \end{itemize}
+%%% EMIL: Ide lehet jöhetne pár példa, hogy ez valójában hogy is néz ki.
 
 Az adatbázison három művelet végezhető:
 \begin{itemize}
@@ -307,9 +308,9 @@ Az adatbázison három művelet végezhető:
 \item Le lehet kérni, hogy eddig hány szegmens van összesítve,
 és melyik a következő hiányzó szegmens.
 Azt is visszaadja, hogy hány szegmensfájl van épp az adatbázis könyvtárában,
-és hogy ezek között van-e olyan, ami nincs összesítve.
+és hogy ezek között van-e olyan, ami nincs összesítve.  %%% EMIL: Mondat eleje, kicsit... kurta...
 
-\item Összesíteni lehet az új szegmensfájlok.
+\item Összesíteni lehet az új szegmensfájlok.  %%% EMIL: ..at?
 
 \item Össze lehet fésülni két összesítőfájlt.
 
@@ -396,6 +397,7 @@ scripts$ ./database import aggregates ../db/aggregates.large
 }
 
 {\color{red}screenshot}
+%%% EMIL: ezt a részt kicst kuszának tartom. Én személy szerint, lehet úgy csinálnam, pl (feltéve hogy már rendesen bevezetted a generátor, init, stb programokat), és akkor először felsorolnám a műveleteket, hogy egy-egy program milyen parancsokat tud, aztán meg külön külön leírnám azok működését. Valahogy "nem elég száraz" a szöveg, egymásba folynak a mondatok... és szerintem itt most épp egy kicsit szárazabb, szakmaibb leírás kellene.
 
 \section{Szitatáblák ellenőrzése}
 
