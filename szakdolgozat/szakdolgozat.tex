@@ -648,6 +648,7 @@ Ehhez keretet kell adjon, hogy azonos paraméterekkel lehessen a sziták futási
 hogy a futási időket a fő algoritmusok határozzák meg, mivel a szitálást felgyorsító
 egyes ötletek nem minden szitán alkalmazhatóak.
 Elvárás, hogy a futási időt eltelt időben, és összeszámolt műveletekben is lehessen mérni.
+%%% EMIL: Itt is érvényes, hogy csomó dolog, mint pl a szita fogalma nincs definiálva.  Akármennyire is trivi. Prímeket keresünk (a prímeket pl nem feltétlenül kell már definiálni), de akár az egyszerű SOE-t is érdemes leírni.
 
 A szitákat szegmentáltan kell megvalósítani, és szabályozhatóvá kell tenni
 a szegmensek méretét, és a szitálás kezdő és végszegmensét. A megvalósítandó sziták:
@@ -682,6 +683,7 @@ adott $n$-ig szitálva legyenek:
 \item a prímhézagok előfordulásának száma
 \item a szitálásra fordított idő
 \end{itemize}
+%%% EMIL: Ez az "ezt kell, azt kell" fogalmazás, nem túl előnyös. Inkább egy saját magadnak írt TODO listának hangzik, és nem diplomamunkának... amúgy a tartalom (a teljes dolgozatban) jó.  Szóval csomó dolog csak normális kijelentő mondatba kell átfogalmazni - azaz csomó dolgot csak normális kijelentő mondatba átfogalmazol (és jó)!
 
 A prímek számát, az ikerprímek számát, és a szitálás idejét
 nem csak a szitált intervallum végén
@@ -692,6 +694,7 @@ parancssorból is el kell tudni végezni, hogy szkriptekkel ez automatizálható
 A statisztikák előállításánál ezen túl még elvárás, hogy a folyamat leállítható,
 és később folytatható legyen.
 
+%%% EMLI: kb eddig olvastam, a többin csak átfutott a szemem... majd mindjárt írok levelet.
 \section{A program komponensei}
 
 \section{A forráskód felosztása}
@@ -736,7 +739,7 @@ Feltételek. Elméleti sebesség.
 A mérések grafikonják pixelei alapján lassú. A beszúrásonkénti elméleti
 $\mathcal{O}(log_{}{|q|})$ ideje se biztató.
 
-\subsection{Bigyó}
+\subsection{Bigyó} %%% EMIL: Ettől SOKKAL jobb nevet kell találni neki!!!!
 
 A bigyó egy monoton prioritásos sor.
 A sor monoton, minden állapotához tartozik egy érték, a sor aktuális pozíciója,
