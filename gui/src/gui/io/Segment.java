@@ -48,7 +48,6 @@ public class Segment implements SieveTable {
 		long[] primeCounts=new long[12];
 		long[] primeGapFrequencies=new long[2048];
 		long[] primeGapStarts=new long[primeGapFrequencies.length];
-		long[] twinPrimes=new long[1];
 		class Aa {
 			long maxPrime=0l;
 			long minPrime=0l;
@@ -69,9 +68,6 @@ public class Segment implements SieveTable {
 					if (0l==primeGapStarts[gap]) {
 						primeGapStarts[gap]=maxPrime;
 					}
-				}
-				if (maxPrime+2l==prime) {
-					++twinPrimes[0];
 				}
 				maxPrime=prime;
 			}
@@ -112,8 +108,7 @@ public class Segment implements SieveTable {
 				primeCounts[1]+primeCounts[7],
 				primeGapFrequencies2, primeGapStarts2,
 				segmentStart/Segment.NUMBERS, segmentEnd, segmentStart,
-				sieveNanos,
-				twinPrimes[0]);
+				sieveNanos);
 	}
 	
 	public int bitIndex(long number) {

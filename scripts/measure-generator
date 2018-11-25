@@ -1,0 +1,50 @@
+#!/bin/bash
+
+rm -rf tmp
+mkdir tmp
+../generator/init.bin tmp
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+BUCKET_BITS=1
+echo "bucket bits,small size,segment start,sieve nanos" > tmp/measure-generator.csv
+while [ "8" -ge "$BUCKET_BITS" ]; do
+	SMALL_SIZE=16
+	while [ "24" -ge "$SMALL_SIZE" ]; do
+		rm -f tmp/generator.bin
+		gcc -o tmp/generator.bin ../generator/generator.c \
+			-DBUCKET_BITS=$BUCKET_BITS \
+			-DSEGMENT_SMALL_SIZE_BITS_LOG2=$SMALL_SIZE \
+			-std=c99 -pedantic -Wall -Werror \
+			-march=native -O3
+		if [ "0" != "$?" ]; then
+			exit 1
+		fi
+		
+		for SEGMENT_START in "0x0000000200000001" "0x0000001000000001" "0x0000008000000001" "0x0000040000000001" "0x0000200000000001" "0x0001000000000001" "0x0008000000000001" "0x0040000000000001" "0x0200000000000001" "0x1000000000000001" "0x8000000000000001"
+		do
+			echo bucket bits $BUCKET_BITS small size $SMALL_SIZE start $SEGMENT_START
+			echo -n "${BUCKET_BITS},${SMALL_SIZE},${SEGMENT_START}," >> tmp/measure-generator.csv
+			tmp/generator.bin tmp start $SEGMENT_START segments 16 | \
+					tail -n 1 | \
+					sed "s/[^0-9]//g" >> tmp/measure-generator.csv
+		done
+		
+		let SMALL_SIZE=$SMALL_SIZE+1
+	done
+	let BUCKET_BITS=$BUCKET_BITS+1
+done
+rm -rf tmp
+cat tmp/measure-generator.csv | \
+		sed "s/0x0000000200000001/33/g" | \
+		sed "s/0x0000001000000001/36/g" | \
+		sed "s/0x0000008000000001/39/g" | \
+		sed "s/0x0000040000000001/42/g" | \
+		sed "s/0x0000200000000001/45/g" | \
+		sed "s/0x0001000000000001/48/g" | \
+		sed "s/0x0008000000000001/51/g" | \
+		sed "s/0x0040000000000001/54/g" | \
+		sed "s/0x0200000000000001/57/g" | \
+		sed "s/0x1000000000000001/60/g" | \
+		sed "s/0x8000000000000001/63/g" | \
+		cat > ../samples/measure-generator.csv

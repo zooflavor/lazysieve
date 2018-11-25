@@ -369,7 +369,7 @@ void sieve() {
 				int index=bucketIndex(positionStart, position);
 				if (0==index) {
 					//this loop runs exactly once
-					//	if all primes>=segment cache size
+					//	if all primes>=SEGMENT_SMALL_SIZE
 					while (positionEnd>position) {
 						segment[(position-segmentStart)>>6]
 								|=1l<<((position-segmentStart)&0x3fl);

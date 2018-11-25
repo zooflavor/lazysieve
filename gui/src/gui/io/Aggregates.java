@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 public class Aggregates {
 	static final int MAGIC=0xd1d1b0b0;
-	static final int VERSION=1;
+	static final int VERSION=0;
 	
 	@FunctionalInterface
 	private static interface PrimeGapConsumer {
@@ -262,12 +262,15 @@ public class Aggregates {
 				new AggregatesConsumer() {
 					private long lastPrime;
 					private long twinPrimes;
+					private final Long two=2l;
+					private final Long zero=0l;
 					
 					@Override
 					public void consume(AggregateBlock aggregateBlock,
 							Progress progress) throws Throwable {
 						Aggregate aggregate=aggregateBlock.get();
-						twinPrimes+=aggregate.twinPrimes;
+						twinPrimes+=aggregate.primeGapFrequencies
+								.getOrDefault(two, zero);
 						if ((0l!=lastPrime)
 								&& (0l!=aggregate.minPrime)
 								&& (lastPrime+2l==aggregate.minPrime)) {

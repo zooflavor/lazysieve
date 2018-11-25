@@ -1,5 +1,5 @@
 #!/bin/bash
-SEGMENTS=33
+SEGMENTS=1024
 DB=../db
 
 function database {

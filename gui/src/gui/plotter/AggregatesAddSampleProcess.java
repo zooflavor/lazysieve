@@ -312,6 +312,13 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 				AggregatesAddSampleProcess.addNewPrimeGapsSample(plotter));
 		menu.add(addNewPrimeGapsItem);
 		
+		JMenuItem addTwinPrimesItem
+				=new JMenuItem("Ikerprímek száma");
+		addTwinPrimesItem.addActionListener((event2)->
+				AggregatesAddSampleProcess
+						.addTwinPrimes(plotter));
+		menu.add(addTwinPrimesItem);
+		
 		JMenuItem addSieveNanosItem
 				=new JMenuItem("Szitálás ideje (szegmensenként)");
 		addSieveNanosItem.addActionListener((event2)->
@@ -325,13 +332,6 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 				AggregatesAddSampleProcess
 						.addSieveNanosSample(plotter, true));
 		menu.add(addSieveNanosSumItem);
-		
-		JMenuItem addTwinPrimesItem
-				=new JMenuItem("Ikerprímek száma");
-		addTwinPrimesItem.addActionListener((event2)->
-				AggregatesAddSampleProcess
-						.addTwinPrimes(plotter));
-		menu.add(addTwinPrimesItem);
 		
 		return menu;
 	}

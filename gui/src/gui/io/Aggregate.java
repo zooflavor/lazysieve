@@ -27,14 +27,13 @@ public class Aggregate {
 	public final long segmentEnd;
 	public final long segmentStart;
 	public final long sieveNanos;
-	public final long twinPrimes;
 	
 	public Aggregate(long aggregateNanos, long initNanos,
 			long lastModification, long maxPrime, long minPrime,
 			long primeCount12Z11, long primeCount4Z1, long primeCount4Z3,
 			long primeCount6Z1, Map<Long, Long> primeGapFrequencies,
 			Map<Long, Long> primeGapStarts, long segment, long segmentEnd,
-			long segmentStart, long sieveNanos, long twinPrimes) {
+			long segmentStart, long sieveNanos) {
 		this.aggregateNanos=aggregateNanos;
 		this.initNanos=initNanos;
 		this.lastModification=lastModification;
@@ -52,7 +51,6 @@ public class Aggregate {
 		this.segmentEnd=segmentEnd;
 		this.segmentStart=segmentStart;
 		this.sieveNanos=sieveNanos;
-		this.twinPrimes=twinPrimes;
 	}
 	
 	public static Aggregate readFrom(DataInput input) throws IOException {
@@ -84,12 +82,10 @@ public class Aggregate {
 		long segmentEnd=input.readLong();
 		long segmentStart=input.readLong();
 		long sieveNanos=input.readLong();
-		long twinPrimes=input.readLong();
 		return new Aggregate(aggregateNanos, initNanos, lastModification,
 				maxPrime, minPrime, primeCount12Z11, primeCount4Z1,
 				primeCount4Z3, primeCount6Z1, primeGapFrequencies,
-				primeGapStarts, segment, segmentEnd, segmentStart, sieveNanos,
-				twinPrimes);
+				primeGapStarts, segment, segmentEnd, segmentStart, sieveNanos);
 	}
 	
 	public void writeTo(DataOutput output) throws IOException {
@@ -116,6 +112,5 @@ public class Aggregate {
 		output.writeLong(segmentEnd);
 		output.writeLong(segmentStart);
 		output.writeLong(sieveNanos);
-		output.writeLong(twinPrimes);
 	}
 }
