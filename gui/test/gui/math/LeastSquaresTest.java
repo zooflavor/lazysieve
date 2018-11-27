@@ -14,7 +14,7 @@ import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-public class RegressionTest {
+public class LeastSquaresTest {
 	private static final Set<RealFunction> BLACKLIST
 			=new HashSet<>(Arrays.asList(
 					Functions.ONE_PER_LNLNX,
@@ -22,7 +22,9 @@ public class RegressionTest {
 					Functions.ONE_PER_X,
 					Functions.ONE_PER_X2,
 					Functions.X_PER_LNLNX,
-					Functions.X_PER_LNX));
+					Functions.X_PER_LNLNX_LNX,
+					Functions.X_PER_LNX,
+					Functions.X_PER_LN2X));
 	
 	@Test
 	public void test() throws Throwable {
@@ -71,9 +73,9 @@ public class RegressionTest {
 		for (double xx=4.0; 64.0>xx; xx+=1.0/16.0) {
 			sample.put(xx, noisy.valueAt(xx));
 		}
-		LinearCombinationFunction regression=Regression.regression(functions,
+		LinearCombinationFunction regression=LeastSquares.regression(functions,
 				Function.identity(), Sum::priority, Progress.NULL,
-				sample.entrySet(), Sum::priority);
+				Sum::priority, sample.entrySet(), true);
 		boolean backlist=false;
 		for (RealFunction function: functions) {
 			if (BLACKLIST.contains(function)) {
@@ -90,7 +92,7 @@ public class RegressionTest {
 			}
 		}
 		assertTrue(
-				Regression.distanceSquared(regression, Progress.NULL,
+				LeastSquares.distanceSquared(regression, Progress.NULL,
 						sample.entrySet(), Sum::priority)
 				<=sample.size()*error*error);
 	}

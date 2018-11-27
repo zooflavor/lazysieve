@@ -6,7 +6,6 @@ import gui.io.Database;
 import gui.io.PrimesProducer;
 import gui.io.Segment;
 import gui.io.Segments;
-import gui.io.SmallPrimesProducer;
 import gui.math.UnsignedLong;
 import gui.ui.CloseButton;
 import gui.ui.GuiWindow;
@@ -224,8 +223,8 @@ public class CheckSegments extends GuiWindow<JFrame> {
 			return;
 		}
 		segmentStarts.forEach(Segment::checkSegmentStart);
-		PrimesProducer largePrimes=database;
-		PrimesProducer smallPrimes=new SmallPrimesProducer();
+		PrimesProducer largePrimes=database.largePrimes();
+		PrimesProducer smallPrimes=Database.smallPrimes();
 		Segment readSegment=new Segment();
 		Segment generatedSegment=new Segment();
 		for (int ii=0; segmentStarts.size()>ii; ++ii) {

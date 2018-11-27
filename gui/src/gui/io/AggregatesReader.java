@@ -1,7 +1,6 @@
 package gui.io;
 
 import gui.ui.progress.Progress;
-import gui.util.MeasuringInputStream;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;

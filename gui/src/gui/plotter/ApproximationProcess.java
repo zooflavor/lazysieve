@@ -1,9 +1,9 @@
 package gui.plotter;
 
 import gui.math.CheckedFunction;
+import gui.math.LeastSquares;
 import gui.math.LinearCombinationFunction;
 import gui.math.RealFunction;
-import gui.math.Regression;
 import gui.math.Sum;
 import gui.ui.GuiProcess;
 import java.util.List;
@@ -24,18 +24,19 @@ class ApproximationProcess extends GuiProcess<Plotter, JFrame> {
 	
 	@Override
 	protected void background() throws Throwable {
-		function=Regression.regression(
+		function=LeastSquares.regression(
 				functions,
 				CheckedFunction::new,
-				Sum::priority,
+				Sum::preferred,
 				progress.subProgress(0.0, null, 0.9),
+				Sum::preferred,
 				samplePanel.sample().asDoubles(),
-				Sum::priority);
-		error=Regression.distanceSquared(
+				true);
+		error=LeastSquares.distanceSquared(
 				function,
 				progress.subProgress(0.9, null, 1.0),
 				samplePanel.sample().asDoubles(),
-				Sum::priority);
+				Sum::preferred);
 	}
 	
 	@Override

@@ -16,7 +16,7 @@ import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Database implements PrimesProducer {
+public class Database {
 	public static final String AGGREGATES="aggregates";
 	public static final String AGGREGATES_TEMP="aggregates.tmp";
 	public static final Pattern SEGMENT_PATTERN
@@ -128,37 +128,37 @@ public class Database implements PrimesProducer {
 				segments.info());
 	}
 	
-	@Override
-	public void primes(PrimeConsumer consumer, long max, Progress progress)
-			throws Throwable {
-		if (0>Long.compareUnsigned(UnsignedLong.MAX_PRIME, max)) {
-			throw new IllegalArgumentException();
-		}
-		if (3l>max) {
-			return;
-		}
-		long lastPrime=1l;
-		Segment segment=new Segment();
-		for (long ss=0; 4>ss; ++ss) {
-			long segmentStart=ss*Segment.NUMBERS+1l;
-			if (0<Long.compareUnsigned(segmentStart, max)) {
+	public PrimesProducer largePrimes() {
+		return (consumer, max, progress)->{
+			if (0>Long.compareUnsigned(UnsignedLong.MAX_PRIME, max)) {
+				throw new IllegalArgumentException();
+			}
+			if (3l>max) {
 				return;
 			}
-			segment.read(this, segmentStart);
-			for (int bitIndex=0; Segment.BITS>bitIndex; ++bitIndex) {
-				if (0==(bitIndex&1023)) {
-					progress.progress(1.0*lastPrime/max);
-				}
-				if (!segment.isPrime(bitIndex)) {
-					continue;
-				}
-				lastPrime=segment.number(bitIndex);
-				if (0<Long.compareUnsigned(lastPrime, max)) {
+			long lastPrime=1l;
+			Segment segment=new Segment();
+			for (long ss=0; 4>ss; ++ss) {
+				long segmentStart=ss*Segment.NUMBERS+1l;
+				if (0<Long.compareUnsigned(segmentStart, max)) {
 					return;
 				}
-				consumer.prime(lastPrime);
+				segment.read(this, segmentStart);
+				for (int bitIndex=0; Segment.BITS>bitIndex; ++bitIndex) {
+					if (0==(bitIndex&1023)) {
+						progress.progress(1.0*lastPrime/max);
+					}
+					if (!segment.isPrime(bitIndex)) {
+						continue;
+					}
+					lastPrime=segment.number(bitIndex);
+					if (0<Long.compareUnsigned(lastPrime, max)) {
+						return;
+					}
+					consumer.prime(lastPrime);
+				}
 			}
-		}
+		};
 	}
 	
 	public Segments readSegments(Progress progress) throws Throwable {
@@ -279,25 +279,34 @@ public class Database implements PrimesProducer {
 				.resolve(String.format("primes.%1$016x", segmentStart));
 	}
 	
+	public static PrimesProducer smallPrimes() {
+		return (consumer, max, progress)->{
+			max=UnsignedLong.min(max, SMALL_PRIMES_MAX);
+			IntList primes=new IntList(4096);
+			for (long ii=3l; max>=ii; ii+=2l) {
+				progress.progress(1.0*ii/SMALL_PRIMES_MAX);
+				boolean prime=true;
+				for (int jj=0; primes.size()>jj; ++jj) {
+					long prime2=primes.get(jj);
+					if (ii<prime2*prime2) {
+						break;
+					}
+					if (0l==ii%prime2) {
+						prime=false;
+						break;
+					}
+				}
+				if (prime) {
+					primes.add((int)ii);
+					consumer.prime(ii);
+				}
+			}
+			progress.finished();
+		};
+	}
+	
 	public static IntList smallPrimes(Progress progress) throws Throwable {
 		IntList primes=new IntList(4096);
-		for (long ii=3l; SMALL_PRIMES_MAX>=ii; ii+=2l) {
-			progress.progress(1.0*ii/SMALL_PRIMES_MAX);
-			boolean prime=true;
-			for (int jj=0; primes.size()>jj; ++jj) {
-				long prime2=primes.get(jj);
-				if (ii<prime2*prime2) {
-					break;
-				}
-				if (0l==ii%prime2) {
-					prime=false;
-					break;
-				}
-			}
-			if (prime) {
-				primes.add((int)ii);
-			}
-		}
 		return primes;
 	}
 }

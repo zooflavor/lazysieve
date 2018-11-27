@@ -228,7 +228,7 @@ public class CheckSieve extends GuiWindow<JFrame> {
 		Segment sieveSegment=new Segment();
 		Sieve sieve=sieveDescriptor.factory.get();
 		sieve.reset(
-				database,
+				database.largePrimes(),
 				progress.subProgress(0.0, "szita inicializálása", 0.05),
 				1l<<sieveDescriptor.smallSegmentSizeSuggestedLog2,
 				start);
@@ -243,7 +243,7 @@ public class CheckSieve extends GuiWindow<JFrame> {
 			referenceSegment.clear(0l, true, segmentStart);
 			sieveSegment.clear(0l, sieve.defaultPrime(), segmentStart);
 			ReferenceSegment.SIEVE.generate(
-					database,
+					database.largePrimes(),
 					subProgress2.subProgress(
 							0.0, "referencia generálása", 0.4),
 					referenceSegment);

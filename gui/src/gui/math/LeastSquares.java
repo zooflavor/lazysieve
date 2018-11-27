@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Regression {
-	private Regression() {
+public class LeastSquares {
+	private LeastSquares() {
 	}
 	
 	public static double distanceSquared(RealFunction function,
@@ -33,8 +33,9 @@ public class Regression {
 			List<RealFunction> functions,
 			Function<RealFunction, RealFunction> functionTransform,
 			Supplier<Sum> functionSumFactory, Progress progress,
+			Supplier<Sum> regressionSumFactory,
 			Collection<Map.Entry<Double, Double>> sample,
-			Supplier<Sum> regressionSumFactory) throws Throwable {
+			boolean totalPivoting) throws Throwable {
 		List<RealFunction> transformedFunctions
 				=new ArrayList<>(functions.size());
 		for (int ii=0; functions.size()>ii; ++ii) {
@@ -66,7 +67,10 @@ public class Regression {
 				progress.subProgress(0.95-0.45/functions.size(), null, 0.95),
 				sum);
 		double[][] coefficients=Matrix.gaussianElimination(
-				xxtxx, xxtyy, progress.subProgress(0.95, null, 1.0), true);
+				xxtxx,
+				xxtyy,
+				progress.subProgress(0.95, null, 1.0),
+				totalPivoting);
 		List<Double> coefficients2=new ArrayList<>(coefficients.length);
 		for (int ii=0; coefficients.length>ii; ++ii) {
 			coefficients2.add(coefficients[ii][0]);

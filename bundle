@@ -11,4 +11,4 @@ tar --exclude "db/*" \
 	--exclude "generator/*.bin" \
 	--exclude "gui/build" \
 	--exclude "gui/nbproject/private" \
-	-czf "szakdolgozat-$(date '+%F-%H-%M')".tar.gz db generator gui scripts szakdolgozat
+	-czf "szakdolgozat-$(date '+%F-%H-%M')".tar.gz db generator gui samples scripts szakdolgozat

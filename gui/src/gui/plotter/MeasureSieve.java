@@ -557,7 +557,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
                     null,
                     1.0*(mm+1l)/measurements);
             sieve.reset(
-                    database,
+                    database.largePrimes(),
                     subProgress.subProgress(0.0, "init", 0.05),
                     segmentSize,
                     startSegment*segmentSize+1l);
