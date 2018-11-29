@@ -34,6 +34,13 @@ public class Aggregate {
 			long primeCount6Z1, Map<Long, Long> primeGapFrequencies,
 			Map<Long, Long> primeGapStarts, long segment, long segmentEnd,
 			long segmentStart, long sieveNanos) {
+		if ((primeGapFrequencies.size()!=primeGapStarts.size())
+				|| (!primeGapFrequencies.keySet().containsAll(
+						primeGapStarts.keySet()))
+				|| (!primeGapStarts.keySet().containsAll(
+						primeGapFrequencies.keySet()))) {
+			throw new IllegalArgumentException();
+		}
 		this.aggregateNanos=aggregateNanos;
 		this.initNanos=initNanos;
 		this.lastModification=lastModification;
@@ -53,7 +60,8 @@ public class Aggregate {
 		this.sieveNanos=sieveNanos;
 	}
 	
-	public static Aggregate readFrom(DataInput input) throws IOException {
+	public static Aggregate readFrom(DataInput input, int version)
+			throws IOException {
 		long aggregateNanos=input.readLong();
 		long initNanos=input.readLong();
 		long lastModification=input.readLong();
@@ -63,20 +71,39 @@ public class Aggregate {
 		long primeCount4Z1=input.readLong();
 		long primeCount4Z3=input.readLong();
 		long primeCount6Z1=input.readLong();
-		int primeGapFrequenciesSize=input.readInt();
-		Map<Long, Long> primeGapFrequencies
-				=new HashMap<>(primeGapFrequenciesSize);
-		for (int ii=primeGapFrequenciesSize; 0<ii; --ii) {
-			long gap=input.readLong();
-			long frequency=input.readLong();
-			primeGapFrequencies.put(gap, frequency);
-		}
-		int primeGapStartsSize=input.readInt();
-		Map<Long, Long> primeGapStarts=new HashMap<>(primeGapStartsSize);
-		for (int ii=primeGapStartsSize; 0<ii; --ii) {
-			long gap=input.readLong();
-			long start=input.readLong();
-			primeGapStarts.put(gap, start);
+		Map<Long, Long> primeGapFrequencies;
+		Map<Long, Long> primeGapStarts;
+		switch (version) {
+			case 0:
+				int primeGapFrequenciesSize=input.readInt();
+				primeGapFrequencies=new HashMap<>(primeGapFrequenciesSize);
+				for (int ii=primeGapFrequenciesSize; 0<ii; --ii) {
+					long gap=input.readLong();
+					long frequency=input.readLong();
+					primeGapFrequencies.put(gap, frequency);
+				}
+				int primeGapStartsSize=input.readInt();
+				primeGapStarts=new HashMap<>(primeGapStartsSize);
+				for (int ii=primeGapStartsSize; 0<ii; --ii) {
+					long gap=input.readLong();
+					long start=input.readLong();
+					primeGapStarts.put(gap, start);
+				}
+				break;
+			case 1:
+				int primeGapSize=input.readInt();
+				primeGapFrequencies=new HashMap<>(primeGapSize);
+				primeGapStarts=new HashMap<>(primeGapSize);
+				for (int ii=primeGapSize; 0<ii; --ii) {
+					Long gap=input.readLong();
+					Long frequency=input.readLong();
+					Long start=input.readLong();
+					primeGapFrequencies.put(gap, frequency);
+					primeGapStarts.put(gap, start);
+				}
+				break;
+			default:
+				throw new IllegalArgumentException(Integer.toString(version));
 		}
 		long segment=input.readLong();
 		long segmentEnd=input.readLong();
@@ -100,13 +127,10 @@ public class Aggregate {
 		output.writeLong(primeCount6Z1);
 		output.writeInt(primeGapFrequencies.size());
 		for (Map.Entry<Long, Long> entry: primeGapFrequencies.entrySet()) {
-			output.writeLong(entry.getKey());
+			Long gap=entry.getKey();
+			output.writeLong(gap);
 			output.writeLong(entry.getValue());
-		}
-		output.writeInt(primeGapStarts.size());
-		for (Map.Entry<Long, Long> entry: primeGapStarts.entrySet()) {
-			output.writeLong(entry.getKey());
-			output.writeLong(entry.getValue());
+			output.writeLong(primeGapStarts.get(gap));
 		}
 		output.writeLong(segment);
 		output.writeLong(segmentEnd);

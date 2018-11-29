@@ -1,6 +1,6 @@
 package gui.sieve.eratosthenes;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
 import gui.sieve.Sieve;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SimpleBucketSieve extends SegmentedEratosthenesianSieve {
+public class SimpleBucketSieve extends EratosthenesianSieve {
 	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(new Sieve.Descriptor(
 							()->new SimpleBucketSieve(),
@@ -58,7 +58,7 @@ public class SimpleBucketSieve extends SegmentedEratosthenesianSieve {
 	}
 	
 	@Override
-	protected void reset(PrimesProducer primesProducer, Progress progress)
+	protected void reset(PrimeProducer primeProducer, Progress progress)
 			throws Throwable {
 		operationCounter=OperationCounter.NOOP;
 		for (int ii=buckets.length-1; 0<=ii; --ii) {
@@ -70,7 +70,7 @@ public class SimpleBucketSieve extends SegmentedEratosthenesianSieve {
 		}
 		long start=start();
 		addPrimePosition=start-2l;
-		primesProducer.primes(
+		primeProducer.primes(
 				(prime)->addPrime(
 						UnsignedLong.firstSievePosition(prime, start),
 						prime),

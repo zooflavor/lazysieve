@@ -95,60 +95,103 @@ Az utolsó $2^{34}$ szám kihagyása egyszerű
 optimalizáció, így a programban az éppen
 szitált szám változója sosem csordul túl.
 
-Az init és a generator csak konzol módban futtaható.
+Az init és a generator csak konzol módban futtatható.
 A program többi része a gui nevű Java program része,
 de az automatizáláshoz az adatbázissal kapcsolatos műveletei
-parancssorból is elérhetőek, ezek az adatbázis információ lekérése,
-az új szegmensfájlok ellenőrzése, és összesítése, és az összesítőfájlök összefésülése.
-Az időigényessége miatt a futási idő összehasonlításához implementált
-sziták ellenőrzése is futtatható grafikus felületen, és parancssorból is.
+parancssorból is elérhetőek, ezek az adatbázis információ lekérése, az új szegmensfájlok ellenőrzése, és összesítése, és az összesítőfájlok összefésülése.
+Az időigényessége miatt a futási idő összehasonlításához implementált sziták ellenőrzése is futtatható grafikus felületen, és parancssorból is.
 
 Az adatbázis információ kilistázza a szegmensfájlok számát,
-az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét
-és végét, a még nem összesített szegmensfájlok számát.
-Ezek alapján eldönthető, szitálást vagy az összesítést
-hogyan kell folytatni, hogy a teljes $2^{64}$-ig intervallum statisztikái elkészüljenek.
+az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét és végét, a még nem összesített szegmensfájlok számát.
+Ezek alapján eldönthető, szitálást vagy az összesítést hogyan kell folytatni, hogy a teljes $2^{64}$-ig intervallum statisztikái elkészüljenek.
 
-A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző
-eratosthenészi szita, vagy az erős pszeudo-prímteszt előállítja
-a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
-A szita lényegesen lassabb, mint a generator, és a pszeudo-prímteszt
-időigénye miatt intervallumok szitálásra nem alkalmas,
-a szegmensfájlok ellenőrzése alapvetően a generator helyességének
-tesztelésére való, minden összesített szegmens ellenőrzése megtöbbszörözné
-a szükséges időt.
+A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző eratosthenészi szita, vagy az erős pszeudo-prímteszt előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
+A szita lényegesen lassabb, mint a generator, és a pszeudo-prímteszt időigénye miatt intervallumok szitálásra nem alkalmas, a szegmensfájlok ellenőrzése alapvetően a generator helyességének
+tesztelésére való, minden összesített szegmens ellenőrzése megtöbbszörözné a szükséges időt.
 
-Az összesítő az adatbáziskönyvtárban található szegmensfájlok statisztikáit készíti el,
-és ezeket a szegmensstatisztikákat szintén az adatbázisban tárolja.
-A szegmensstatisztikák alapján a végső statisztikákat közvetlenül
-a megjelenítés előtt készíti el az összesítő.
-Az összesítéshez sem szükséges, hogy a szegmensek sorban kerüljenek összesítésre,
-így akár több gépen párhuzamosan is lehetne szitálni, összesíteni,
-majd az eredményt összefésülni.
+Az összesítő az adatbáziskönyvtárban található szegmensfájlok statisztikáit készíti el, és ezeket a szegmensstatisztikákat szintén az adatbázisban tárolja.
+A szegmensstatisztikák alapján a végső statisztikákat közvetlenül a megjelenítés előtt készíti el az összesítő.
+Az összesítéshez sem szükséges, hogy a szegmensek sorban kerüljenek összesítésre, így akár több gépen párhuzamosan is lehetne szitálni, összesíteni, majd az eredményt összefésülni.
 
 A program része több, különböző algoritmusú prímszita.
-Ezeknek az eredménye ellenőrizhető a szegmensfájlok ellenőrzéséhez
-használt szitával, szintén a sziták helyességének teszteléséhez.
-A feladat része, hogy ezeknek a szitáknak a futási idejét össze lehessen hasonlítani,
-ezért mindegyik szita néhány jól meghatárzotott ötlet egyszerű megvalósítása
-optimalizálások nélkül.
-Mindegyik szita szegmentált, a szitálást fix hosszúságú intervallumokon végzi,
-bármelyik szegmenstől képes kezdeni a szitálást, és egy szegmens szitálása után
-további előkészület nélkül képes szitálni a következő szegmenst,
-így egyetlen menetben akár több szegmenshez tartozó futási idő is megmérhető,
-nem szükséges minden mintavételi pontig a teljes szitálást elvégezni.
+Ezeknek az eredménye ellenőrizhető a szegmensfájlok ellenőrzéséhez használt szitával, szintén a sziták helyességének teszteléséhez.
+A feladat része, hogy ezeknek a szitáknak a futási idejét össze lehessen hasonlítani, ezért mindegyik szita néhány jól meghatározott ötlet egyszerű megvalósítása optimalizálások nélkül.
+Mindegyik szita szegmentált, a szitálást fix hosszúságú intervallumokon végzi, bármelyik szegmenstől képes kezdeni a szitálást, és egy szegmens szitálása után további előkészület nélkül képes szitálni a következő szegmenst, így egyetlen menetben akár több szegmenshez tartozó futási idő is megmérhető, nem szükséges minden mintavételi pontig a teljes szitálást elvégezni.
 
-A minták közelítése alapfüggvények lineáris kombinációjával történik,
-a legkisebb négyzetek módszerét használva.
+A minták közelítése alapfüggvények lineáris kombinációjával történik, a legkisebb négyzetek módszerét használva.
 
-A program a mintákat és közelítő függvényeket Descartes-féle koordinátarendszerben
-jeleníti meg, ehhez a mintákat és a függvényket mintavételezi az x tengely
-kiválasztott szakaszának pixelenkénti felosztása szerint.
+A program a mintákat és közelítő függvényeket Descartes-féle koordináta rendszerben jeleníti meg, ehhez a mintákat és a függvényeket mintavételezi az x tengely kiválasztott szakaszának pixelenkénti felosztása szerint.
 
-\section{A forráskód}
+\section{Az adatbázis}
 
-A megoldás 3 programból áll, az init és a generator C nyelven készült el,
-az összes többi részfeladat a gui nevű Java nyelven írt programban lett megoldva.
+A program adatbázisa két fajta adatot tárol, a szitált szegmenseket, azaz a szitatábla bitvektorait, és a szegmensek összesítéseit.
+Mindkettő a szegmens első számával van azonosítva, a szegmens hossza mindig $2^{30}$ szám, és az $n \in \mathbb{N}$ megengedett kezdő szám, ha $n < 2^{64}-2^{34}$ és $n \equiv 1 \pmod{2^{30}}$.
+Minden szegmens egy külön fájl az adatbázis könyvtárában, és az összes szegmensstatisztika egy fájlban van.
+
+Az init program az első 4 szegmensfájlt írja, a generator az első 4 szegmensfájlt olvassa, és az összes többi szegmensfájlt írja, a gui az összes szegmensfájlt olvassa, és egyiket se írja, és szegmensstatisztika fájlt csak a gui használja.
+
+Egy szegmensfájlok nevei ''primes.'' előtaggal kel kezdődjön, és a pontosan 16 hexadecimális számjegy kell kövesse, ami a szegmens által leírt első szám.
+A fájl bináris fájl, {\color{red}little endian} sorrendben.
+A tartalma:
+\begin{itemize}
+\item a szegmens elejével kezdve $2^{29}$ egymást követő páratlan szám bitvektora.
+	
+Ez $2^{26}$ byte, {\color{red}little endian} sorrendben minden bit egy szám összetettségét írja le.
+Ha a bit $1$, akkor a szám összetett, ha $0$, akkor a szám prím.
+Ha $s$ a szegmens intervallumának kezdete, akkor az $0.$ bájt $0.$ bitje $s$-t írja le, a $0.$ bájt $1.$ bitje $s+2$-t, a $k.$ bájt $l.$ bitje $s+16k+2l$-t.
+	
+\item a szegmens kezdete, 8 bájt, egész
+\item a szegmens szitálására való felkészülés ideje, 8 bájt, egész, nanoszekundumokban
+\item a szegmens szitálásának ideje, 8 bájt, egész, nanoszekundumokban
+\end{itemize}
+
+Ahhoz, hogy az init és a generator program bármikor leállítható legyen szegmensfájl írása közben, a szegmenst először egy ideiglenes fájlba írja, és ha ez hiba nélkül megtörtént, akkor az ideglenes fájlt átnevezi a megfelelő névre.
+Mivel az ideiglenes fájl ugyanabba a könyvtárba kerül, mint ahova a szegmensfájl is, így feltételezhető, hogy helyi meghajtón az átnevezés már atomi művelet.
+
+Ez az eljárás az átnevezés előtt nem győződik meg arról, hogy az ideiglenes fájl minden része
+kiíródott a háttértárra, így ez csak a program leállíthatóságát garantálja, a számítógép váratlan leállása esetén érdemes azokat a szegmensfájlokat letörölni, amikről feltételezhető, hogy nem volt ideje a számítógépnek minden részét kiírnia a tényleges tárolóra.
+
+A szegmensstatisztikák az ''aggregates'' fájlban vannak. A szegmensek a fájlban a kezdőszámok sorrendjében követik egymást, egy szegmensnek legfeljebb egy statisztikája lehet.
+A fájl bináris, a bájtok {\color{red}big endian} sorrendben követik egymást. A fájl fejléce
+\begin{itemize}
+\item {\color{red}magic number}: 0xd1d1b0b0, 4 bájt
+\item verziószám: 1, 4 bájt.
+\end{itemize}
+Ezután minden statisztika egy változó méretű blokkban van tárolva, a fájl végéig. Minden block két részből áll, az első 4 bájt a második rész mérete bájtokban. Ez a második rész a szegmensstatisztika. A statisztika gzip-pel tömörített,
+kitömörítve bináris adat, {\color{red}big endian sorrendben}, aminek a formátuma
+\begin{itemize}
+\item a szegmens összesítésének futási ideje, 8 bájt, nanoszekundumokban
+\item a szegmens szitálásának inicializálásának ideje, 8 bájt, nanoszekundumokban
+\item az összesített szegmensfájl utolsó módosításának ideje, 8 bátj, milliszekundumokban, 1970.1.1. 00:00:00-tól
+\item a szegmensben található legnagyobb prím, 8 bájt
+\item a szegmensben található legkisebb prím, 8 bájt
+\item a $12\mathbb{Z}+11$ alakú prímek száma a szegmensben
+\item a $4\mathbb{Z}+1$ alakú prímek száma a szegmensben
+\item a $4\mathbb{Z}+3$ alakú prímek száma a szegmensben
+\item a $6\mathbb{Z}+1$ alakú prímek száma a szegmensben
+\item a szegmensben előforduló prímhézagok számát, 4 bájt. ahány prímhézag előfordult, annyiszor ismétlődik a következő három mező
+\begin{itemize}
+\item a prímhézag nagysága, 8 bájt
+\item a prímhézag előfordulásainak száma, 8 bájt
+\item a prímhézag első előfordulása, 8 bájt
+\end{itemize}
+\item a szegmens sorszáma, 8 bájt
+\item a szegmens vége, 8 bájt
+\item a szegmens kezdete, 8 bájt
+\item a szegmens szitálására fordított idő, 8 bájt, nanoszekundumokban.
+\end{itemize}
+
+Az összesítésfájl írása a szegmensfájl írásához hasonló.
+Egy ideiglenes fájlba írása után a program megvárja, hogy a fájl tartalma a háttértárolóra íródjon, majd az ideiglenes fájlt átnevezi a megfelelő névre.
+Az ideiglenes fájl kiírásának megvárásával a statisztikafájl váratlan számítógép leállás esetén is visszaállítható.
+
+A fájl formátuma és az új fájl kiírásának algoritmusa lehetővé teszi, hogy a statisztikafájlt egyszerre lehessen sorban felolvasni, és az új eredményt sorban kiírni, úgy, hogy egyszerre csak egy statisztikát kelljen a memóriában tartani.
+
+Az adatbázis nincs védve a párhuzamos írásoktól, és az összesítőfájl egyszerű sorban feldolgozhatósága feltételezi, hogy egy fájl kevés szegmensstatisztikát fog tartalmazni, legfeljebb. kb. $10^6$ szegmensét.
+
+\section{A megvalósítás}
+
+A megoldás 3 programból áll, az init és a generator C nyelven készült el, az összes többi részfeladat a gui nevű Java nyelven írt programban lett megoldva.
 
 \subsection{Init és generator}
 
@@ -169,40 +212,10 @@ eljárások.
 
 A sziták belső, kis szegmensmérete a
 SEGMENT\_SMALL\_SIZE\_BITS\_LOG2 konstanssal
-szabályozható, és a measure-generator script
+szabályozható, és a measure-generator szkript
 kimenete alapján egy adott géphez igazítható.
 
-Ez a közös header fájl határozza meg a szegmensfájlok
-formátumát, a readSegment/writeSegment eljárásokkal.
-A fájl neve a "primes." előtaggal kell kezdődjön,
-és a pontosan 16 hexadecimális számjegy kell kövesse,
-a szegmens által leírt első szám.
-A fájl egyszerű bináris fájl, kis endian sorrendben.
-A tartalma:
-\begin{itemize}
-\item a szegmens elejével kezdve $2^{29}$ egymást követő
-	páratlan szám bittérképe.
-	
-	Ez $2^{26}$ byte, kis endian sorrendben minden bit
-	egy szám összetettségét írja le. Ha a bit $1$,
-	akkor a szám összetett, ha $0$, akkor a szám prím.
-	Ha $s$ a szegmens intervallumának kezdete, akkor
-	az $0.$ bájt $0.$ bitje $s$-t írja le,
-	a $0.$ bájt $1.$ bitje $s+2$-t,
-	a $k.$ bájt $l.$ bitje $s+16k+2l$-t.
-	
-\item a szegmens kezdete, 8 bájt
-\item a szegmens szitálására való felkészülés ideje,
-	8 bájt, nanoszekundumokban
-\item a szegmens szitálásának ideje, 8 bájt, nanoszekundumokban
-\end{itemize}
-
-A writeSegment meghatározza a szegmensfájlok írásának menetét is.
-Ahhoz, hogy a program bármikor leállítható legyen, a szegmensfájl kiírása először egy ideiglenes fájlba történik, és ha ez hiba nélkül megtörtént, akkor a az ideglenes fájlt átnevezi a megfelelő névre.
-Mivel az ideiglenes fájl ugyanabba a könyvtárba kerül, mint ahova a szegmensfájl is, így feltételezhető, hogy helyi meghajtón az átnevezés már atomi művelet.
-
-Ez az eljárás az átnevezés előtt nem győződik meg arról, hogy az ideiglenes fájl minden része
-kiíródott a háttértárra, így ez csak a program leállíthatóságát garantálja, a számítógép váratlan leállása esetén érdemes azokat a szegmensfájlokat letörölni, amikről feltételezhető, hogy nem volt ideje a számítógépnek minden részét kiírnia a tényleges tárolóra.
+A szegmensfájlok olvasására és írásara a readSegment() és writeSegment() függvények szolgálnak.
 
 \subsubsection{Init}
 
@@ -306,43 +319,62 @@ tárolt nagy prímekre van alkalmazva.
 
 \subsection{Gui}
 
-{\color{red}class diagram. rizsa. lib. commands. gui. max 4gb, autoboxing, mi az, miért nem jó. allokáció/deallokáció elkerülése, from-to ahogy c/java-ban}
+A program Javaban írt része tartalmazza az összes többi funkció megvalósítását, a szegmensfájlok feldolgozását, a különböző szitákat, és a minták megjelenítését.
+Ezeknek a funkcióknak a többsége nem interaktív, a felhasználó a paraméterek megadása után a végrehajtást már nem tudja befolyásolni.
+
+A forráskód ennek megfelelően három egymástól jól elkülöníthető részre osztható.
+A legalsó szint a program adatszerkezeteit, algoritmusait, és fájlformátumait írja le. 
+Erre építenek a felhasználói műveletek megvalósításai.
+Mindegyik művelethez tartozik egy eljárásként megvalósított belépési pont,
+a programkód legfelső szintje ezeket teszi a felhasználó számára meghívhatóvá, parancssorból és grafikusan is.
+
+A grafikonmegjelenítés az egyetlen ténylegesen interaktív feladat, ennek megoldása a modell-nézet-vezérlő felosztást alkalmazza.
+
+{\color{red}class diagram}
 
 \subsubsection{gui.util}
 
 A csomag néhány közismert algoritmust és adatszerkezetet tartalmaz, valamint az ezekhez szükséges funkcionális interfészek definícióit.
-A legtöbbnek létezik sztenderd könyvtári megvalósítása, de ezek referencia típusokat használnak.
+A legtöbbnek létezik könnyen használható sztenderd könyvtári megvalósítása, de ezek referenciatípusokat használnak.
+A primitív és referencia típusú értékek közötti rengeteg konverzió három problémát okoz.
+Feleslegesen növeli a futási időt, miközben egyetlen számítógépen szitálva $2^{64}$-ig reménytelenül hosszú feladat.
+Ezen túl megnöveli a program memóriaigényét.
+$2^{32}$-ig kb. $2\cdot10^6$ darab prím van, ha egy szita csak a prím-pozíció párokat egy egyszerű tömbben tárolná, prímenként 4 bájton, pozícionként 8 bájton, akkor ez a tömb kb. $2,4$Gb memóriát foglalna el.
+A program a primitív típusokon alapuló konténerekkel képes $3,5$Gb memória használatával futni.
+A harmadik probléma az, hogy primitív érték objektummá alakítása szinte mindig új objektum allokálásával jár, ami legtöbbször egy objektum elérhetetlenségéhez is vezet.
+A szemétgyűjtő ezzel járó folyamatos háttérmunkája nem csak feleslegesen növeli a futási időt, hanem kiszámíthatatlanságával megnöveli a sziták mért futási idejének zaját.
 
-A PrimitiveList és leszármazottai az ArrayList mintájára szükség szerint növekvő vektorok. Konkrét megvalósítások
-a double, int, és long primitív típusokra vannak.
+A PrimitiveList osztály és leszármazottai az ArrayList mintájára szükség szerint növekvő vektorok. Konkrét megvalósítások a double, int, és long primitív típusokra vannak.
 
-A BinarySearch és a QuickSort a bináris keresés és a quicksort algoritmusát valósítják meg absztrakt módon, az elemeket közvetlenül sosem érik el, az összehasonlításokat
-és a cseréket interfészeken keresztül végzik index alapján.
+A BinarySearch és a QuickSort a bináris keresés és a {\color{red}quicksort} algoritmusát valósítják meg absztrakt módon elért tömb felett. Az elemeket közvetlenül sosem érik el, az összehasonlításokat és a cseréket interfészeken keresztül végzik index alapján.
 
 A BinaryMinHeap egy bináris kupac, mint absztrakt konténerosztály, az elemek típusától függő műveleteket absztrakt metódusként határozza meg.
-A kupac egy elsőbbségi sor, a sor eleje az absztrakt rendezés legkisebb eleme.
+A műveletek felteszik, hogy az elemek indexelhetőek, mint egy tömbben.
+A kupac egy elsőbbségi sor, a sor eleje az absztrakt rendezés szerinti legkisebb elem.
 
 \subsubsection{gui.math}
 
 Ebben a csomagban az osztályok két részre oszthatóak.
-Az UnsignedLong a Java long típus előjel nélküli
-műveleteit valósítja meg.
+Az UnsignedLong a Java long típus előjel nélküli műveleteit valósítja meg.
 A Java a 8-as verziótól támogatja a primitív egész típusok előjel nélküli összehasonlítását és osztását, ez az osztály ezekre építve ad néhány segédeljárást.
-A pszeudoprím-teszthez a maradékos hatványozás Java támogatás nélkül a kitevő bitjei alapján ismételt szorzást és négyzetre emelést használja, míg a szorzás ehhez hasonlóan összeadást és kétszerezést. Ezeknek az algoritmusoknak a futási ideje egy-egy szám esetén elfogadhatóak, de intervallumok szitálására nem alkalmasak.
+A pszeudoprím-teszthez a maradékos hatványozás Java támogatás nélkül a kitevő bitjei alapján az ismételt szorzást és négyzetre emelést használja, míg a szorzás ehhez hasonlóan összeadást és kétszerezést. Ezeknek az algoritmusoknak a futási ideje egy-egy szám esetén elfogadható, de intervallumok szitálására nem alkalmas.
 
 A csomag többi osztálya a legkisebb négyzetek módszerének implementációja, és annak segédosztályai.
-
 A Sum double típusú értékek véges összegeit számolja ki.
 A double véges pontosságú reprezentációjának következménye, hogy többtagú összeg eredménye függhet a tagok összeadásának sorrendjétől, azaz hiba keletkezhet.
 A Sum három stratégiát ad ennek minimalizálására.
 A program használata közben a felhasználó ezek közül nem tud választani, {\color{red}a tesztek alapján legstabilabbnak ítélt elsőbbségi soron alapuló} összegzést használja a közelítés.
 A legegyszerűbb Sum.Simple a tagokat felsorolásuk sorrendjében adja össze. 
-A bináris kupacot használó Sum.Priority a tagokat a sorban gyűjti, majd az összeadásra, amíg lehet, a két legkisebb abszolút értékű elemet választja ki, majd az eredményt a sorba visszahelyezi.
-A Sum.Array nagyságrend szerinti részösszegeket tart nyílván, új tagot a nagyságrendjéhez tartozó részösszeghez adja hozzá. A nagyságrend a double érték IEEE 754 szabvány szerinti reprezentció kitevője.
+A bináris kupacot használó Sum.Priority a tagokat a sorban gyűjti, majd a végső összeg kiszámításához a sorból, amíg lehet, ismételten kiveszi a két legkisebb abszolút értékű elemet, azokat összeadja, és az eredményt a sorba visszahelyezi. A végeredmény a sorban maradó érték lesz.
+A Sum.Array nagyságrend szerinti részösszegeket tart nyílván, új tagot a nagyságrendjéhez tartozó részösszeghez adja hozzá. A nagyságrend a double érték IEEE 754 szabvány szerinti reprezentáció kitevője.
 
-A RealFunction interfész valóshoz valós függvények reprezentációi, közelítés elemi függvényei. Egy függvény a helyettesítési értékén kívül az értelmezési tartományát is meg kell adja, igaz értéket akkor kell adjon a kérdezett intervallumra, ha annak minden pontjában értelmezve van. A függvény grafikonján csak az ilyen az teljesen értelmezett egy pixel széles oszlopokon fog függvényértéket megjelenni. A Functions osztály a beépített elemi függvényeket tartalmazza.
+A RealFunction interfész valóshoz valóst rendelő függvények reprezentációi.
+Egy függvény a helyettesítési értékén kívül az értelmezési tartományáról is információt kell adjon.
+A grafikonmegjelenítő az x-tengely egy pixel által lefedett intervallumán akkor jelenít meg értéket, ha az az intervallum az értelmezési tartomány része.
+A Functions osztály a beépített elemi függvényeket tartalmazza.
 JavaScript-ben függvény a CustomFunction-nel adható meg.
-A legkisebb négyzetek módszerével kapott függvényt a LinearCombinationFunction írja le, ebből a lineáris kombináció skaláris értékei is kiolvashatóak.
+A LinearCombinationFunction már létező függvények lineáris kombinációja.
+A mintaközelítés eredménye ilyen típusú.
 
 A Matrix osztályban vannak megadva a valós mátrixok műveletei, mindegyik kétdimenziós double tömbökre.
 Az implementált műveletek a legkisebb négyzetek módszeréhez szükségesekre korlátozódnak.
@@ -354,20 +386,140 @@ A közelítés hibáját is ki lehet ezzel az osztállyal számolni.
 
 \subsubsection{gui.io}
 
-\subsubsection{gui.ui}
+A gui.io csomagban az adatbázis kezelését leíró osztályok vannak.
+Az adatbázis funkciók a Database egy objektumán keresztül érhetőek el, ez a common.h-val párhuzamosan definiálja a szegmensfájlok neveit.
+A felhasználói műveletek közül az adatbázis információk lekérését, a szegmensfájlok összesítését, és összesítés importálását Database osztály info(), reaggregate(), és importAggreagtes() metódusai
+valósítják meg.
+A sziták az inicializálásukkor a Database.largePrimes() metódust használva olvassák be az első 4 szegmensfájlból a prímeket.
+
+A Segment osztály példányai szegmensfájlok a memóriában.
+Ezek tényleges fájlból olvasott adatokat is tartalmazhatnak, vagy szegmensek és sziták ellenőrzésekor a Java program is generálja.
+Ezzel az osztállyal szegmensfájlt csak olvasni lehet, írni nem.
+
+Egy szegmens összesítését a Segment.aggregate() függvény végzi.
+Az eredményül kapott Aggregate példány az adatbázis formátumánál leírt szegmensstatisztika tükre.
+Az összesítőfájlt az AggregatesReader és AggregatesWriter osztállyal lehet írni és olvasni, mindkét esetben a szegmensek szigorúan növekedő kezdőszámú sorrendben dolgozhatóak fel.
+A írás és az olvasás AggregateBlock példányokkal dolgozik, ezek az objektumok a statisztikához való hozzáférés mellett a betömörített bináris adatot jegyzik meg, hogy a statisztika változatlan kiírása esetén ki lehessen hagyni az időigényes betömörítést.
+
+Az szegmensenkénti statisztikák alapján a megjelenítésre szánt mintákat az Aggregates osztály készíti el.
+A szegmenseket az összesítésfájl sorrendjében dolgozza fel, az első hiányzó szegmensig. A megjelenített statisztikák legtöbbje egyszerűen összesíthető a szegmensenkénti adatokból. A prímhézagok esetében a szegmenseken átívelő hézag külön odafigyelést igényelnek.
+
+Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a CSVReader és CSVWriter osztályokat. Mindkettő stream alapon teszi lehetővé a szöveges cellák soronkénti feldolgozását.
 
 \subsubsection{gui.sieve}
 
+Ebben a csomagban, és a gui.sieve.eratosthenes alcsomagjában, a futási idők méréséhez implementált sziták vannak.
+
+\begin{tikzpicture}
+
+\umlclass[x=0.5, y=0, type=abstract]{OperationCounter}{}{
++add() \\
++get()::long \\
++increment() \\
++reset()}
+
+\umlclass[x=5.5, y=-0.3, type=abstract]{SieveTable}{}
+{+clear(prime) \\
++flip(number) \\
++isPrime(number)::boolean \\
++setComposite(number) \\
++setPrime(number)}
+
+\umlclass[x=10, y=1]{LongTable}{}{}
+\umlclass[x=10, y=-1]{Segment}{}{}
+\umlclass[x=0, y=-4, type=abstract]{Sieve}{}{+reset(start) \\ +sieve()}
+\umlclass[x=0, y=-7, type=abstract]{SegmentedSieve}{}{}
+\umlclass[x=0, y=-9.5, type=abstract]{EratosthenesianSieve}{}{}
+\umlclass[x=4, y=-4]{TrialDivision}{}{}
+\umlclass[x=4, y=-6]{SieveOfAtkin}{}{}
+\umlclass[x=9, y=-6]{SieveOfEratosthenes}{}{}
+\umlclass[x=8, y=-8]{QueueSieve}{}{}
+\umlclass[x=7, y=-10]{CacheOptimizedLinearSieve}{}{}
+\umlclass[x=5, y=-12]{SimpleBucketSieve}{}{}
+\umlclass[x=1, y=-12, type=abstract]{BucketSieve}{}{}
+\umlclass[x=1, y=-14]{Bucket1Sieve}{}{}
+\umlclass[x=5, y=-14]{BucketNSieve}{}{}
+
+\umlinherit{LongTable}{SieveTable}
+\umlinherit{Segment}{SieveTable}
+\umluniassoc{Sieve}{SieveTable}
+\umluniassoc{Sieve}{OperationCounter}
+\umlinherit{SegmentedSieve}{Sieve}
+\umlinherit{TrialDivision}{Sieve}
+\umlinherit{EratosthenesianSieve}{SegmentedSieve}
+\umlinherit{SieveOfAtkin}{SegmentedSieve}
+\umlinherit{BucketSieve}{EratosthenesianSieve}
+\umlinherit{SieveOfEratosthenes}{EratosthenesianSieve}
+\umlinherit{QueueSieve}{EratosthenesianSieve}
+\umlinherit{CacheOptimizedLinearSieve}{EratosthenesianSieve}
+\umlinherit{SimpleBucketSieve}{EratosthenesianSieve}
+\umlinherit{Bucket1Sieve}{BucketSieve}
+\umlinherit{BucketNSieve}{BucketSieve}
+\end{tikzpicture}
+
+A szitál a Sieve osztály leszármazottai.
+A példányaitól elvárás, hogy
+\begin{itemize}
+\item a szitálást szegmensenként végezzék
+\item a szitatábla bitvektorát csak korlátozottan éri el
+\begin{itemize}
+\item csak az éppen szitált szegmensbe eső számokat éri el
+\item páros számot sose ér el
+\item legfeljebb $2^{32}-1$-ig olvassa vissza a szitálás eredményét
+\end{itemize}
+\item a szegmens mérete szabályozható, a lehetséges értékek a kettő hatványai $2^8$-tól $2^{30}$-ig 
+\item bármikor újra lehessen inicializálni a szitát egy szegmens kezdetéhez úgy, hogy onnantól már további felkészülési idő nélkül több egymás utáni szegmenst tud szitálni
+\item az OperationCounter osztály segítségével számon tartja a szitálás műveletigényét.
+\end{itemize}
+
+A SieveTable osztály Segment implementációja az adatbázisnál is használt szegmensfájl, szita ellenőrzésekor ez a szitatábla tárolja a bitvektort, és az ellenőrzés a végeredményt hasonlítja össze a referenciaszita eredményével.
+A LongTable megvalósítást a program a futási idő mérésénél használja, ez a szitatábla mindig $2^{32}$-ig tartja nyilván az eredményt, annál nagyobb számoknál a műveletet elvégzi a memóriában, de különböző számok ugyanazt a bitet módosíthatják, így egy számra vonatkozó eredmény nem olvasható vissza.
+
+Mindegyik szita megvalósítása valamilyen formában eltárolja a már megtalált prímeket, de csak a szitált szegmens végének négyzetgyökéig veszik azokat figyelembe.
+A sziták a prímek és pozíciójuk tárolását, egy kivételével, egy vagy két PrimitiveList használatával oldják meg, az elemek csoportosítását a listán belüli helyük adja.
+Az edénysoron alapuló sziták belső edényeinek pillanatnyi mérete tág határok között mozog, azért a memóriaveszteség csökkentésére ezek ez edények kisebb, fix méretű edények láncolt listái.
+Az edénysor ezeket a listaelemeket feldolgozás után újrahasznosítja a szemétgyűjtés elkerüléséhez.
+
+A CacheOptimizedLinearSieve belső adatstruktúrája nehezebben bővíthető, mint a listás vagy elsőbbségi soros szitáké.
+Ezért a COLS szita $2^{32}$-ig egy egyszerű listás eratoszthenészi szitaként viselkedik, és az azutáni első szegmens szitálásakor alakítja ki a prímek csoportosítását.
+
+A sziták egyszerű hierarchiát alkotnak.
+A SegmentedSieve leszármazottai minden prímmel csak egyszer foglalkoznak egy szegmensben, bár lehet, hogy az több helyen szitál.
+Az EratosthenesianSieve típusú sziták a prímekkel úgy szitálnak, hogy a prím eltárolt utolsó többszörösét a prím kétszeresével növelik, amíg a többszörös a szegmensbe esik.
+
+A sziták algoritmusai a ''Sziták'' fejezetben vannak részletesebben kifejtve.
+Az implementációk főbb jellemzői:
+\begin{itemize}
+\item TrialDivision: próbaosztás
+\item SieveOfAtkin: Atkin szitája
+\item Eratoszthenész szitájának implementációi, mindegyik a prím-pozíció párok eltárolásával próbálja gyorsítani a futását
+\begin{itemize}
+\item SieveOfEratosthenes: a prímeket egy tömbben tárolja, és minden szegmens szitálásához minden prímmel próbál szitálni a szegmensben
+\item QueueSieve: a prímeket bináris kupacban tárolja, szitáláskor a kupac elejét dolgozza fel, amíg az a szegmensbe esik.
+\item CacheOptimizedLinearSieve: a prímeket kétszintű edényrendszerbe csoportosítja, szitáláskor a szegmensbe eső elemek már edényekbe vannak válogatva, azokat csak be kell járni
+\item SimpleBucketSieve: a prímeket a QueueSieve-hez hasonlóan egy elsőbbségi sorban tartja nyilván, az elsőbbségi sor egyre nagyobb intervallumokat lefedő edények listája
+\item Bucket1Sieve: az edénysoron alapuló szita felgyorsítása a COLS 0. ''körével'', a szegmensek méreténél kisebb prímeket a sortól külön, egy tömbben tárolja. Ezek a kis prímek minden szegmensben szitálnak, felesleges lenne a sorból minden szegmensnél kivenni, majd visszahelyezni.
+\item BucketNSieve: a Bucket1Sieve további optimalizálása, az edénysor számrendszerének alapját megnövelve a prímek részleges rendezését finomítja.
+\end{itemize}
+\end{itemize}
+
+\subsubsection{gui.ui}
+
+\subsubsection{Parancssor}
+
+A gui program legtöbb művelete parancssorból is indítható.
+A parancssori műveletek a gui.Command.Descriptor osztály példányaival írhatóak le, és a gui.Main.main() a program indítási paramétereit ezekkel a leírókkal összevetve választja ki a futtatandó parancsot.
+A leíró a parancs belépési pontja mellett a megengedd argumentumok listáját tartalmazza. A parancs kiválasztásához a tényleges és elvárt argumentumok meg kell egyezzenek.
+Az argumentum leírása reguláris kifejezéssel szintaktikailag ellenőrzi a tényleges argumentumokat, a szemantikai helyesség ellenőrzése minden parancs saját feladata.
+
 \subsubsection{Adatbázis műveletek}
 
-\subsubsection{Grafikus megjelenítés}
+\subsubsection{Szegmensek ellenőrzése}
 
-\section{Adatszerkezetek}
+\subsubsection{Sziták ellenőrzése}
 
-\section{Numerikus algoritmusok}
+\subsubsection{Grafikon ábrázolása}
 
-Egyenletrendszerek. Összeadás.
-Körül kéne írni, hogy igazán tudjuk, hogy hipotézisvizsgálatra nem vállalkozunk.
 A grafikonrajzolónak sokkal okosabbnak kéne lennie, hogy gyorsan változó függvényeket
 helyesen jelenítsen meg, reménytelenül okosnak.
 

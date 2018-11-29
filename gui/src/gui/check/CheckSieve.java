@@ -241,7 +241,7 @@ public class CheckSieve extends GuiWindow<JFrame> {
 			subProgress2.progress(0.0);
 			long segmentStart=ss*Segment.NUMBERS+1l;
 			referenceSegment.clear(0l, true, segmentStart);
-			sieveSegment.clear(0l, sieve.defaultPrime(), segmentStart);
+			sieveSegment.clear(0l, sieve.clearBitsToPrime(), segmentStart);
 			ReferenceSegment.SIEVE.generate(
 					database.largePrimes(),
 					subProgress2.subProgress(

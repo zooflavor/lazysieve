@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 public class Aggregates {
 	static final int MAGIC=0xd1d1b0b0;
-	static final int VERSION=0;
+	static final int VERSION=1;
 	
 	@FunctionalInterface
 	private static interface PrimeGapConsumer {

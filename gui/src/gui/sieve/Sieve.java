@@ -1,11 +1,11 @@
 package gui.sieve;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.ui.progress.Progress;
 import gui.util.Supplier;
 
-public interface Sieve {
-	class Descriptor {
+public abstract class Sieve {
+	public static class Descriptor {
 		public final Supplier<Sieve> factory;
 		public final String longName;
 		public final String shortName;
@@ -31,13 +31,41 @@ public interface Sieve {
 		}
 	}
 	
-	boolean defaultPrime();
+	protected long segmentSize;
+	protected int segmentSizeLog2;
+	protected long startSegment;
 	
-	void reset(PrimesProducer primesProducer, Progress progress,
-			long segmentSize, long start) throws Throwable;
+	public abstract boolean clearBitsToPrime();
 	
-	void sieve(OperationCounter operationCounter, SieveTable sieveTable)
-			throws Throwable;
+	public void reset(PrimeProducer primeProducer, Progress progress,
+			long segmentSize, long start) throws Throwable {
+		if (64l>segmentSize) {
+			throw new IllegalArgumentException(""+segmentSize);
+		}
+		if (Long.highestOneBit(segmentSize)!=segmentSize) {
+			throw new IllegalArgumentException(""+segmentSize);
+		}
+		this.segmentSize=segmentSize;
+		segmentSizeLog2=Long.numberOfTrailingZeros(segmentSize);
+		startSegment=Long.divideUnsigned(start-1l, segmentSize);
+		reset(primeProducer, progress);
+	}
 	
-	long start();
+	protected abstract void reset(PrimeProducer primeProducer,
+			Progress progress) throws Throwable;
+	
+	public void sieve(OperationCounter operationCounter, SieveTable sieveTable)
+			throws Throwable {
+		long start=segmentSize*startSegment+1l;
+		long end=start+segmentSize;
+		sieve(end, operationCounter, sieveTable, start);
+		++startSegment;
+	}
+	
+	protected abstract void sieve(long end, OperationCounter operationCounter,
+			SieveTable sieveTable, long start) throws Throwable;
+
+	public long start() {
+		return segmentSize*startSegment+1l;
+	}
 }

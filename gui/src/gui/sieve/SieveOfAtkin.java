@@ -1,6 +1,6 @@
 package gui.sieve;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.math.UnsignedLong;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
@@ -73,7 +73,7 @@ public class SieveOfAtkin extends SegmentedSieve {
 	}
 	
 	@Override
-	public boolean defaultPrime() {
+	public boolean clearBitsToPrime() {
 		return false;
 	}
 	
@@ -97,7 +97,7 @@ public class SieveOfAtkin extends SegmentedSieve {
 	}
 	
 	@Override
-	protected void reset(PrimesProducer primesProducer, Progress progress)
+	protected void reset(PrimeProducer primeProducer, Progress progress)
 			throws Throwable {
 		positions.clear();
 		primes.clear();
@@ -105,7 +105,7 @@ public class SieveOfAtkin extends SegmentedSieve {
 		if (0l==startSegment) {
 			return;
 		}
-		primesProducer.primes(
+		primeProducer.primes(
 				(prime)->{
 					long position=firstSievePosition(prime, start());
 					if (0l!=position) {

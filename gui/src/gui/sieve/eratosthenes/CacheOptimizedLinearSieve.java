@@ -1,6 +1,6 @@
 package gui.sieve.eratosthenes;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
 import gui.sieve.Sieve;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class CacheOptimizedLinearSieve extends SegmentedEratosthenesianSieve {
+public class CacheOptimizedLinearSieve extends EratosthenesianSieve {
 	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
 					new Sieve.Descriptor(
@@ -172,7 +172,7 @@ public class CacheOptimizedLinearSieve extends SegmentedEratosthenesianSieve {
 	}
 	
 	@Override
-	protected void reset(PrimesProducer primesProducer, Progress progress)
+	protected void reset(PrimeProducer primeProducer, Progress progress)
 			throws Throwable {
 		brokenBuckets=null;
 		bucketStarts=null;
@@ -186,7 +186,7 @@ public class CacheOptimizedLinearSieve extends SegmentedEratosthenesianSieve {
 		if (0l==startSegment) {
 			return;
 		}
-		primesProducer.primes(
+		primeProducer.primes(
 				(prime)->{
 					positions.add(
 							UnsignedLong.firstSievePosition(prime, start()));

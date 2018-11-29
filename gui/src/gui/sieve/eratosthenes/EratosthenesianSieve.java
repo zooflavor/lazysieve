@@ -4,8 +4,8 @@ import gui.sieve.OperationCounter;
 import gui.sieve.SegmentedSieve;
 import gui.sieve.SieveTable;
 
-public abstract class SegmentedEratosthenesianSieve extends SegmentedSieve {
-	public SegmentedEratosthenesianSieve(long firstNumber) {
+public abstract class EratosthenesianSieve extends SegmentedSieve {
+	public EratosthenesianSieve(long firstNumber) {
 		super(firstNumber);
 	}
 	
@@ -22,7 +22,7 @@ public abstract class SegmentedEratosthenesianSieve extends SegmentedSieve {
 			SieveTable sieveTable, long start) throws Throwable;
 	
 	@Override
-	public boolean defaultPrime() {
+	public boolean clearBitsToPrime() {
 		return true;
 	}
 	

@@ -2,7 +2,7 @@ package gui.sieve;
 
 import gui.math.UnsignedLong;
 
-public abstract class SegmentedSieve extends AbstractSieve {
+public abstract class SegmentedSieve extends Sieve {
 	private final long firstNumber;
 	
 	public SegmentedSieve(long firstNumber) {

@@ -1,7 +1,7 @@
 package gui.check;
 
 import gui.io.PrimeConsumer;
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.io.Segment;
 import gui.math.UnsignedLong;
 import gui.ui.progress.Progress;
@@ -19,7 +19,7 @@ public abstract class ReferenceSegment {
 	
 	public static final ReferenceSegment SIEVE=new ReferenceSegment() {
 		@Override
-		public void generate(PrimesProducer primesProducer, Progress progress,
+		public void generate(PrimeProducer primeProducer, Progress progress,
 				Segment segment) throws Throwable {
 			long max=UnsignedLong.squareRootFloor(segment.segmentEnd);
 			PrimeConsumer sieve=(prime)->{
@@ -37,7 +37,7 @@ public abstract class ReferenceSegment {
 					}
 				}
 			};
-			primesProducer.primes(sieve, max, progress);
+			primeProducer.primes(sieve, max, progress);
 		}
 		
 		@Override
@@ -68,7 +68,7 @@ public abstract class ReferenceSegment {
 						299210837l));
 
 		@Override
-		public void generate(PrimesProducer primesProducer, Progress progress,
+		public void generate(PrimeProducer primeProducer, Progress progress,
 				Segment segment) throws Throwable {
 			bitIndices: for (int bitIndex=(1l==segment.segmentStart)?1:0;
 					Segment.BITS>bitIndex;
@@ -143,7 +143,7 @@ public abstract class ReferenceSegment {
 		}
 	}
 	
-	public abstract void generate(PrimesProducer primesProducer,
+	public abstract void generate(PrimeProducer primeProducer,
 			Progress progress, Segment segment) throws Throwable;
 	
 	public static ReferenceSegment parse(String argument) {

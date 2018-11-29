@@ -561,7 +561,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
                     subProgress.subProgress(0.0, "init", 0.05),
                     segmentSize,
                     startSegment*segmentSize+1l);
-            table.clear(sieve.defaultPrime());
+            table.clear(sieve.clearBitsToPrime());
             Progress subProgress2
 					=subProgress.subProgress(0.05, "szitálás", 1.0);
             for (int ss=0; sampleXs.length>ss; ++ss) {

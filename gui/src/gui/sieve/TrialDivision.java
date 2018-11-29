@@ -1,6 +1,6 @@
 package gui.sieve;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.math.UnsignedLong;
 import gui.ui.progress.Progress;
 import gui.util.IntList;
@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class TrialDivision extends AbstractSieve {
+public class TrialDivision extends Sieve {
 	public static List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
 					new Sieve.Descriptor(
@@ -20,18 +20,18 @@ public class TrialDivision extends AbstractSieve {
 	private final IntList primes=new IntList(UnsignedLong.MAX_PRIME_COUNT);
 	
 	@Override
-	public boolean defaultPrime() {
+	public boolean clearBitsToPrime() {
 		return true;
 	}
 	
 	@Override
-	protected void reset(PrimesProducer primesProducer, Progress progress)
+	protected void reset(PrimeProducer primeProducer, Progress progress)
 			throws Throwable {
 		primes.clear();
 		if (0l==startSegment) {
 			return;
 		}
-		primesProducer.primes(
+		primeProducer.primes(
 				(prime)->primes.add((int)prime),
 				UnsignedLong.min(UnsignedLong.MAX_PRIME,
 						segmentSize*startSegment),

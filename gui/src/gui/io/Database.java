@@ -2,7 +2,6 @@ package gui.io;
 
 import gui.math.UnsignedLong;
 import gui.ui.progress.Progress;
-import gui.util.IntList;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,8 +20,6 @@ public class Database {
 	public static final String AGGREGATES_TEMP="aggregates.tmp";
 	public static final Pattern SEGMENT_PATTERN
 			=Pattern.compile("primes.([0-9a-f]{8}[048c]0000001)");
-	public static final long SMALL_PRIMES_MAX
-			=UnsignedLong.squareRootFloor(Segment.NUMBERS+1l);
 	
 	public final Path rootDirectory;
 	
@@ -128,7 +125,7 @@ public class Database {
 				segments.info());
 	}
 	
-	public PrimesProducer largePrimes() {
+	public PrimeProducer largePrimes() {
 		return (consumer, max, progress)->{
 			if (0>Long.compareUnsigned(UnsignedLong.MAX_PRIME, max)) {
 				throw new IllegalArgumentException();
@@ -277,36 +274,5 @@ public class Database {
 		Segment.checkSegmentStart(segmentStart);
 		return rootDirectory
 				.resolve(String.format("primes.%1$016x", segmentStart));
-	}
-	
-	public static PrimesProducer smallPrimes() {
-		return (consumer, max, progress)->{
-			max=UnsignedLong.min(max, SMALL_PRIMES_MAX);
-			IntList primes=new IntList(4096);
-			for (long ii=3l; max>=ii; ii+=2l) {
-				progress.progress(1.0*ii/SMALL_PRIMES_MAX);
-				boolean prime=true;
-				for (int jj=0; primes.size()>jj; ++jj) {
-					long prime2=primes.get(jj);
-					if (ii<prime2*prime2) {
-						break;
-					}
-					if (0l==ii%prime2) {
-						prime=false;
-						break;
-					}
-				}
-				if (prime) {
-					primes.add((int)ii);
-					consumer.prime(ii);
-				}
-			}
-			progress.finished();
-		};
-	}
-	
-	public static IntList smallPrimes(Progress progress) throws Throwable {
-		IntList primes=new IntList(4096);
-		return primes;
 	}
 }

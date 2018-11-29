@@ -1,6 +1,6 @@
 package gui.sieve.eratosthenes;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
 import gui.sieve.PrimeQueue;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class QueueSieve extends SegmentedEratosthenesianSieve {
+public class QueueSieve extends EratosthenesianSieve {
 	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
 					new Sieve.Descriptor(
@@ -56,8 +56,8 @@ public class QueueSieve extends SegmentedEratosthenesianSieve {
 	}
 	
 	@Override
-	protected void reset(PrimesProducer primesProducer,
-			Progress progress) throws Throwable {
+	protected void reset(PrimeProducer primeProducer, Progress progress)
+			throws Throwable {
 		queue.clear();
 		smallPrimePositions.clear();
 		smallPrimes.clear();
@@ -66,7 +66,7 @@ public class QueueSieve extends SegmentedEratosthenesianSieve {
 			return;
 		}
 		long start=start();
-		primesProducer.primes(
+		primeProducer.primes(
 				(prime)->addPrime(
 						UnsignedLong.firstSievePosition(prime, start),
 						prime),

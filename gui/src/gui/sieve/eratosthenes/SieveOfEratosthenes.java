@@ -1,6 +1,6 @@
 package gui.sieve.eratosthenes;
 
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.math.UnsignedLong;
 import gui.sieve.OperationCounter;
 import gui.sieve.Sieve;
@@ -12,12 +12,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SegmentedSieveOfEratosthenes
-		extends SegmentedEratosthenesianSieve {
+public class SieveOfEratosthenes extends EratosthenesianSieve {
 	public static final List<Sieve.Descriptor> SIEVES
 			=Collections.unmodifiableList(Arrays.asList(
 					new Sieve.Descriptor(
-							SegmentedSieveOfEratosthenes::new,
+							SieveOfEratosthenes::new,
 							"Eratoszthenész szitája-szegmentált",
 							"eratosthenes-segmented",
 							30, 6, 20)));
@@ -27,7 +26,7 @@ public class SegmentedSieveOfEratosthenes
 	private final IntList primes=new IntList(UnsignedLong.MAX_PRIME_COUNT);
 	private int sqrtIndex;
 	
-	public SegmentedSieveOfEratosthenes() {
+	public SieveOfEratosthenes() {
 		super(3l);
 	}
 	
@@ -40,7 +39,7 @@ public class SegmentedSieveOfEratosthenes
 	}
 	
 	@Override
-	protected void reset(PrimesProducer primesProducer, Progress progress)
+	protected void reset(PrimeProducer primeProducer, Progress progress)
 			throws Throwable {
 		positions.clear();
 		primes.clear();
@@ -48,7 +47,7 @@ public class SegmentedSieveOfEratosthenes
 		if (0l==startSegment) {
 			return;
 		}
-		primesProducer.primes(
+		primeProducer.primes(
 				(prime)->{
 					positions.add(
 							UnsignedLong.firstSievePosition(prime, start()));

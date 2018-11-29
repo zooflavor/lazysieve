@@ -15,12 +15,12 @@ public class AggregateBlock implements Supplier<Aggregate> {
 	private final Aggregate aggregate;
 	private byte[] block;
 	
-	public AggregateBlock(byte[] block) throws IOException {
-		this.block=block;
+	public AggregateBlock(byte[] block, int version) throws IOException {
+		this.block=(Aggregates.VERSION==version)?block:null;
 		try (InputStream bis=new ByteArrayInputStream(block);
 				InputStream gis=new GZIPInputStream(bis);
 				DataInputStream dis=new DataInputStream(gis)) {
-			aggregate=Aggregate.readFrom(dis);
+			aggregate=Aggregate.readFrom(dis, version);
 		}
 	}
 	

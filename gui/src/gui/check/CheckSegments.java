@@ -3,7 +3,7 @@ package gui.check;
 import gui.Command;
 import gui.Gui;
 import gui.io.Database;
-import gui.io.PrimesProducer;
+import gui.io.PrimeProducer;
 import gui.io.Segment;
 import gui.io.Segments;
 import gui.math.UnsignedLong;
@@ -12,6 +12,7 @@ import gui.ui.GuiWindow;
 import gui.ui.progress.PrintStreamProgress;
 import gui.ui.progress.Progress;
 import gui.util.Consumer;
+import gui.util.IntList;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -57,6 +58,8 @@ public class CheckSegments extends GuiWindow<JFrame> {
 							"Main check segments [adatbázis könytár] test [szegmens kezdetek...]",
 							Command.Argument.LONG)));
 	public static final char MNEMONIC='f';
+	public static final long SMALL_PRIMES_MAX
+			=UnsignedLong.squareRootFloor(Segment.NUMBERS+1l);
 	public static final String TITLE="Szegmensfájlok ellenőrzése";
 	
 	private class ActionListener implements Consumer<ActionEvent> {
@@ -223,8 +226,7 @@ public class CheckSegments extends GuiWindow<JFrame> {
 			return;
 		}
 		segmentStarts.forEach(Segment::checkSegmentStart);
-		PrimesProducer largePrimes=database.largePrimes();
-		PrimesProducer smallPrimes=Database.smallPrimes();
+		PrimeProducer largePrimes=database.largePrimes();
 		Segment readSegment=new Segment();
 		Segment generatedSegment=new Segment();
 		for (int ii=0; segmentStarts.size()>ii; ++ii) {
@@ -237,10 +239,10 @@ public class CheckSegments extends GuiWindow<JFrame> {
 			readSegment.read(database, segmentStarts.get(ii));
 			subProgress.progress(0.01);
 			generatedSegment.clear(0l, true, readSegment.segmentStart);
-			gui.io.PrimesProducer primes2;
+			PrimeProducer primes2;
 			if (1l==readSegment.segmentStart) {
 				generatedSegment.setComposite(0);
-				primes2=smallPrimes;
+				primes2=smallPrimes();
 			}
 			else {
 				primes2=largePrimes;
@@ -255,6 +257,32 @@ public class CheckSegments extends GuiWindow<JFrame> {
 			subProgress.finished();
 		}
 		progress.finished("A szegmensek helyesek.");
+	}
+	
+	public static PrimeProducer smallPrimes() {
+		return (consumer, max, progress)->{
+			max=UnsignedLong.min(max, SMALL_PRIMES_MAX);
+			IntList primes=new IntList(4096);
+			for (long ii=3l; max>=ii; ii+=2l) {
+				progress.progress(1.0*ii/SMALL_PRIMES_MAX);
+				boolean prime=true;
+				for (int jj=0; primes.size()>jj; ++jj) {
+					long prime2=primes.get(jj);
+					if (ii<prime2*prime2) {
+						break;
+					}
+					if (0l==ii%prime2) {
+						prime=false;
+						break;
+					}
+				}
+				if (prime) {
+					primes.add((int)ii);
+					consumer.prime(ii);
+				}
+			}
+			progress.finished();
+		};
 	}
 	
 	public static void start(Gui gui) {

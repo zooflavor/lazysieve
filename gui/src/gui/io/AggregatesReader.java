@@ -52,10 +52,13 @@ public abstract class AggregatesReader implements AutoCloseable {
 		}
 	}
 	
-	private static class Version0 extends Stream {
-		private Version0(MeasuringInputStream measure, long size,
-				DataInputStream stream) {
+	private static class Version01 extends Stream {
+		private final int version;
+		
+		private Version01(MeasuringInputStream measure, long size,
+				DataInputStream stream, int version) {
 			super(measure, size, stream);
+			this.version=version;
 		}
 		
 		@Override
@@ -69,7 +72,7 @@ public abstract class AggregatesReader implements AutoCloseable {
 			}
 			byte[] block=new byte[blockSize];
 			stream.readFully(block, 0, blockSize);
-			return new AggregateBlock(block);
+			return new AggregateBlock(block, version);
 		}
 	}
 	
@@ -153,9 +156,10 @@ public abstract class AggregatesReader implements AutoCloseable {
 						int version=dis.readInt();
 						AggregatesReader reader;
 						switch (version) {
+							case 0:
 							case Aggregates.VERSION:
-								reader=new AggregatesReader.Version0(
-										mis, size, dis);
+								reader=new AggregatesReader.Version01(
+										mis, size, dis, version);
 								break;
 							default:
 								throw new RuntimeException(
