@@ -1,7 +1,6 @@
 package gui.graph;
 
 import gui.math.UnsignedLong;
-import gui.plotter.Colors;
 import gui.ui.Color;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,16 +9,16 @@ import java.util.Objects;
 
 public class Graph {
 	public static final Graph EMPTY=new Graph(
-					Colors.BACKGROUND,
+					Color.BACKGROUND,
 					-1,
 					-1,
 					new ArrayList<>(0),
-					Colors.RULER.alpha(63),
+					Color.RULER.alpha(63),
 					8.0,
-					Colors.RULER,
+					Color.RULER,
 					new ArrayList<>(0),
-					Colors.TOOLTIP_BACKGROUND,
-					Colors.TOOLTIP_TEXT,
+					Color.TOOLTIP_BACKGROUND,
+					Color.TOOLTIP_TEXT,
 					0.0,
 					0.0,
 					1.0,

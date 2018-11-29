@@ -1,6 +1,8 @@
-package gui.io;
+package gui.io.command;
 
 import gui.Command;
+import gui.io.Database;
+import gui.io.DatabaseInfo;
 import gui.ui.progress.PrintStreamProgress;
 import java.nio.file.Path;
 import java.util.Arrays;

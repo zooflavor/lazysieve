@@ -1,4 +1,4 @@
-package gui.plotter;
+package gui.graph.plotter;
 
 import gui.Command;
 import gui.graph.PlotType;
@@ -336,7 +336,7 @@ public class MeasureSieve extends GuiWindow<JDialog> {
 										+"-("+start2
 										+", "+end2
 										+")-"+(sum2?"összesen":"szegmens"),
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}

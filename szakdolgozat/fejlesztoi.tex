@@ -435,7 +435,7 @@ Ebben a csomagban, és a gui.sieve.eratosthenes alcsomagjában, a futási idők 
 \umlclass[x=9, y=-6]{SieveOfEratosthenes}{}{}
 \umlclass[x=8, y=-8]{QueueSieve}{}{}
 \umlclass[x=7, y=-10]{CacheOptimizedLinearSieve}{}{}
-\umlclass[x=5, y=-12]{SimpleBucketSieve}{}{}
+\umlclass[x=6, y=-12]{SimpleBucketSieve}{}{}
 \umlclass[x=1, y=-12, type=abstract]{BucketSieve}{}{}
 \umlclass[x=1, y=-14]{Bucket1Sieve}{}{}
 \umlclass[x=5, y=-14]{BucketNSieve}{}{}
@@ -480,7 +480,7 @@ A sziták a prímek és pozíciójuk tárolását, egy kivételével, egy vagy k
 Az edénysoron alapuló sziták belső edényeinek pillanatnyi mérete tág határok között mozog, azért a memóriaveszteség csökkentésére ezek ez edények kisebb, fix méretű edények láncolt listái.
 Az edénysor ezeket a listaelemeket feldolgozás után újrahasznosítja a szemétgyűjtés elkerüléséhez.
 
-A CacheOptimizedLinearSieve belső adatstruktúrája nehezebben bővíthető, mint a listás vagy elsőbbségi soros szitáké.
+A CacheOptimizedLinearSieve belső adatszerkezete nehezebben bővíthető, mint a listás vagy elsőbbségi soros szitáké.
 Ezért a COLS szita $2^{32}$-ig egy egyszerű listás eratoszthenészi szitaként viselkedik, és az azutáni első szegmens szitálásakor alakítja ki a prímek csoportosítását.
 
 A sziták egyszerű hierarchiát alkotnak.
@@ -505,23 +505,122 @@ Az implementációk főbb jellemzői:
 
 \subsubsection{gui.ui}
 
+Ebben a csomagban a Swing használatát megkönnyítő osztályok vannak.
+
+A program legtöbb művelete hosszú időt vesz igénybe, és a felhasználó az elindítása után már nem tudja befolyásolni.
+A gui.ui.progress alcsomag az ilyen lassú folyamatok visszajelzését segíti.
+A Progress interfészen keresztül egy folyamat százalékban visszaadhatja, hogy hol tart.
+A Progress.subProgress() függvénnyel részeljárások elöl elfedhető a teljes megoldásban elfoglal helyük.
+Az interfésznek két implementációja adott, parancssorhoz a PrintStreamProgress, és a grafikus GuiProgress.
+Mindkét megvalósítás ügyel arra, hogy gyakori státuszfrissítés esetén a megjelenítés ne tartsa fel a ténylegesen végzendő műveletet.
+
+A lassú folyamatok megvalósításának másik segédosztálya a GuiProcess.
+Ez az absztrakt osztály megszervezi a grafikus felületen a háttérfolyamatok futtatását.
+A Swing szál feltartása helyett a lassú művelet háttérben futtatható részét egy külön szálban futtatja, a műveletet a background() metódusában kell megvalósítani.
+A background() függvény lefutása után a foreground() metódust a Swing szálban hívja meg, az eredmény itt jeleníthető meg. Az eredmény átadása a két szál között az osztály megvalósítására van bízva, a szálak szinkronizálásának megkönnyítésére a background() metódusból visszatérés garantáltan happens-before relációban van a foreground() meghívásával.
+A GuiProcess a background() futásához egy GuiProgress példányt is létrehoz.
+
+\subsubsection{Grafikus megjelenítés}
+
+A grafikus program fő ablakát a gui.Gui osztály írja le.
+A program ablakai egy közös Session objektumon keresztül fenntartanak szálakat a háttérfolyamatok futtatására.
+Ez az objektum számon tartja a nyitott ablakok számát, és az utolsó becsukásával a háttérszálakat szabályosan leállítja.
+
 \subsubsection{Parancssor}
 
 A gui program legtöbb művelete parancssorból is indítható.
 A parancssori műveletek a gui.Command.Descriptor osztály példányaival írhatóak le, és a gui.Main.main() a program indítási paramétereit ezekkel a leírókkal összevetve választja ki a futtatandó parancsot.
-A leíró a parancs belépési pontja mellett a megengedd argumentumok listáját tartalmazza. A parancs kiválasztásához a tényleges és elvárt argumentumok meg kell egyezzenek.
+A leíró a parancs belépési pontja mellett a megengedett argumentumok listáját tartalmazza. A parancs kiválasztásához a tényleges és elvárt argumentumok meg kell egyezzenek.
 Az argumentum leírása reguláris kifejezéssel szintaktikailag ellenőrzi a tényleges argumentumokat, a szemantikai helyesség ellenőrzése minden parancs saját feladata.
 
 \subsubsection{Adatbázis műveletek}
 
-\subsubsection{Szegmensek ellenőrzése}
+Az adatbázison három művelet végezhető, ezek implementációja a Database osztály info() metódusa, ami összegyűjti az adatbázisban tárolt szegmensek információit, az importAggregates() a megadott és az adatbázis összesítőfájlát összefésüli, és a reaggregate() az új szegmensfájlokat összesíti.
+Ez a két művelet a szegmens és összesítőfájl segédosztályait használja, az összefésülő rendezéshez hasonlóan ezek egyetlen menetben oldják meg a feladatot.
 
-\subsubsection{Sziták ellenőrzése}
+Egyik művelet sem interaktív, a paraméterek megadása és az eredmény visszajelzése is
+a legegyszerűbb megoldásokat használja grafikusan és parancssorban is. Ezek megvalósítása a gui.io.command csomagban található.
+
+\subsubsection{Szegmensek és sziták ellenőrzése}
+
+Ez a két művelet a gui.check csomagban van megvalósítva.
+Mindkettő parancssorból és grafikusan is indítható, az adatbázis műveletekhez hasonlóan a paraméterek bekérése és az eredmény megjelenítése egyszerű.
+
+Mindkét művelet az ellenőrzéseket szegmensenként végzi. Az összehasonlításhoz a ReferenceSegment osztály állítja elő a referenciának vett adatokat. Ehhez a ReferenceSegment.SIEVE példány Eratoszthenész szitáját használja, A ReferenceSegment.TEST az erős pszeudoprím tesztet.
+
+A CheckSegments osztály oldja meg a szegmensek ellenőrzését, a checkSegments() metódusa végzi el a tényleges ellenőrzést, a kiválasztott szegmensek beolvasását, a referencia generálását, és az kettő összehasonlítását.
+A CheckSieve osztály checkSieve() metódusa ehhez hasonlóan működik, az ellenőrizni kívánt szegmenseket nem fájlból olvassa be, hanem a kiválasztott szitával állítja elő, és referenciának mindig a szitát választja.
 
 \subsubsection{Grafikon ábrázolása}
 
-A grafikonrajzolónak sokkal okosabbnak kéne lennie, hogy gyorsan változó függvényeket
-helyesen jelenítsen meg, reménytelenül okosnak.
+A grafikonok megjelenítése a program egyetlen interaktív része, ennek kezelésére a modell-nézet-vezérlő mintát használja.
+A modell a megjelenítendő minták és függvények, valamint a grafikon megjelenítendő intervalluma.
+A nézet a sztenderd Swing komponenseket használja.
+A vezérlő a gui segédosztályaira épít.
+
+A modell alapján az megjelenítéshez szükséges grafikus utasítások előállítása időigényes, a mintákat és a függvényeket pixel széles intervallumokon mintavételezve határozza meg a képernyő egy oszlopához tartozó minimum és maximum értékeket. Az interaktivitás érzésének fenntartásához az oszlopokra bontást a program egy háttérszálban végzi, és közben a részeredményeket rendszeresen átadja a nézetnek megjelenítésre. A felhasználó a háttérszámítások közben a modellt módosítva az addigi előszámításokat elveszíti, és egy új háttérszál indul.
+
+{\color{red} class diagram}
+
+\subsubsection{Modell}
+
+A modell osztályai a gui.graph csomagban vannak.
+A modellt a Graph osztály írja le. Ez egy nem módosítható konténerosztály, az ábrázoláshoz szükséges összes paramétert tartalmazza:
+\begin{itemize}
+\item a mintákat, ezeket a Sample osztály írja le
+\item a függvényeket, ezeket a Function osztály írja le
+\item a grafikon ábrázolására használható képernyőrész szélességét és magasságát pixelekben
+\item a grafikon megjelenített részét, amit mintatér koordináta rendszerében lehet megadni egy téglalap sarkaival
+\item a megjelenítéshez használt színeket
+\end{itemize}
+
+A RenderedGraph osztály tartalmazza a minták és függvények oszlopokra bontását. A Graph osztályhoz hasonlóan ennek az osztálynak a példányai se módosíthatóak. A RenderedGraph tartalmazza a hozzá tartozó Graph referenciáját is, ezzel mindig ellenőrizhető, hogy a két modell objektum egymáshoz tartozik.
+
+A RenderedSample osztállyal reprezentált oszlopminták egybefüggő intervallumként vannak megadva a RenderedInterval osztály segítségével, de minta esetén mindig egy intervallum az oszlopokra bontás eredménye, mert a minták értelmezési tartománya véges, összefüggő intervallum sehol nincs rajta.
+
+Ezeknek az osztályoknak a módosíthatatlansága megkönnyíti a helyes többszálú feldolgozást. Egy kész objektumot egy szál sem fog megváltozni látni, és a referenciák megjegyzésével könnyen követhető, hogy melyik a legújabb modell.
+
+A grafikon felbontását a GraphRenderer osztály vezérli. A minták felbontásához a pixeloszlopok intervallumán megkeresi a legkisebb és a legnagyobb mintaértéket, és ha ez van, akkor az egyetlen mintaintervallumba tesz ezt. A mintákat a nézet minden kitöltött oszlop között összeköti egy vékony egyenessel. Ahhoz, hogy a megjelenítés szélein túlra is be legyen húzva ez az egyenes, az oszlopmintába a megjelenített intervallumtól balra és jobbra eső minta elem is bekerül.
+
+Függvények előkészítésénél az eljárás ehhez nagyon hasonló.
+Az oszlop minimum és maximum értékét pontos módszer helyett mintavételezéssel határozza meg. Az oszlop intervallumában több, egyenletes távolságra lévő ponton kiértékeli a függvényt, és ezekből határozza meg az értékeket.
+A függvény oszlopmintájában az intervallumok összefüggőek, a függvény a legelső oszlop bal szélétől a legutolsó oszlop jobb széléig értelmezve van. A nézet ennek megfelelően az intervallumok közötti szakaszokon semmit nem rajzol ki.
+
+A GraphRenderer a nézettel a CheckAndPost interfészen keresztül kommunikál, a pontos nézetimplementáció ismerete nélkül. A check() metódussal le tudja ellenőrizni, hogy a legújabb modell az-e, amit éppen feldolgoz, és a checkAndPost() metódussal az előbbi ellenőrzés után az addig elkészült részeredményt tovább is adja megjelenítésre.
+Ha a modell már elavult, ezek a metódusok egy RendererDeathException-t dobnak, és a GraphRenderer hibajelzés nélkül leáll. Ilyenkor egy másik szálon már dolgozik egy új GraphRenderer az új modellen.
+
+\subsubsection{Vezérlő}
+
+A grafikon megjelenítésének ablaka a Plotter osztály.
+A vezérlő ennek az ablaknak az eseménykezelői, amik a modell módosításán keresztül tudják módosítani a megjelenített grafikont.
+A modellen végezhető műveletek:
+\begin{itemize}
+\item a grafikon megjelenített részének mozgatása, nagyítása, kicsinyítése
+\item mintát hozzáadása
+\item minta törlése
+\item mintát közelítése
+\item minta törlése
+\end{itemize}
+Ezek megvalósítására a program a Swing sztenderd komponenseit használja.
+
+A mintát a modellhez adni három forrásból lehet.
+Az adatbázis összesített statisztikáiból.
+Ezek előállítása az Aggregates osztály feladata.
+Be lehet tölteni mintát CSV fájlból, ezt a LoadSampleSample process oldja meg, vagy meg lehet mérni egy minta futási idejét. A futási idő mérése a parancssorból indítható mérést használja, a MeasureSieve ablak a mérés paramétereinek megadására szolgál.
+
+A minta közelítésének számítási részét a gui.math csomag megoldja. A FunctionSelector ablak az elemi függvények kiválasztását oldja meg, a CustomFunctionDialog ablakban lehet megadni elemi függvényt JavaScript nyelven.
+
+A GraphPlotter komponens a grafikon egérrel történő mozgatásáról és nagyításáról eseményeket küld a vezérlésnek, a nézet osztály is csak a vezérlésen keresztül módosítja a modellt.
+
+\subsubsection{Nézet}
+
+A nézetet a GraphPlotter osztály reprezentálja.
+A két részből álló előkészített modell megjelenítése a grafikus vezérlőutasítások kiadásából áll.
+Ennek a komponensnek a graph és renderedGraph adattagjai tartalmazzák a legújabb modell értéket, a vezérlés, az előkészítés, és a megjelenítés ezen keresztül szinkronizálva kommunikál.
+
+A modell módosításakor a GraphPlotter objektum a graph adattag cseréjével biztosítja, hogy a régi modellre vonatkozó háttérszálak leállnak, és elindítja az új modell oszlopra bontását.
+Az előkészített modellről a CheckAndPost eseménykezelőjén keresztül értesül, aminek hatására az új grafikon kirajzolását ütemezi.
+A tényleges kirajzolásnál még egyszer ellenőrzi, hogy a grafikon a komponens tényleges méretére készült el, majd a már elkészült részeket kirajzolja.
 
 \section{Sziták}
 
@@ -624,6 +723,10 @@ Amúgy sincs bármekkora tömb...
 Összes prím, és pozíciója $2^32$-ig. Primitív típusok és boxing. Garbage collector.
 
 \section{Teszt}
+
+{\color{red} util. math. junit coverage.
+math pontosság.
+sziták, szegmensek.}
 
 \subsection{Adatszerkezetek}
 

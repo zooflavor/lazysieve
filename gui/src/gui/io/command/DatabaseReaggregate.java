@@ -1,5 +1,6 @@
-package gui;
+package gui.io.command;
 
+import gui.Gui;
 import gui.ui.GuiProcess;
 import javax.swing.JFrame;
 

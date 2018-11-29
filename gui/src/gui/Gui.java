@@ -2,8 +2,11 @@ package gui;
 
 import gui.check.CheckSegments;
 import gui.check.CheckSieve;
+import gui.graph.plotter.Plotter;
 import gui.io.Database;
-import gui.plotter.Plotter;
+import gui.io.command.DatabaseImport;
+import gui.io.command.DatabaseInfoDialog;
+import gui.io.command.DatabaseReaggregate;
 import gui.ui.CloseButton;
 import gui.ui.GuiWindow;
 import java.awt.FlowLayout;

@@ -1,4 +1,4 @@
-package gui.plotter;
+package gui.graph.plotter;
 
 import gui.math.CheckedFunction;
 import gui.math.LeastSquares;

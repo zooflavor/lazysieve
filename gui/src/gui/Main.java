@@ -2,8 +2,8 @@ package gui;
 
 import gui.check.CheckSegments;
 import gui.check.CheckSieve;
-import gui.io.DatabaseCommands;
-import gui.plotter.MeasureSieve;
+import gui.graph.plotter.MeasureSieve;
+import gui.io.command.DatabaseCommands;
 import gui.sieve.Sieves;
 import java.util.ArrayList;
 import java.util.List;

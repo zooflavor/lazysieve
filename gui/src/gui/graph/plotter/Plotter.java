@@ -1,4 +1,4 @@
-package gui.plotter;
+package gui.graph.plotter;
 
 import gui.Session;
 import gui.graph.Function;
@@ -7,7 +7,6 @@ import gui.graph.Sample;
 import gui.ui.CloseButton;
 import gui.ui.Color;
 import gui.ui.ColorRenderer;
-import gui.ui.GraphPlotter;
 import gui.ui.GuiWindow;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -356,7 +355,7 @@ public class Plotter extends GuiWindow<JFrame> {
 	
 	public List<Color> selectNewColors(int size) {
 		synchronized (lock) {
-			return Colors.selectNew(random, size,
+			return Color.selectNew(random, size,
 					(consumer)->{
 						samplePanels.forEach(
 								(sample)->sample.usedColors(consumer));

@@ -5,10 +5,10 @@ import gui.io.Segments;
 import gui.ui.GuiProcess;
 import javax.swing.JFrame;
 
-class StartProcess extends GuiProcess<Gui, JFrame> {
+class StartCheckSegmentsProcess extends GuiProcess<Gui, JFrame> {
 		private Segments segments;
 		
-		public StartProcess(Gui parent) {
+		public StartCheckSegmentsProcess(Gui parent) {
 			super(true, parent, CheckSegments.TITLE);
 		}
 		

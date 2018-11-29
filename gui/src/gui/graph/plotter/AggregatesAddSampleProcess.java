@@ -1,4 +1,4 @@
-package gui.plotter;
+package gui.graph.plotter;
 
 import gui.graph.PlotType;
 import gui.graph.Sample;
@@ -22,7 +22,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return toSample(Aggregates.maxPrimeGaps(progress, reader))
 						.create("Legnagyobb prímhézag",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -36,7 +36,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return toSample(Aggregates.newPrimeGaps(progress, reader))
 						.create("Prímhézagok első előfordulása^(-1)",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -50,7 +50,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime12Z11Counts(progress, reader)
 						.create("12Z+11 prímek száma",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -64,7 +64,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime4Z1Counts(progress, reader)
 						.create("4Z+1 prímek száma",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -78,7 +78,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime4Z3Counts(progress, reader)
 						.create("4Z+3 prímek száma",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -92,7 +92,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.prime6Z1Counts(progress, reader)
 						.create("6Z+1 prímek száma",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -106,7 +106,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsAbsoluteError(progress, reader)
 						.create("Prímszámtétel abszolút hiba",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -120,7 +120,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsExpectedValue(progress, reader)
 						.create("Prímszámtétel",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -134,7 +134,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCountsRelativeError(progress, reader)
 						.create("Prímszámtétel relatív hiba",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -148,7 +148,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.primeCounts(progress, reader)
 						.create("Prímek száma",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -163,7 +163,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 				return toSample(
 							Aggregates.primeGapFrequencies(progress, reader))
 						.create("Prímhézagok gyakoriság",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.BARS,
 								color);
 			}
@@ -177,7 +177,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return toSample(Aggregates.primeGapMerits(progress, reader))
 						.create("Prímhézagok jósága",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -191,7 +191,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return toSample(Aggregates.primeGapStarts(progress, reader))
 						.create("Prímhézagok első előfordulása",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -206,7 +206,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 				return Aggregates.sieveNanos(progress, reader, sum)
 						.create(String.format("Szitálás ideje (ns)(%1$s)",
 										sum?"összesen":"szegmensenként"),
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}
@@ -220,7 +220,7 @@ public abstract class AggregatesAddSampleProcess extends AddSampleProcess {
 					AggregatesReader reader) throws Throwable {
 				return Aggregates.twinPrimes(progress, reader)
 						.create("Ikerprímek száma",
-								Colors.INTERPOLATION,
+								Color.INTERPOLATION,
 								PlotType.LINE,
 								color);
 			}

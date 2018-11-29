@@ -1,4 +1,4 @@
-package gui.plotter;
+package gui.graph.plotter;
 
 import gui.graph.Function;
 import gui.graph.Sample;
@@ -210,7 +210,7 @@ final class SamplePanel {
 		
 		@Override
 		public Color getElementAt(int index) {
-			return Colors.GRAPHS.get(index);
+			return Color.GRAPHS.get(index);
 		}
 		
 		@Override
@@ -220,7 +220,7 @@ final class SamplePanel {
 		
 		@Override
 		public int getSize() {
-			return Colors.GRAPHS.size();
+			return Color.GRAPHS.size();
 		}
 		
 		@Override
@@ -460,7 +460,7 @@ final class SamplePanel {
 	private void sampleColorChanged(ActionEvent event) {
 		Color color=(Color)sampleColor.getSelectedItem();
 		Sample oldSample=sample;
-		Sample newSample=oldSample.setColors(Colors.INTERPOLATION, color);
+		Sample newSample=oldSample.setColors(Color.INTERPOLATION, color);
 		sample=newSample;
 		plotter.replaceSample(oldSample, newSample);
 	}

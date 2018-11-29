@@ -5,6 +5,12 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.function.Consumer;
 
 public class Color implements Comparable<Color> {
 	public static final Color BLACK=Color.create("fekete", 0xff000000);
@@ -27,10 +33,17 @@ public class Color implements Comparable<Color> {
 	public static final Color RED=Color.create("vörös", 0xffaa0000);
 	public static final Color TRANSPARENT=Color.create("átlátszó", 0x00000000);
 	public static final Color WHITE=Color.create("fehér", 0xffffffff);
+
+	public static final Color BACKGROUND=Color.LIGHT_GRAY;
+	public static final List<Color> GRAPHS;
+	public static final Color INTERPOLATION=Color.GRAY;
+	public static final Color RULER=Color.WHITE;
+	public static final Color TOOLTIP_BACKGROUND=Color.LIGHT_GRAY;
+	public static final Color TOOLTIP_TEXT=Color.DARK_GRAY;
 	
 	static {
 		try {
-			List<Color> colors=new ArrayList<>();
+			Set<Color> colors=new TreeSet<>();
 			int modifiers=Modifier.FINAL|Modifier.PUBLIC|Modifier.STATIC;
 			for (Field field: Color.class.getDeclaredFields()) {
 				if ((field.getModifiers()==modifiers)
@@ -39,8 +52,21 @@ public class Color implements Comparable<Color> {
 					colors.add(color);
 				}
 			}
-			colors.sort(null);
 			COLORS=Collections.unmodifiableList(new ArrayList<>(colors));
+			
+			Set<Color> graphs=new TreeSet<>(Color.COLORS);
+			graphs.remove(Color.BLACK);
+			graphs.remove(Color.DARK_GRAY);
+			graphs.remove(Color.GRAY);
+			graphs.remove(Color.LIGHT_GRAY);
+			graphs.remove(Color.WHITE);
+			graphs.remove(Color.TRANSPARENT);
+			graphs.remove(BACKGROUND);
+			graphs.remove(INTERPOLATION);
+			graphs.remove(RULER);
+			graphs.remove(TOOLTIP_BACKGROUND);
+			graphs.remove(TOOLTIP_TEXT);
+			GRAPHS=Collections.unmodifiableList(new ArrayList<>(graphs));
 		}
 		catch (IllegalAccessException
 				|IllegalArgumentException
@@ -116,6 +142,44 @@ public class Color implements Comparable<Color> {
 	@Override
 	public int hashCode() {
 		return blue+13*green+31*red;
+	}
+	
+	public static List<Color> selectNew(Random random, int size,
+			Consumer<Consumer<Color>> usedColors) {
+		Map<Color, Integer> counts=new TreeMap<>();
+		GRAPHS.forEach((color)->counts.put(color, 0));
+		usedColors.accept((color)->{
+			Integer count=counts.get(color);
+			if (null!=count) {
+				counts.put(color, count+1);
+			}
+		});
+		List<Color> colors=new ArrayList<>(counts.size());
+		List<Color> result=new ArrayList<>(size);
+		while (result.size()<size) {
+			colors.clear();
+			int minCount=0;
+			for (Map.Entry<Color, Integer> entry: counts.entrySet()) {
+				Color color=entry.getKey();
+				int count=entry.getValue();
+				if (colors.isEmpty()
+						|| (minCount>count)) {
+					colors.clear();
+					colors.add(color);
+					minCount=count;
+				}
+				else if (minCount==count) {
+					colors.add(color);
+				}
+			}
+			if (colors.isEmpty()) {
+				throw new IllegalStateException();
+			}
+			Color color=colors.get(random.nextInt(colors.size()));
+			result.add(color);
+			counts.put(color, counts.get(color)+1);
+		}
+		return result;
 	}
 	
 	@Override

@@ -286,7 +286,7 @@ public class CheckSegments extends GuiWindow<JFrame> {
 	}
 	
 	public static void start(Gui gui) {
-		new StartProcess(gui)
+		new StartCheckSegmentsProcess(gui)
 				.start(gui.session.executor);
 	}
 	

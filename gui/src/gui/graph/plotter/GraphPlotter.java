@@ -1,4 +1,4 @@
-package gui.ui;
+package gui.graph.plotter;
 
 import gui.graph.CheckAndPost;
 import gui.graph.Function;
@@ -11,6 +11,7 @@ import gui.graph.RendererDeathException;
 import gui.graph.Ruler;
 import gui.graph.Sample;
 import gui.math.UnsignedLong;
+import gui.ui.Color;
 import gui.util.Consumer;
 import java.awt.BasicStroke;
 import java.awt.Font;

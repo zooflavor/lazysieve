@@ -1,4 +1,4 @@
-package gui.plotter;
+package gui.graph.plotter;
 
 import gui.graph.PlotType;
 import gui.graph.Sample;
@@ -77,7 +77,7 @@ public class LoadSampleProcess extends GuiProcess<Plotter, JFrame> {
 				label=label.substring(0, label.length()-4);
 			}
 			samples.add(sample2.create(
-					label, Colors.INTERPOLATION, plotType, color));
+					label, Color.INTERPOLATION, plotType, color));
 		}
 		progress.finished();
 	}
