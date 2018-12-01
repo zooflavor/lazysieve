@@ -7,6 +7,7 @@ import gui.sieve.eratosthenes.CacheOptimizedLinearSieve;
 import gui.sieve.eratosthenes.SimpleBucketSieve;
 import gui.sieve.eratosthenes.QueueSieve;
 import gui.sieve.eratosthenes.SieveOfEratosthenes;
+import gui.test.NoOpSieve;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +47,7 @@ public class Sieves {
 		List<Sieve.Descriptor> sieves=new ArrayList<>();
 		sieves.addAll(BucketSieve.SIEVES);
 		sieves.addAll(CacheOptimizedLinearSieve.SIEVES);
+		sieves.addAll(NoOpSieve.SIEVES);
 		sieves.addAll(QueueSieve.SIEVES);
 		sieves.addAll(SieveOfAtkin.SIEVES);
 		sieves.addAll(SieveOfEratosthenes.SIEVES);

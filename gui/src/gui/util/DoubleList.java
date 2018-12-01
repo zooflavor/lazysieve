@@ -47,6 +47,13 @@ public class DoubleList extends PrimitiveList<DoubleList> {
 		return values[index];
 	}
 	
+	public double set(int index, double value) {
+		check(index);
+		double result=values[index];
+		values[index]=value;
+		return result;
+	}
+	
 	@Override
 	protected void swapImpl(int index0, int index1) {
 		double temp=values[index0];

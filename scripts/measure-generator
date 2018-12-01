@@ -34,7 +34,7 @@ while [ "8" -ge "$BUCKET_BITS" ]; do
 	done
 	let BUCKET_BITS=$BUCKET_BITS+1
 done
-rm -rf tmp
+mkdir -p ../samples/test
 cat tmp/measure-generator.csv | \
 		sed "s/0x0000000200000001/33/g" | \
 		sed "s/0x0000001000000001/36/g" | \
@@ -47,4 +47,5 @@ cat tmp/measure-generator.csv | \
 		sed "s/0x0200000000000001/57/g" | \
 		sed "s/0x1000000000000001/60/g" | \
 		sed "s/0x8000000000000001/63/g" | \
-		cat > ../samples/measure-generator.csv
+		cat > ../samples/test/measure-generator.csv
+rm -rf tmp

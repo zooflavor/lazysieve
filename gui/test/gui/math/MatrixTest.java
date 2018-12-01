@@ -58,8 +58,8 @@ public class MatrixTest {
 			Matrix.gaussianElimination(
 					new double[][]{{1, 0}},
 					new double[][]{{1}},
-					Progress.NULL,
-					true);
+					true,
+					Progress.NULL);
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -68,8 +68,8 @@ public class MatrixTest {
 			Matrix.gaussianElimination(
 					new double[][]{{1, 0}, {0, 1}},
 					new double[][]{{2}},
-					Progress.NULL,
-					true);
+					true,
+					Progress.NULL);
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -78,8 +78,8 @@ public class MatrixTest {
 			Matrix.gaussianElimination(
 					new double[][]{{0}},
 					new double[][]{{0}},
-					Progress.NULL,
-					true);
+					true,
+					Progress.NULL);
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -88,8 +88,8 @@ public class MatrixTest {
 			Matrix.gaussianElimination(
 					new double[][]{{0}},
 					new double[][]{{3}},
-					Progress.NULL,
-					true);
+					true,
+					Progress.NULL);
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -98,8 +98,8 @@ public class MatrixTest {
 			Matrix.gaussianElimination(
 					new double[][]{{0, 0}, {0, 0}},
 					new double[][]{{2}, {3}},
-					Progress.NULL,
-					true);
+					true,
+					Progress.NULL);
 			fail();
 		}
 		catch (ArithmeticException ex) {
@@ -109,36 +109,56 @@ public class MatrixTest {
 				Matrix.gaussianElimination(
 						new double[][]{{1, 0}, {0, 1}},
 						new double[][]{{2}, {3}},
-						Progress.NULL,
-						true));
+						true,
+						Progress.NULL));
 		assertEquals(
 				new double[][]{{3}, {2}},
 				Matrix.gaussianElimination(
 						new double[][]{{0, 1}, {1, 0}},
 						new double[][]{{2}, {3}},
-						Progress.NULL,
-						true));
+						true,
+						Progress.NULL));
 		assertEquals(
 				new double[][]{{2}, {3}},
 				Matrix.gaussianElimination(
 						new double[][]{{1, 0}, {0, 2}},
 						new double[][]{{2}, {6}},
-						Progress.NULL,
-						true));
+						true,
+						Progress.NULL));
 		assertEquals(
 				new double[][]{{2}, {3}},
 				Matrix.gaussianElimination(
 						new double[][]{{1, 0}, {0, 2}},
 						new double[][]{{2}, {6}},
-						Progress.NULL,
-						false));
+						false,
+						Progress.NULL));
 		assertEquals(
 				new double[][]{{2}, {3}},
 				Matrix.gaussianElimination(
 						new double[][]{{2, 1}, {1, 1}},
 						new double[][]{{7}, {5}},
+						true,
+						Progress.NULL));
+	}
+	
+	@Test
+	public void testMultiply() throws Throwable {
+		try {
+			Matrix.multiply(
+					Matrix.create(1, 1),
+					Matrix.create(2, 2),
+					Progress.NULL, Sum.preferred());
+			fail();
+		}
+		catch (ArithmeticException ex) {
+		}
+		assertEquals(
+				new double[][]{{24.0, 29.0, 34.0}, {42.0, 51.0, 60.0}},
+				Matrix.multiply(
+						new double[][]{{2.0, 3.0}, {4.0, 5.0}},
+						new double[][]{{3.0, 4.0, 5.0}, {6.0, 7.0, 8.0}},
 						Progress.NULL,
-						true));
+						Sum.preferred()));
 	}
 	
 	@Test

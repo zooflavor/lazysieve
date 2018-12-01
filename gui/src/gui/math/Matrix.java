@@ -3,7 +3,14 @@ package gui.math;
 import gui.ui.progress.Progress;
 import java.util.Arrays;
 
+@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class Matrix {
+	public static final boolean PREFERRED_PIVOTING=true;
+	
+	static {
+		new Matrix();
+	}
+	
 	private Matrix() {
 	}
 	
@@ -31,13 +38,13 @@ public class Matrix {
 	}
 	
 	public static double[][] gaussianElimination(double[][] aa, double[][] bb,
-			Progress progress, boolean totalPivoting) throws Throwable {
+			boolean completePivoting, Progress progress) throws Throwable {
 		int sizeA=aa.length;
 		if (sizeA!=aa[0].length) {
-			throw new ArithmeticException("aa.length!==aa[0].length");
+			throw new ArithmeticException("aa.length!=aa[0].length");
 		}
 		if (sizeA!=bb.length) {
-			throw new ArithmeticException("aa.length!==bb.length");
+			throw new ArithmeticException("aa.length!=bb.length");
 		}
 		int sizeB=bb[0].length;
 		aa=copy(aa);
@@ -49,7 +56,7 @@ public class Matrix {
 		Progress subProgress=progress.subProgress(0.0, null, 0.5);
 		for (int ii=0; sizeA-1>ii; ++ii) {
 			subProgress.progress(1.0*ii/(sizeA-1));
-			int maxColumnsEnd=totalPivoting?sizeA:ii+1;
+			int maxColumnsEnd=completePivoting?sizeA:ii+1;
 			int maxColumn=ii;
 			int maxRow=ii;
 			for (int rr=ii; sizeA>rr; ++rr) {
@@ -69,7 +76,7 @@ public class Matrix {
 				swapRows(bb, ii, maxRow);
 			}
 			if (0.0==aa[ii][ii]) {
-				throw new ArithmeticException("0.0===aa[ii][ii]");
+				throw new ArithmeticException("0.0==aa[ii][ii]");
 			}
 			for (int rr=ii+1; sizeA>rr; ++rr) {
 				if (0.0!=aa[rr][ii]) {
@@ -86,7 +93,7 @@ public class Matrix {
 		for (int ii=sizeA-1; 0<=ii; --ii) {
 			subProgress.progress(1.0*(sizeA-1-ii)/(sizeA));
 			if (0.0==aa[ii][ii]) {
-				throw new ArithmeticException("0.0===aa[ii][ii]");
+				throw new ArithmeticException("0.0==aa[ii][ii]");
 			}
 			for (int rr=ii-1; 0<=rr; --rr) {
 				if (0.0!=aa[rr][ii]) {
@@ -118,7 +125,7 @@ public class Matrix {
 	public static double[][] multiply(double[][] matrix0, double[][] matrix1,
 			Progress progress, Sum sum) throws Throwable {
 		if (matrix0[0].length!=matrix1.length) {
-			throw new ArithmeticException("matrix[0].length!==matrix1.length");
+			throw new ArithmeticException("matrix[0].length!=matrix1.length");
 		}
 		int rows=matrix0.length;
 		int columns=matrix1[0].length;

@@ -3,9 +3,11 @@ package gui.graph.plotter;
 import gui.math.CheckedFunction;
 import gui.math.LeastSquares;
 import gui.math.LinearCombinationFunction;
+import gui.math.Matrix;
 import gui.math.RealFunction;
 import gui.math.Sum;
 import gui.ui.GuiProcess;
+import gui.ui.MessageException;
 import java.util.List;
 import javax.swing.JFrame;
 
@@ -25,13 +27,14 @@ class ApproximationProcess extends GuiProcess<Plotter, JFrame> {
 	@Override
 	protected void background() throws Throwable {
 		function=LeastSquares.regression(
+				Matrix.PREFERRED_PIVOTING,
 				functions,
-				CheckedFunction::new,
+				(realFunction)->new CheckedFunction<>(
+						MessageException::new, realFunction),
 				Sum::preferred,
 				progress.subProgress(0.0, null, 0.9),
 				Sum::preferred,
-				samplePanel.sample().asDoubles(),
-				true);
+				samplePanel.sample().asDoubles());
 		error=LeastSquares.distanceSquared(
 				function,
 				progress.subProgress(0.9, null, 1.0),

@@ -52,6 +52,10 @@ public abstract class CustomFunction implements RealFunction {
             String script) throws ScriptException {
         ScriptEngine engine=new ScriptEngineManager()
                 .getEngineByName(engineName);
+		if (null==engine) {
+			throw new ScriptException(String.format(
+					"a %1$s szkript nem támogatott", engineName));
+		}
         if (engine instanceof Compilable) {
             return new Compiled(engine, name,
                     ((Compilable)engine).compile(script));
@@ -89,11 +93,8 @@ public abstract class CustomFunction implements RealFunction {
 			try {
 				object=valueAt(bindings);
 			}
-			catch (ArithmeticException ex) {
-				object=Double.NaN;
-			}
 			catch (ScriptException ex) {
-				throw new RuntimeException(ex);
+				throw new ArithmeticException(ex.toString());
 			}
 		}
         double result;
@@ -101,7 +102,7 @@ public abstract class CustomFunction implements RealFunction {
             result=((Number)object).doubleValue();
         }
         else {
-			throw new RuntimeException(String.format(
+			throw new ArithmeticException(String.format(
 					"a %1$s függvény értéke %2$s-ben nem szám, hanem %3$s",
 					name,
 					xx,

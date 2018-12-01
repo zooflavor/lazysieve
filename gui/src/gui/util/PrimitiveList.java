@@ -18,13 +18,6 @@ public abstract class PrimitiveList<L extends PrimitiveList<L>> {
 		}
 	}
 	
-	public void checkInsert(int index) {
-		if ((0>index)
-				|| (size<index)) {
-			throw new ArrayIndexOutOfBoundsException(index);
-		}
-	}
-	
 	public void clear() {
 		size=0;
 	}

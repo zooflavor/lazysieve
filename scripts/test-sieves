@@ -1,0 +1,100 @@
+#!/bin/bash
+
+function checkSieves {
+	START=$1
+	END=$2
+	shift
+	shift
+	for SIEVE in $@
+	do
+		echo check sieve $START $END $SIEVE
+		java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar check sieve tmp $SIEVE $START $END
+		if [ "0" != "$?" ]; then
+			exit 1
+		fi
+	done
+}
+
+function generate {
+	../generator/generator.bin tmp start $1 segments 3
+	if [ "0" != "$?" ]; then
+		exit 1
+	fi
+}
+
+echo check sieve fail
+java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar check sieve tmp no-op 0x3 0x400000001
+if [ "0" == "$?" ]; then
+	echo szitát hibásnak kellett volna találni
+	exit 1
+fi
+
+rm -rf tmp
+mkdir tmp
+
+../generator/init.bin tmp
+mv tmp/primes.0000000000000001 tmp/primes.0000000000000001.bak
+echo -n abcd0123 > tmp/primes.0000000000000001
+dd if=tmp/primes.0000000000000001.bak of=tmp/primes.0000000000000001 conv=notrunc bs=8 skip=1 oflag=append status=progress
+echo check segment fail
+java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar check segments tmp sieve 0x1
+if [ "0" == "$?" ]; then
+	echo szegmensfájlt hibásnak kellett volna találni
+	exit 1
+fi
+rm tmp/primes.0000000000000001
+mv tmp/primes.0000000000000001.bak tmp/primes.0000000000000001
+
+generate        0x100000001
+generate        0x200000001
+generate        0x400000001
+generate        0x800000001
+generate       0x1100000001
+generate       0x2200000001
+generate       0x4300000001
+generate       0x8400000001
+generate      0x19500000001
+generate      0x40600000001
+generate     0x141700000001
+generate     0x452800000001
+generate    0x1763900000001
+generate    0x4874000000001
+generate   0x18985100000001
+generate   0x49096200000001
+generate  0x170107300000001
+generate  0x481218400000001
+generate 0x1492329500000001
+generate 0x4503430500000001
+generate 0x8614541600000001
+generate 0xf725652700000001
+generate 0xff36763800000001
+
+java -Xms3584m -Xmx3584m -jar ../gui/dist/gui.jar check segments tmp sieve $(ls tmp/primes.*|sed "s/tmp\\/primes\\./0x/")
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+
+checkSieves 0x3 0x1000001 trial-division
+checkSieves 0x100000001 0x100100001 trial-division
+checkSieves 0x3 0x200000001 atkin bin-heap bin-heap-inplace buckets buckets-1 buckets-2 buckets-3 buckets-4 buckets-5 buckets-6 buckets-7 buckets-8 buckets-simple cols eratosthenes-segmented
+checkSieves 0x100000001 0x110000001 atkin bin-heap bin-heap-inplace buckets buckets-1 buckets-8 buckets-simple cols eratosthenes-segmented
+checkSieves 0x200000001 0x210000001 atkin bin-heap bin-heap-inplace buckets buckets-1 buckets-8 buckets-simple cols eratosthenes-segmented
+checkSieves 0x400000001 0x410000001 atkin bin-heap buckets-8 cols eratosthenes-segmented
+checkSieves 0x800000001 0x810000001 atkin bin-heap buckets-8 cols eratosthenes-segmented
+checkSieves 0x1200000001 0x1210000001 buckets-8 cols
+checkSieves 0x4200000001 0x4210000001 buckets-8 cols
+checkSieves 0x13200000001 0x13210000001 buckets-8 cols
+checkSieves 0x43200000001 0x43210000001 buckets-8 cols
+checkSieves 0x143200000001 0x143210000001 buckets-8 cols
+checkSieves 0x443200000001 0x443210000001 buckets-8 cols
+checkSieves 0x1543200000001 0x1543210000001 buckets-8 cols
+checkSieves 0x4543200000001 0x4543210000001 buckets-8 cols
+checkSieves 0x16543200000001 0x16543210000001 buckets-8 cols
+checkSieves 0x46543200000001 0x46543210000001 buckets-8 cols
+checkSieves 0x176543200000001 0x176543210000001 buckets-8 cols
+checkSieves 0x476543200000001 0x476543210000001 buckets-8 cols
+checkSieves 0x1876543200000001 0x1876543210000001 buckets-8 cols
+checkSieves 0x4876543200000001 0x4876543210000001 buckets-8 cols
+checkSieves 0xf876543200000001 0xf876543210000001 buckets-8 cols
+
+rm -rf tmp

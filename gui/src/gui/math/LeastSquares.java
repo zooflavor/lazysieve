@@ -8,7 +8,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class LeastSquares {
+	static {
+		new LeastSquares();
+	}
+	
 	private LeastSquares() {
 	}
 	
@@ -30,12 +35,11 @@ public class LeastSquares {
 	}
 	
 	public static LinearCombinationFunction regression(
-			List<RealFunction> functions,
+			boolean completePivoting, List<RealFunction> functions,
 			Function<RealFunction, RealFunction> functionTransform,
 			Supplier<Sum> functionSumFactory, Progress progress,
 			Supplier<Sum> regressionSumFactory,
-			Collection<Map.Entry<Double, Double>> sample,
-			boolean totalPivoting) throws Throwable {
+			Collection<Map.Entry<Double, Double>> sample) throws Throwable {
 		List<RealFunction> transformedFunctions
 				=new ArrayList<>(functions.size());
 		for (int ii=0; functions.size()>ii; ++ii) {
@@ -69,8 +73,8 @@ public class LeastSquares {
 		double[][] coefficients=Matrix.gaussianElimination(
 				xxtxx,
 				xxtyy,
-				progress.subProgress(0.95, null, 1.0),
-				totalPivoting);
+				completePivoting,
+				progress.subProgress(0.95, null, 1.0));
 		List<Double> coefficients2=new ArrayList<>(coefficients.length);
 		for (int ii=0; coefficients.length>ii; ++ii) {
 			coefficients2.add(coefficients[ii][0]);

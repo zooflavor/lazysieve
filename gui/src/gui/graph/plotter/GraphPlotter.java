@@ -48,7 +48,7 @@ public class GraphPlotter extends JComponent {
 		@Override
 		public void check(Graph graph) throws RendererDeathException {
 			synchronized (lock) {
-				if (graph!=GraphPlotter.this.graph) {
+				if (graph!=GraphPlotter.this.graph.graph) {
 					throw new RendererDeathException();
 				}
 			}
@@ -58,10 +58,10 @@ public class GraphPlotter extends JComponent {
 		public void checkAndPost(RenderedGraph graph)
 				throws RendererDeathException {
 			synchronized (lock) {
-				if (graph.graph!=GraphPlotter.this.graph) {
+				if (graph.graph!=GraphPlotter.this.graph.graph) {
 					throw new RendererDeathException();
 				}
-				GraphPlotter.this.renderedGraph=graph;
+				GraphPlotter.this.graph=graph;
 			}
 			SwingUtilities.invokeLater(GraphPlotter.this::repaint);
 		}
@@ -165,12 +165,12 @@ public class GraphPlotter extends JComponent {
 		
 		private void reset(MouseEvent event) {
 			synchronized (lock) {
-				if ((this.graph==GraphPlotter.this.graph)
+				if ((this.graph==GraphPlotter.this.graph.graph)
 						&& (mouseX==event.getX())
 						&& (mouseY==event.getY())) {
 					return;
 				}
-				this.graph=GraphPlotter.this.graph;
+				this.graph=GraphPlotter.this.graph.graph;
 				mouseX=event.getX();
 				mouseY=event.getY();
 				if ((null==graph.toolTipBackgroundColor)
@@ -294,10 +294,9 @@ public class GraphPlotter extends JComponent {
 	
 	private final Executor executor;
 	private final Consumer<Throwable> logger;
-	private Graph graph=Graph.EMPTY;
+	private RenderedGraph graph=new RenderedGraph(Graph.EMPTY);
 	private final List<Listener> listeners=new ArrayList<>();
 	private final Object lock=new Object();
-	private RenderedGraph renderedGraph;
 	private final ToolTip toolTip=new ToolTip();
 	
 	@SuppressWarnings("OverridableMethodCallInConstructor")
@@ -322,7 +321,7 @@ public class GraphPlotter extends JComponent {
 		JToolTip toolTip2=super.createToolTip();
 		Color backgroundColor;
 		synchronized (lock) {
-			backgroundColor=graph.toolTipBackgroundColor;
+			backgroundColor=graph.graph.toolTipBackgroundColor;
 		}
 		if (null!=backgroundColor) {
 			toolTip2.setBackground(backgroundColor.awt());
@@ -351,7 +350,7 @@ public class GraphPlotter extends JComponent {
 	
 	public Graph getGraph() {
 		synchronized (lock) {
-			return graph;
+			return graph.graph;
 		}
 	}
 	
@@ -365,43 +364,37 @@ public class GraphPlotter extends JComponent {
 		return toolTip.text(event);
 	}
 	
-	private static void paint(Graph graph, RenderedGraph renderedGraph,
-			Graphics2D graphics) {
-		boolean completed=false;
-		if (null!=renderedGraph) {
-			completed=renderedGraph.completed;
-			graphics.setColor(graph.rulerColor.awt());
-			graphics.setFont(new Font(Font.MONOSPACED, Font.PLAIN,
-					(int)Math.round(graph.labelSize)));
-			for (int ii=0; renderedGraph.rulers.size()>ii; ++ii) {
-				paintRuler(graph, graphics, renderedGraph.rulers.get(ii));
-			}
-			for (int ii=0; renderedGraph.functions.size()>ii; ++ii) {
-				Function function=graph.functions.get(ii);
-				paintLine(graphics, function.color, null,
-						renderedGraph.functions.get(ii));
-			}
-			for (int ii=0; renderedGraph.samples.size()>ii; ++ii) {
-				Sample sample=graph.samples.get(ii);
-				switch (sample.plotType) {
-					case BARS:
-						paintBars(graphics, sample.pointColor,
-								renderedGraph.samples.get(ii));
-						break;
-					case LINE:
-						paintLine(graphics, sample.lineColor,
-								sample.pointColor,
-								renderedGraph.samples.get(ii));
-						break;
-					default:
-						throw new IllegalStateException(
-								sample.plotType.toString());
-				}
+	private static void paint(RenderedGraph graph, Graphics2D graphics) {
+		graphics.setColor(graph.graph.rulerColor.awt());
+		graphics.setFont(new Font(Font.MONOSPACED, Font.PLAIN,
+				(int)Math.round(graph.graph.labelSize)));
+		for (int ii=0; graph.rulers.size()>ii; ++ii) {
+			paintRuler(graph.graph, graphics, graph.rulers.get(ii));
+		}
+		for (int ii=0; graph.functions.size()>ii; ++ii) {
+			Function function=graph.graph.functions.get(ii);
+			paintLine(graphics, function.color, null,
+					graph.functions.get(ii));
+		}
+		for (int ii=0; graph.samples.size()>ii; ++ii) {
+			Sample sample=graph.graph.samples.get(ii);
+			switch (sample.plotType) {
+				case BARS:
+					paintBars(graphics, sample.pointColor,
+							graph.samples.get(ii));
+					break;
+				case LINE:
+					paintLine(graphics, sample.lineColor, sample.pointColor,
+							graph.samples.get(ii));
+					break;
+				default:
+					throw new IllegalStateException(
+							sample.plotType.toString());
 			}
 		}
-		if (!completed) {
-			paintIncomplete(graph.incompleteColor, graphics,
-					graph.componentHeight, graph.componentWidth);
+		if (!graph.completed) {
+			paintIncomplete(graph.graph.incompleteColor, graphics,
+					graph.graph.componentHeight, graph.graph.componentWidth);
 		}
 	}
 	
@@ -433,16 +426,14 @@ public class GraphPlotter extends JComponent {
 	@Override
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
-		Graph graph2;
+		RenderedGraph graph2;
 		Graph graph3;
-		RenderedGraph renderedGraph2;
 		int height=getHeight();
 		int width=getWidth();
 		synchronized (lock) {
 			graph2=this.graph;
-			renderedGraph2=this.renderedGraph;
-			graph3=graph2.setComponentSize(height, width);
-			if (graph3!=graph2) {
+			graph3=graph2.graph.setComponentSize(height, width);
+			if (graph3!=graph2.graph) {
 				setGraph(graph3);
 			}
 		}
@@ -457,19 +448,14 @@ public class GraphPlotter extends JComponent {
 			graphics2d.setRenderingHint(
 					RenderingHints.KEY_TEXT_ANTIALIASING,
 					RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			graphics2d.setColor(graph2.backgroundColor.awt());
+			graphics2d.setColor(graph2.graph.backgroundColor.awt());
 			graphics2d.fillRect(0, 0, width, height);
-			if (graph3!=graph2) {
-				paintIncomplete(
-						graph2.incompleteColor, graphics2d, height, width);
+			if (graph3!=graph2.graph) {
+				paintIncomplete(graph2.graph.incompleteColor,
+						graphics2d, height, width);
 			}
 			else {
-				paint(graph2,
-						((null!=renderedGraph2)
-										&& (renderedGraph2.graph==graph2))
-								?renderedGraph2
-								:null,
-						graphics2d);
+				paint(graph2, graphics2d);
 			}
 		}
 		finally {
@@ -477,8 +463,7 @@ public class GraphPlotter extends JComponent {
 		}
 		SwingUtilities.invokeLater(()->{
 			synchronized (lock) {
-				if ((graph2==this.graph)
-						&& (renderedGraph2==this.renderedGraph)) {
+				if (graph2==this.graph) {
 					return;
 				}
 			}
@@ -609,21 +594,19 @@ public class GraphPlotter extends JComponent {
 	public void setGraph(Graph newGraph) {
 		Objects.requireNonNull(graph, "graph");
         synchronized (lock) {
-            if (this.graph==newGraph) {
+            if (this.graph.graph==newGraph) {
                 return;
             }
-            this.graph=newGraph;
-            this.renderedGraph=null;
+            this.graph=new RenderedGraph(newGraph);
         }
 		SwingUtilities.invokeLater(()->{
 			Graph newGraph2
                     =newGraph.setComponentSize(getHeight(), getWidth());
 			synchronized (lock) {
-				if (this.graph!=newGraph) {
+				if (this.graph.graph!=newGraph) {
 					return;
 				}
-				this.graph=newGraph2;
-				renderedGraph=null;
+				this.graph=new RenderedGraph(newGraph2);
 			}
 			repaint();
             executor.execute(

@@ -1,6 +1,7 @@
 package gui.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,5 +21,9 @@ public class RenderedGraph {
 		this.graph=graph;
 		this.rulers=Collections.unmodifiableList(new ArrayList<>(rulers));
 		this.samples=Collections.unmodifiableList(new ArrayList<>(samples));
+	}
+	
+	public RenderedGraph(Graph graph) {
+		this(false, Arrays.asList(), graph, Arrays.asList(), Arrays.asList());
 	}
 }

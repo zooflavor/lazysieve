@@ -1,12 +1,11 @@
 package gui.math;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class Functions {
 	public static final Comparator<RealFunction> COMPARATOR
 			=(f0, f1)->f0.toString().compareTo(f1.toString());
@@ -126,7 +125,8 @@ public class Functions {
 				
 				@Override
 				public double valueAt(double xx) {
-					if (0.0>=xx) {
+					if ((1.0>=xx)
+							|| (Math.E==xx)) {
 						return Double.NaN;
 					}
 					return 1.0/Math.log(Math.log(xx));
@@ -407,7 +407,9 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 1.0<fromX;
+					return (1.0<fromX)
+                            && ((Math.E<fromX)
+                                    || (Math.E>toX));
 				}
 				
 				@Override
@@ -417,7 +419,8 @@ public class Functions {
 				
 				@Override
 				public double valueAt(double xx) {
-					if (1.0>=xx) {
+					if ((1.0>=xx)
+							|| (Math.E==xx)) {
 						return Double.NaN;
 					}
 					return xx/Math.log(Math.log(xx));
@@ -427,7 +430,9 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 1.0<fromX;
+					return (1.0<fromX)
+                            && ((Math.E<fromX)
+                                    || (Math.E>toX));
 				}
 				
 				@Override
@@ -437,7 +442,8 @@ public class Functions {
 				
 				@Override
 				public double valueAt(double xx) {
-					if (1.0>=xx) {
+					if ((1.0>=xx)
+							|| (Math.E==xx)) {
 						return Double.NaN;
 					}
 					double lnx=Math.log(xx);
@@ -448,7 +454,9 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 0.0<fromX;
+                    return (0.0<fromX)
+                            && ((1.0<fromX)
+                                    || (1.0>toX));
 				}
 				
 				@Override
@@ -468,7 +476,9 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 0.0<fromX;
+                    return (0.0<fromX)
+                            && ((1.0<fromX)
+                                    || (1.0>toX));
 				}
 				
 				@Override
@@ -489,7 +499,9 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 1.0<fromX;
+					return (1.0<fromX)
+                            && ((Math.E<fromX)
+                                    || (Math.E>toX));
 				}
 				
 				@Override
@@ -499,7 +511,8 @@ public class Functions {
 				
 				@Override
 				public double valueAt(double xx) {
-					if (1.0>=xx) {
+					if ((1.0>=xx)
+							|| (Math.E==xx)) {
 						return Double.NaN;
 					}
 					return xx*xx/Math.log(Math.log(xx));
@@ -509,7 +522,9 @@ public class Functions {
 			=new RealFunction() {
 				@Override
 				public boolean isDefined(double fromX, double toX) {
-					return 0.0<fromX;
+                    return (0.0<fromX)
+                            && ((1.0<fromX)
+                                    || (1.0>toX));
 				}
 				
 				@Override
@@ -527,39 +542,36 @@ public class Functions {
 			};
 	
 	static {
-		List<RealFunction> functions0=new ArrayList<>();
-		functions0.add(Functions.ONE);
-		functions0.add(Functions.X);
-		functions0.add(Functions.X2);
-		functions0.add(Functions.X3);
-		functions0.add(Functions.X4);
-		functions0.add(Functions.X5);
-		functions0.add(Functions.X6);
-		functions0.add(Functions.ONE_PER_X);
-		functions0.add(Functions.ONE_PER_X2);
-		functions0.add(Functions.LNX);
-		functions0.add(Functions.SQRT_X);
-		List<RealFunction> functions1=new ArrayList<>();
-		try {
-			int modifiers=Modifier.FINAL|Modifier.PUBLIC|Modifier.STATIC;
-			for (Field field: Functions.class.getDeclaredFields()) {
-				if ((field.getModifiers()==modifiers)
-						&& RealFunction.class.equals(field.getType())) {
-					RealFunction function=(RealFunction)field.get(null);
-					if (!functions0.contains(function)) {
-						functions1.add(function);
-					}
-				}
-			}
-		}
-		catch (IllegalAccessException
-				|IllegalArgumentException
-				|SecurityException ex) {
-			throw new RuntimeException(ex);
-		}
-		functions1.sort(COMPARATOR);
-		functions0.addAll(functions1);
-		FUNCTIONS=Collections.unmodifiableList(new ArrayList<>(functions0));
+		new Functions();
+		List<RealFunction> functions=new ArrayList<>();
+		functions.add(Functions.ONE);
+		functions.add(Functions.X);
+		functions.add(Functions.X2);
+		functions.add(Functions.X3);
+		functions.add(Functions.X4);
+		functions.add(Functions.X5);
+		functions.add(Functions.X6);
+		functions.add(Functions.ONE_PER_X);
+		functions.add(Functions.ONE_PER_X2);
+		functions.add(Functions.SQRT_X);
+		functions.add(Functions.LN2X);
+		functions.add(Functions.LNX);
+		functions.add(Functions.X_LN2X);
+		functions.add(Functions.X_LNX);
+		functions.add(Functions.LNLNX);
+		functions.add(Functions.LNX_LNLNX);
+		functions.add(Functions.X_LNLNX);
+		functions.add(Functions.X_LNX_LNLNX);
+		functions.add(Functions.X2_PER_LNX);
+		functions.add(Functions.X_PER_LN2X);
+		functions.add(Functions.ONE_PER_LNX);
+		functions.add(Functions.X_PER_LNX);
+		functions.add(Functions.ONE_PER_LNLNX);
+		functions.add(Functions.X2_PER_LNLNX);
+		functions.add(Functions.X_PER_LNLNX);
+		functions.add(Functions.X_PER_LNLNX_LNX);
+		functions.sort(COMPARATOR);
+		FUNCTIONS=Collections.unmodifiableList(new ArrayList<>(functions));
 	}
 	
 	private Functions() {

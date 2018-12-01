@@ -1,6 +1,11 @@
 package gui.util;
 
+@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class BinarySearch {
+	static {
+		new BinarySearch();
+	}
+	
 	private BinarySearch() {
 	}
 	

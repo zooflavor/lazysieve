@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar ../gui/dist/gui.jar test max prime gaps ../db ../samples/test/max-prime-gaps.csv

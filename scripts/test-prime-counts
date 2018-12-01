@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar ../gui/dist/gui.jar test prime counts ../db ../samples/test/prime-counts.csv

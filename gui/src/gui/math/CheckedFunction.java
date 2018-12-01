@@ -1,9 +1,15 @@
 package gui.math;
 
-public class CheckedFunction implements RealFunction {
+import java.util.function.Function;
+
+public class CheckedFunction<T extends RuntimeException>
+		implements RealFunction {
+	private final Function<String, T> exceptionFactory;
 	private final RealFunction function;
 	
-	public CheckedFunction(RealFunction function) {
+	public CheckedFunction(Function<String, T> exceptionFactory,
+			RealFunction function) {
+		this.exceptionFactory=exceptionFactory;
 		this.function=function;
 	}
 	
@@ -27,7 +33,7 @@ public class CheckedFunction implements RealFunction {
 		}
 		catch (ArithmeticException ex) {
 		}
-		throw new RuntimeException(String.format(
+		throw exceptionFactory.apply(String.format(
 				"A %1$s függvény nincs értelmezve a %2$,g pontban.",
 				function,
 				xx));

@@ -4,10 +4,15 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class UnsignedLong {
 	public static final long MAX_PRIME=(1l<<32)-1l;
 	public static int MAX_PRIME_COUNT=203280221;
 	public static final long UNSIGNED_INT_MASK=0xffffffffl;
+	
+	static {
+		new UnsignedLong();
+	}
 	
 	private UnsignedLong() {
 	}
@@ -27,12 +32,16 @@ public class UnsignedLong {
 	}
 	
 	public static String format(long value) {
+		return format(NumberFormat.getIntegerInstance(),
+				DecimalFormatSymbols.getInstance(),
+				value);
+	}
+	
+	public static String format(NumberFormat format,
+			DecimalFormatSymbols symbols, long value) {
 		String result=Long.toUnsignedString(value);
 		if (4<=result.length()) {
-			NumberFormat format=NumberFormat.getIntegerInstance();
 			if (format.isGroupingUsed()) {
-				DecimalFormatSymbols symbols
-						=DecimalFormatSymbols.getInstance();
 				int separators=(result.length()-1)/3;
 				StringBuilder sb=new StringBuilder(result.length()+separators);
 				for (int ii=0; result.length()>ii; ++ii) {
@@ -107,10 +116,14 @@ public class UnsignedLong {
 	}
 	
 	public static long parse(String value) {
-		NumberFormat format=NumberFormat.getIntegerInstance();
+		return parse(NumberFormat.getIntegerInstance(),
+				DecimalFormatSymbols.getInstance(),
+				value);
+	}
+	
+	public static long parse(NumberFormat format, DecimalFormatSymbols symbols,
+			String value) {
 		if (format.isGroupingUsed()) {
-			DecimalFormatSymbols symbols
-					=DecimalFormatSymbols.getInstance();
 			value=value.replaceAll(
 					Pattern.quote(""+symbols.getGroupingSeparator()),
 					"");
@@ -120,17 +133,18 @@ public class UnsignedLong {
 	
 	public static long round(double value) {
 		if (!Double.isFinite(value)) {
-			throw new IllegalArgumentException(Double.toString(value));
+			throw new ArithmeticException(Double.toString(value));
 		}
 		if (0.0>=value) {
 			return 0l;
 		}
-		long result=Math.round(value);
-		if ((Long.MAX_VALUE==result)
-				&& (Long.MAX_VALUE<value)) {
-			result+=Math.round(value-Long.MAX_VALUE);
+		if (2.0*Long.MAX_VALUE<=value) {
+			return -1l;
 		}
-		return result;
+		if (Long.MAX_VALUE>=value) {
+			return Math.round(value);
+		}
+		return (1l<<63)+Math.round(value-2.0*(1l<<62));
 	}
 	
 	public static long square(long value) {

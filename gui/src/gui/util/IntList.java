@@ -47,6 +47,13 @@ public class IntList extends PrimitiveList<IntList> {
 		return values[index];
 	}
 	
+	public int set(int index, int value) {
+		check(index);
+		int result=values[index];
+		values[index]=value;
+		return result;
+	}
+	
 	@Override
 	protected void swapImpl(int index0, int index1) {
 		int temp=values[index0];

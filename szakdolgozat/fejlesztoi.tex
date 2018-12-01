@@ -105,7 +105,7 @@ Az adatbázis információ kilistázza a szegmensfájlok számát,
 az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét és végét, a még nem összesített szegmensfájlok számát.
 Ezek alapján eldönthető, szitálást vagy az összesítést hogyan kell folytatni, hogy a teljes $2^{64}$-ig intervallum statisztikái elkészüljenek.
 
-A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző eratosthenészi szita, vagy az erős pszeudo-prímteszt előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
+A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző eratosthenészi szita, vagy az erős pszeudo-prímteszt\cite{pseudoprime} előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
 A szita lényegesen lassabb, mint a generator, és a pszeudo-prímteszt időigénye miatt intervallumok szitálásra nem alkalmas, a szegmensfájlok ellenőrzése alapvetően a generator helyességének
 tesztelésére való, minden összesített szegmens ellenőrzése megtöbbszörözné a szükséges időt.
 
@@ -586,7 +586,7 @@ Függvények előkészítésénél az eljárás ehhez nagyon hasonló.
 Az oszlop minimum és maximum értékét pontos módszer helyett mintavételezéssel határozza meg. Az oszlop intervallumában több, egyenletes távolságra lévő ponton kiértékeli a függvényt, és ezekből határozza meg az értékeket.
 A függvény oszlopmintájában az intervallumok összefüggőek, a függvény a legelső oszlop bal szélétől a legutolsó oszlop jobb széléig értelmezve van. A nézet ennek megfelelően az intervallumok közötti szakaszokon semmit nem rajzol ki.
 
-A GraphRenderer a nézettel a CheckAndPost interfészen keresztül kommunikál, a pontos nézetimplementáció ismerete nélkül. A check() metódussal le tudja ellenőrizni, hogy a legújabb modell az-e, amit éppen feldolgoz, és a checkAndPost() metódussal az előbbi ellenőrzés után az addig elkészült részeredményt tovább is adja megjelenítésre.
+A GraphRenderer a nézettel a CheckAndPost interfészen keresztül kommunikál a pontos nézetimplementáció ismerete nélkül. A check() metódussal le tudja ellenőrizni, hogy a legújabb modell az-e, amit éppen feldolgoz, a checkAndPost() metódussal az előbbi ellenőrzés után az addig elkészült részeredményt tovább is adja megjelenítésre.
 Ha a modell már elavult, ezek a metódusok egy RendererDeathException-t dobnak, és a GraphRenderer hibajelzés nélkül leáll. Ilyenkor egy másik szálon már dolgozik egy új GraphRenderer az új modellen.
 
 \subsubsection{Vezérlő}
@@ -616,11 +616,11 @@ A GraphPlotter komponens a grafikon egérrel történő mozgatásáról és nagy
 
 A nézetet a GraphPlotter osztály reprezentálja.
 A két részből álló előkészített modell megjelenítése a grafikus vezérlőutasítások kiadásából áll.
-Ennek a komponensnek a graph és renderedGraph adattagjai tartalmazzák a legújabb modell értéket, a vezérlés, az előkészítés, és a megjelenítés ezen keresztül szinkronizálva kommunikál.
 
+Ennek a komponensnek a graph adattagja tartalmazza a legújabb modell értéket, a vezérlés, az előkészítés, és a megjelenítés ezen keresztül szinkronizálva kommunikál.
 A modell módosításakor a GraphPlotter objektum a graph adattag cseréjével biztosítja, hogy a régi modellre vonatkozó háttérszálak leállnak, és elindítja az új modell oszlopra bontását.
 Az előkészített modellről a CheckAndPost eseménykezelőjén keresztül értesül, aminek hatására az új grafikon kirajzolását ütemezi.
-A tényleges kirajzolásnál még egyszer ellenőrzi, hogy a grafikon a komponens tényleges méretére készült el, majd a már elkészült részeket kirajzolja.
+A tényleges kirajzolásnál még egyszer ellenőrzi, hogy a grafikon a komponens tényleges méretére készült el, majd a már elkészült grafikon részleteket kirajzolja.
 
 \section{Sziták}
 
@@ -722,16 +722,64 @@ Amúgy sincs bármekkora tömb...
 
 Összes prím, és pozíciója $2^32$-ig. Primitív típusok és boxing. Garbage collector.
 
-\section{Teszt}
+\section{A program ellenőrzése}
 
-{\color{red} util. math. junit coverage.
-math pontosság.
-sziták, szegmensek.}
+Az megoldás szitáinak ellenőrzése a gui program elvárt feladata.
+Az init és generator program szegmensfájlai, és a gui szitáinak kimenetei is összehasonlíthatóak a ReferenceSegment osztály szitájával.
+Ezen keresztül a sziták kimenetének egyenlősége szúrópróbaszerűen ellenőrizhető.
+Ezeket az időigényes ellenőrzéséket végzi el a ''test-sieves'' szkript minden szitával több intervallumon.
+A teszt ellenőrzéséhez a szkript egy szándékosan hibás szegmens, és egy hibás szita ellenőrzését is elvégzi.
 
-\subsection{Adatszerkezetek}
+A gui program ''math'' és ''util'' csomagjaira a program összes többi része épít, az adatbázisműveletek, a sziták, és a megjelenítés is. Erre a két csomagra a JUnit keretrendszerrel és a JaCoCo lefedettségmérővel teljes lefedettségű egységtesztek készültek.
 
-\subsection{Numerikus pontosság és sebesség}
+Az összesített statisztikák ellenőrzésére a ''test-prime-counts'' szkript a prímek számát a ''samples/test/prime-counts.csv'' fájlba írja az adatbázis alapján kettő hatványai helyeken, míg a ''test-max-prime-gaps'' a ''samples/test/max-prime-gaps.csv'' fájlba a maximális prímhézagokat metni.
+Ezek a publikált értékekkel\cite{gaps}\cite{pi} összevethetőek. Ezeket a fájlokat a gui program ''gui.test'' csomagjának osztályai készítik el. A program tesztelésénél ez a két statisztika $2^{47}(\approx1,4\cdot10^{14})$-ig egyezett.
 
-\subsection{Sziták}
+A minták és közelítő függvények megjelenítésének tesztelése ismert grafikonú mintákkal való összevetéssel történt.
+Táblázatkezelő programokkal, mint például a LibreOffice, formula alapján generált minták grafikonja ábrázolható, és a gui program által olvasott CSV formátu fájlba menthető.
+A formulákkal véletlenszerű zaj is hozzáadható a mintához.
+A ''samples/test/graph'' könyvtárban megtalálható néhány táblázatminta a teszteléshez.
 
-\subsection{Elmélet vs. mért}
+\subsection{Numerikus pontosság}
+
+A legkisebb négyzetek módszerének megvalósítása a mátrixműveletek pontosságát két paraméterrel tudja szabályozni, a mátrixszorzás összegzéseit három különböző algoritmussal lehet végezni, és a Gauss-eliminációt részleges sorcserével, vagy teljes sor-oszlop cserével is el lehet végezni.
+Ezeknek a paramétereknek a megválasztása a tesztek alapján sem egyértelmű.
+
+A ''test-measure-sums'' közelítések pontosságáról készít statisztikákat három változóban, és az eredményt a ''samples/test/measure-sums.csv'' fájlba menti. A három váltózó:
+\begin{itemize}
+\item az összegzést tömbbel, kupaccal, vagy egyetlen változóval végezze
+\item részleges vagy teljes csere
+\item x szerint rendezett-e a minta.
+\end{itemize}
+A három paraméter mindegyik lehetőségéhez a mérés elemi függvények függvények alapján egy mintát generál, majd ezt a mintát ugyanezekkel az elemi függvényekkel közelíti.
+Egy paraméter-kombinációhoz az összes közelítés négyzetes eltérését, és a közelítés idejét összesíti.
+A minták generálásához használt elemi függvények a ''MeasureSums'' osztályból kiolvashatóak.
+
+\begin{tabular}{|l|l|l|r|r|}
+\hline
+összegzés & csere & rendezett & $\sum{hiba^2}$ & idő (ns) \\ \cline{1-5}
+\multirow{4}{*}{változó} & \multirow{2}{*}{részleges} & igen & $2,53 \cdot 10^{25}$ & $1,26 \cdot 10^{9}$ \\ \cline{3-5}
+& & nem & $4,24 \cdot 10^{23}$ & $1,85 \cdot 10^{9}$ \\ \cline{2-5}
+& \multirow{2}{*}{teljes} & igen & $2,53 \cdot 10^{25}$ & $1,34 \cdot 10^{9}$ \\ \cline{3-5}
+& & nem & $4,21 \cdot 10^{23}$ & $1,82 \cdot 10^{9}$ \\ \cline{1-5}
+\multirow{4}{*}{tömb} & \multirow{2}{*}{részleges} & igen & $2,62 \cdot 10^{20}$ & $1,45 \cdot 10^{9}$ \\ \cline{3-5}
+& & nem & $9,75 \cdot 10^{19}$ & $2,45 \cdot 10^{9}$ \\ \cline{2-5}
+& \multirow{2}{*}{teljes} & igen & $1,87 \cdot 10^{20}$ & $1,56 \cdot 10^{9}$ \\ \cline{3-5}
+& & nem & $6,76 \cdot 10^{19}$ & $2,33 \cdot 10^{9}$ \\ \cline{1-5}
+\multirow{4}{*}{kupac} & \multirow{2}{*}{részleges} & igen & $1,12 \cdot 10^{21}$ & $1,37 \cdot 10^{10}$ \\ \cline{3-5}
+& & nem & $1,12 \cdot 10^{21}$ & $1,67 \cdot 10^{10}$ \\ \cline{2-5}
+& \multirow{2}{*}{teljes} & igen & $3,12 \cdot 10^{19}$ & $1,39 \cdot 10^{10}$ \\ \cline{3-5}
+& & nem & $3,12 \cdot 10^{19}$ & $1,68 \cdot 10^{10}$ \\
+\hline
+\end{tabular}\\
+
+A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
+\begin{itemize}
+\item legjobb, és leglassabb választás a kupac összegzés
+\item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két lehetőség
+\item az egy változóban összegzés hibája több nagyságrenddel nagyobb, mint a másik két összegzés hibája
+\item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
+\item a kupac összegzés a minta rendezettségére nem érzékeny
+\item a rendezetlen minta összegzése a változóval és tömbbel pontosabb, mint a rendezett.
+\end{itemize}
+Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a Gauss-eliminációban teljes sor és oszlopcserét hajt végre, ezt a felhasználó nem tudja megváltoztatni.

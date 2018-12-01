@@ -5,6 +5,9 @@ import gui.check.CheckSieve;
 import gui.graph.plotter.MeasureSieve;
 import gui.io.command.DatabaseCommands;
 import gui.sieve.Sieves;
+import gui.test.MaxPrimeGaps;
+import gui.test.MeasureSums;
+import gui.test.PrimeCounts;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +19,10 @@ public class Main {
 			commands.addAll(CheckSieve.COMMANDS);
 			commands.addAll(DatabaseCommands.COMMANDS);
 			commands.addAll(Gui.COMMANDS);
+			commands.addAll(MaxPrimeGaps.COMMANDS);
+			commands.addAll(MeasureSums.COMMANDS);
 			commands.addAll(MeasureSieve.COMMANDS);
+			commands.addAll(PrimeCounts.COMMANDS);
 			commands.addAll(Sieves.COMMANDS);
 			commands.sort((c0, c1)->c0.usage.compareTo(c1.usage));
 			outer: for (Command.Descriptor command: commands) {

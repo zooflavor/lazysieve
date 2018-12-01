@@ -1,5 +1,6 @@
 package gui.util;
 
+@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class QuickSort {
 	public static class PivotProperty implements Property {
 		public Compare compare;
@@ -13,6 +14,10 @@ public class QuickSort {
 		public boolean hasProperty(int index) {
 			return 0>=compare.compare(pivotIndex, index);
 		}
+	}
+	
+	static {
+		new QuickSort();
 	}
 	
 	private QuickSort() {
