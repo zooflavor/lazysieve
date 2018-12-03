@@ -60,52 +60,70 @@ parancssorból is el tudja végezni, hogy szkriptekkel ez automatizálható legy
 A statisztikák előállításának folyamata
 bármikor adatvesztés leállítható, és később folytatható.
 
-%%% EMLI: kb eddig olvastam, a többin csak átfutott a szemem... majd mindjárt írok levelet.
+%%% EMIL: kb eddig olvastam, a többin csak átfutott a szemem... majd mindjárt írok levelet.
+
+\pagebreak
 \section{A program komponensei}
 
-{\color{red}Ábra.
+\begin{figure}[h]
+\centering
+\caption{A program adatáramlás diagramja}
+\begin{tikzpicture}[framed]
+\draw (0, 0) node[rectangle,draw](db) {Adatbázis};
 
-init -> db -> generátor -> db -> összesítő -> db -> minta megjelenítés -> minta közelítés -> közelítés megjelenítés
+\draw (-1, 1) node[rectangle,rounded corners,,draw](init) {init};
+\draw (1, 1) node[rectangle,rounded corners,,draw](generator) {generator};
+\draw (4, 1) node[rectangle,rounded corners,,draw](aggregate) {Összesítés};
+\draw (4, 0) node[rectangle,draw](info) {Info};
 
-db -> info
+\draw (-4, 1) node[rectangle,rounded corners,draw](check-segment) {Szegmens ellenőrzése};
+\draw (-4, 0) node[rectangle,rounded corners,,draw](reference-sieve) {Referencia szita};
+\draw (-4, -1) node[rectangle,rounded corners,,draw](check-sieve) {Szita ellenőrzése};
+\draw (0, -1) node[rectangle,rounded corners,,draw](sieves) {Sziták};
 
-db -> sziták -> futási idő minta -> minta megjelenítés -> minta közelítés -> közelítés megjelenítés
+\draw (4, -1) node[rectangle,draw](view) {Megjelenítés};
+\draw (4, -2) node[rectangle,rounded corners,,draw](approximate) {Minta közelítése};
 
-db -> ellenőrzés
+\draw[<->, thick] (db) -- (aggregate);
+\draw[->, thick] (db) -- (check-segment);
+\draw[<->, thick] (db) -- (generator);
+\draw[->, thick] (db) -- (info);
+\draw[->, thick] (db) -- (reference-sieve);
+\draw[->, thick] (db) -- (sieves);
+\draw[->, thick] (db) -- (view);
+\draw[->, thick] (init) -- (db);
+\draw[->, thick] (reference-sieve) -- (check-segment);
+\draw[->, thick] (reference-sieve) -- (check-sieve);
+\draw[->, thick] (sieves) -- (check-sieve);
+\draw[->, thick] (sieves) -- (view);
+\draw[<->, thick] (view) -- (approximate);
 
-db -> sziták -> ellenőrzés
-}
+\draw[dashed, rounded corners] (-6.2, 0) -- (-6.2, 1.5) -- (-1.7, 1.5) -- (-1.7, -0.5) -- (2.7, -0.5) -- (2.7, 1.5) -- (5.8, 1.5) -- (5.8, -2.5) -- (-6.2, -2.5) -- (-6.2, 0);
+\draw (-5.7, -2.2) node[]{gui};
+\draw[dashed, rounded corners] (-6.2, -1.8) -- (-5.1, -1.8) -- (-5.1, -2.5);
+\end{tikzpicture}
+\end{figure}
 
-A program az adatbáziskönyvtárban tárolja az átszitált szegmensek tábláit,
-és az ezekből készült statisztikákat. A szegmensfájlokban egy $2^{30}$ hosszú
-intervallum minden páratlan számához hozzá van rendelve, hogy az az szám
-összetett vagy prím, és minden szegmens kezdő száma kongruens $1 (mod\ 2^{30})$.
+A program az adatbáziskönyvtárban tárolja az átszitált szegmensek tábláit, és az ezekből készült statisztikákat.
+A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az az szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 (mod\ 2^{30})$.
 
-Az első négy szegmenst az init program készíti el, így ezek $2^{32}$-ig tartalmazzák
-a prímszámokat. A program többi szitája ezek alapján inicializálja magát,
-ha $3$-nál nagyobb számtól kell a szitálást elkezdeni.
+Az első négy szegmenst az init program készíti el, így ezek $2^{32}$-ig tartalmazzák a prímszámokat.
+A program többi szitája ezek alapján inicializálja magát, ha $3$-nál nagyobb számtól kell a szitálást elkezdeni.
 Ez a négy fájl bármikor újragenerálható, de ezeket érdemes a futások között megtartani.
 
-A generátor egy optimalizált szita, $2^{32}$-től $2^{64}-2^{34}$-ig képes szitálni,
-mindig egész szegmenseket, és az eredményt az adatbáziskönyvtárba menti.
+A generátor egy optimalizált szita, $2^{32}$-től $2^{64}-2^{34}$-ig képes szitálni, mindig egész szegmenseket, és az eredményt az adatbáziskönyvtárba menti.
 Ezekre a szegmensfájlokra összesítés és ellenőrzés után többet nincs már szükség.
-A szitálást tetszőleges szegmenstől lehet kezdeni a megengedett tartományon belül,
-nem szükséges sorban végigmenni a számokon.
-Az utolsó $2^{34}$ szám kihagyása egyszerű
-optimalizáció, így a programban az éppen
-szitált szám változója sosem csordul túl.
+A szitálást tetszőleges szegmenstől lehet kezdeni a megengedett tartományon belül, nem szükséges sorban végigmenni a számokon.
+Az utolsó $2^{34}$ szám kihagyása egyszerű optimalizáció, így a programban az éppen szitált szám változója sosem csordul túl.
 
 Az init és a generator csak konzol módban futtatható.
-A program többi része a gui nevű Java program része,
-de az automatizáláshoz az adatbázissal kapcsolatos műveletei
-parancssorból is elérhetőek, ezek az adatbázis információ lekérése, az új szegmensfájlok ellenőrzése, és összesítése, és az összesítőfájlok összefésülése.
+A program többi része a gui nevű Java program része, de az automatizáláshoz az adatbázissal kapcsolatos műveletei parancssorból is elérhetőek, ezek az adatbázis információ lekérése, az új szegmensfájlok ellenőrzése, és összesítése, és az összesítőfájlok összefésülése.
 Az időigényessége miatt a futási idő összehasonlításához implementált sziták ellenőrzése is futtatható grafikus felületen, és parancssorból is.
 
-Az adatbázis információ kilistázza a szegmensfájlok számát,
-az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét és végét, a még nem összesített szegmensfájlok számát.
+Az adatbázis információ kilistázza a szegmensfájlok számát, az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét és végét, a még nem összesített szegmensfájlok számát.
 Ezek alapján eldönthető, szitálást vagy az összesítést hogyan kell folytatni, hogy a teljes $2^{64}$-ig intervallum statisztikái elkészüljenek.
 
-A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző eratosthenészi szita, vagy az erős pszeudo-prímteszt\cite{pseudoprime} előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
+A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző eratosthenészi szita, vagy az erős pszeudo-prímteszt\cite{pseudoprime}\cite{pseudoprimebase} előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
 A szita lényegesen lassabb, mint a generator, és a pszeudo-prímteszt időigénye miatt intervallumok szitálásra nem alkalmas, a szegmensfájlok ellenőrzése alapvetően a generator helyességének
 tesztelésére való, minden összesített szegmens ellenőrzése megtöbbszörözné a szükséges időt.
 
@@ -131,12 +149,12 @@ Minden szegmens egy külön fájl az adatbázis könyvtárában, és az összes 
 Az init program az első 4 szegmensfájlt írja, a generator az első 4 szegmensfájlt olvassa, és az összes többi szegmensfájlt írja, a gui az összes szegmensfájlt olvassa, és egyiket se írja, és szegmensstatisztika fájlt csak a gui használja.
 
 Egy szegmensfájlok nevei ''primes.'' előtaggal kel kezdődjön, és a pontosan 16 hexadecimális számjegy kell kövesse, ami a szegmens által leírt első szám.
-A fájl bináris fájl, {\color{red}little endian} sorrendben.
+A fájl bináris fájl, a legkisebb helyiértékű bájt elöl.
 A tartalma:
 \begin{itemize}
 \item a szegmens elejével kezdve $2^{29}$ egymást követő páratlan szám bitvektora.
 	
-Ez $2^{26}$ byte, {\color{red}little endian} sorrendben minden bit egy szám összetettségét írja le.
+Ez $2^{26}$ byte, legkisebb helyiértékű byte elöl sorrendben, minden bit egy páratlan szám összetettségét írja le.
 Ha a bit $1$, akkor a szám összetett, ha $0$, akkor a szám prím.
 Ha $s$ a szegmens intervallumának kezdete, akkor az $0.$ bájt $0.$ bitje $s$-t írja le, a $0.$ bájt $1.$ bitje $s+2$-t, a $k.$ bájt $l.$ bitje $s+16k+2l$-t.
 	
@@ -152,13 +170,12 @@ Ez az eljárás az átnevezés előtt nem győződik meg arról, hogy az ideigle
 kiíródott a háttértárra, így ez csak a program leállíthatóságát garantálja, a számítógép váratlan leállása esetén érdemes azokat a szegmensfájlokat letörölni, amikről feltételezhető, hogy nem volt ideje a számítógépnek minden részét kiírnia a tényleges tárolóra.
 
 A szegmensstatisztikák az ''aggregates'' fájlban vannak. A szegmensek a fájlban a kezdőszámok sorrendjében követik egymást, egy szegmensnek legfeljebb egy statisztikája lehet.
-A fájl bináris, a bájtok {\color{red}big endian} sorrendben követik egymást. A fájl fejléce
+A fájl bináris, a legnagyobb helyiértékű bájt elöl. A fájl fejléce:
 \begin{itemize}
-\item {\color{red}magic number}: 0xd1d1b0b0, 4 bájt
+\item formátum azonosító: 0xd1d1b0b0, 4 bájt
 \item verziószám: 1, 4 bájt.
 \end{itemize}
-Ezután minden statisztika egy változó méretű blokkban van tárolva, a fájl végéig. Minden block két részből áll, az első 4 bájt a második rész mérete bájtokban. Ez a második rész a szegmensstatisztika. A statisztika gzip-pel tömörített,
-kitömörítve bináris adat, {\color{red}big endian sorrendben}, aminek a formátuma
+Ezután minden statisztika egy változó méretű blokkban van tárolva, a fájl végéig. Minden block két részből áll, az első 4 bájt a második rész mérete bájtokban. Ez a második rész a szegmensstatisztika. A statisztika gzip-pel tömörített, kitömörítve bináris adat, a legnagyobb helyiértékű bájt elöl, aminek a formátuma:
 \begin{itemize}
 \item a szegmens összesítésének futási ideje, 8 bájt, nanoszekundumokban
 \item a szegmens szitálásának inicializálásának ideje, 8 bájt, nanoszekundumokban
@@ -246,66 +263,31 @@ A prímek listáját elég $2^{16}$-ig előállítai, ezt a program próbaosztá
 A generator fő részei hasonlóak az init-hez.
 Indulása után felolvassa az összes prímet az első 4 szegmensfájlból, és mindegyik prímhez osztással meghatározza, hogy melyik a legkisebb szám, amit oszt, és legalább akkora, mint legelső
 szitálandó szegmens kezdete.
-A prímek, és a hozzájuk tartozó következő szitálandó
-pozíciót tároló adatstruktúra szitálás közben
-nem érzékeny azokra az elemekre, amik az éppen szitált szegmensnél
-nagyobb helyeken szitálnak, így a generator
-az összes prímet eltárolja $2^{32}$-ig, nem csak
-a szitálandó tartomány végének négyzetgyökéig,
-és a prímek első többszörösét is a prím
-négyzetétől szitálja.
+A prímek, és a hozzájuk tartozó következő szitálandó pozíciót tároló adatstruktúra szitálás közben
+nem érzékeny azokra az elemekre, amik az éppen szitált szegmensnél nagyobb helyeken szitálnak, így a generator az összes prímet eltárolja $2^{32}$-ig, nem csak a szitálandó tartomány végének négyzetgyökéig, és a prímek első többszörösét is a prím négyzetétől szitálja.
 
-A prímek listájának inicializálása után
-a nagy szegmenseket az inithez hasonlóan kisebbekre osztja,
+A prímek listájának inicializálása után a nagy szegmenseket az inithez hasonlóan kisebbekre osztja,
 és ezeket sorban szitálja a prímek listája alapján.
 
-A prímek listája a generatorban több külön
-adatszerkezet összessége. A prímeket a szita
-inicilizálásánál 3 részre osztja a nagyságuk szerint.
-A $64$-nél kisebb prímeket $64$-bit széles bitmintákban
-tárolja, és ezekkel a mintákkal $64$-bitesével szitálja
-végig a kisszegmenseket a bitenkénti vagy művelettel.
-A 3 és a 11, valamint az 5 és a 7 szorzata kisebb, mint 64,
-ezeket a párokat egyetlen $64$ bites mintába fejti ki,
-ezeknek a mintáknak a periódisa 33, és 35.
-A többi prím mintájának periódusa a legnagyobb olyan szám,
-ami 64-nél kisebb, és a prím osztja.
+A prímek listája a generatorban több külön adatszerkezet összessége.
+A prímeket a szita inicilizálásánál 3 részre osztja a nagyságuk szerint.
+A $64$-nél kisebb prímeket $64$-bit széles bitmintákban tárolja, és ezekkel a mintákkal $64$-bitesével szitálja végig a kis szegmenseket a bitenkénti vagy művelettel.
+A 3 és a 11, valamint az 5 és a 7 szorzata kisebb, mint 64, ezeket a párokat egyetlen $64$ bites mintába fejti ki, ezeknek a mintáknak a periódisa 33, és 35.
+A többi prím mintájának periódusa a legnagyobb olyan szám, ami 64-nél kisebb, és a prím osztja.
 
-A prímek, amik $64$-nél nagyobbak, de a
-kis szegmensek hosszánál kisebbek, azaz minden kis szegmensben
-szitálnak, az init-hez hasonlóan egy egyszerű tömbbe
-kerülnek, és ugyanúgy szitál ezekkel a program, mint
-az init-ben.
+A prímek, amik $64$-nél nagyobbak, de a kis szegmensek hosszánál kisebbek, azaz minden kis szegmensben szitálnak, az init-hez hasonlóan egy egyszerű tömbbe kerülnek, és ugyanúgy szitál ezekkel a program, mint az init-ben.
 
-A kis szegmensek hosszánál nagyobb prímek
-egy kis szegmensben legfeljebb egyszer szitálnak,
-és van olyan szegmens, ahol egyszer sem.
-A generator ezeket a prímeket egy prioritásos
-sorban tárolja, amiben az elemek sorrendjét
-a következő szegmens száma határozza meg,
-amiben az a prím szitálni fog, a szegmensen
-belüli sorrendet a sor nem veszi figyelembe.
-Ezeknél a nagy prímeknél nem csak a páros
-többszörösöket ugorja át a szita, hanem
-a 3-mal és 5-tel osztható többszörösöket is
-kihagyja. {\color{red}mi a kerék magyarul?}
+A kis szegmensek hosszánál nagyobb prímek egy kis szegmensben legfeljebb egyszer szitálnak, és van olyan szegmens, ahol egyszer sem.
+A generator ezeket a prímeket egy prioritásos sorban tárolja, amiben az elemek sorrendjét a következő szegmens száma határozza meg, amiben az a prím szitálni fog, a szegmensen belüli sorrendet a sor nem veszi figyelembe.
+Ezeknél a nagy prímeknél nem csak a páros többszörösöket ugorja át a szita, hanem a 3-mal és 5-tel osztható többszörösöket is kihagyja.
 
 Az edénysor algoritmusának részletes leírására egy későbbi fejezetben kerül sor.
-Az ott leírt távolság függvényt implementálja a bucketIndex függvény
-a forráskódban. A számrendszert a BUCKET\_BITS konstans szabályozza.
-A sorhoz tartozó edények listája a buckets tömb, ennek minden eleme
-egy láncolt lista, ahol a listaelemek fix méretű edények.
+Az ott leírt távolság függvényt implementálja a bucketIndex függvény a forráskódban.
+A számrendszert a BUCKET\_BITS konstans szabályozza.
+A sorhoz tartozó edények listája a buckets tömb, ennek minden eleme egy láncolt lista, ahol a listaelemek fix méretű edények.
 
-A program futása alatt a sor elemeinek száma nem változik,
-de az elemek az edények között mozognak. A sor legkisebb elemeinek,
-azaz az aktuális szegmensben szitáló prímek megkereséséhez
-a lista egyik edényének minden elemét
-megvizsgálja, ha egy elem az aktuális
-szegmensben nem szitál, akkor az elemet a sorba visszahelyezi,
-a távolság függvény szerint már közelebbi edénybe, ha pedig
-az elem szitál az aktuális szegmensben, akkor elvégzi a szitálást,
-és az elemet visszateszi a sorba, azon pozíció szerint, ahol a
-prím legközelebb szitálni fog.
+A program futása alatt a sor elemeinek száma nem változik, de az elemek az edények között mozognak.
+A sor legkisebb elemeinek, azaz az aktuális szegmensben szitáló prímek megkereséséhez a lista egyik edényének minden elemét megvizsgálja, ha egy elem az aktuális szegmensben nem szitál, akkor az elemet a sorba visszahelyezi, a távolság függvény szerint már közelebbi edénybe, ha pedig az elem szitál az aktuális szegmensben, akkor elvégzi a szitálást, és az elemet visszateszi a sorba, azon pozíció szerint, ahol a prím legközelebb szitálni fog.
 
 A 2, 3, és 5 többszöröseinek hatékony kihagyásához
 a prioritásos sor elemeiben a pozíció mellett el van tárolva,
@@ -314,7 +296,7 @@ A nyolc szóba jöhető lehetőség közül a PrimePosition.prime mező
 felső 3 bitje választ. Ezt a 3 bit információt biztonsággal
 lehet itt tárolni, a 64 bit széles változóból a feladat határai
 miatt mindig csak az alsó 32 tartalmaz értékes számjegyet.
-A {\color{red}2-3-5 kerék} alapú gyorsítás csak a prioritásos sorban
+Ez a 2-3-5 kerék alapú gyorsítás csak a prioritásos sorban
 tárolt nagy prímekre van alkalmazva.
 
 \subsection{Gui}
@@ -330,8 +312,6 @@ a programkód legfelső szintje ezeket teszi a felhasználó számára meghívha
 
 A grafikonmegjelenítés az egyetlen ténylegesen interaktív feladat, ennek megoldása a modell-nézet-vezérlő felosztást alkalmazza.
 
-{\color{red}class diagram}
-
 \subsubsection{gui.util}
 
 A csomag néhány közismert algoritmust és adatszerkezetet tartalmaz, valamint az ezekhez szükséges funkcionális interfészek definícióit.
@@ -346,7 +326,7 @@ A szemétgyűjtő ezzel járó folyamatos háttérmunkája nem csak feleslegesen
 
 A PrimitiveList osztály és leszármazottai az ArrayList mintájára szükség szerint növekvő vektorok. Konkrét megvalósítások a double, int, és long primitív típusokra vannak.
 
-A BinarySearch és a QuickSort a bináris keresés és a {\color{red}quicksort} algoritmusát valósítják meg absztrakt módon elért tömb felett. Az elemeket közvetlenül sosem érik el, az összehasonlításokat és a cseréket interfészeken keresztül végzik index alapján.
+A BinarySearch és a QuickSort a bináris keresés és a gyorsrendezés algoritmusát valósítják meg absztrakt módon elért tömb felett. Az elemeket közvetlenül sosem érik el, az összehasonlításokat és a cseréket interfészeken keresztül végzik index alapján.
 
 A BinaryMinHeap egy bináris kupac, mint absztrakt konténerosztály, az elemek típusától függő műveleteket absztrakt metódusként határozza meg.
 A műveletek felteszik, hogy az elemek indexelhetőek, mint egy tömbben.
@@ -361,15 +341,16 @@ A pszeudoprím-teszthez a maradékos hatványozás Java támogatás nélkül a k
 
 A csomag többi osztálya a legkisebb négyzetek módszerének implementációja, és annak segédosztályai.
 A Sum double típusú értékek véges összegeit számolja ki.
-A double véges pontosságú reprezentációjának következménye, hogy többtagú összeg eredménye függhet a tagok összeadásának sorrendjétől, azaz hiba keletkezhet.
-A Sum három stratégiát ad ennek minimalizálására.
-A program használata közben a felhasználó ezek közül nem tud választani, {\color{red}a tesztek alapján legstabilabbnak ítélt elsőbbségi soron alapuló} összegzést használja a közelítés.
-A legegyszerűbb Sum.Simple a tagokat felsorolásuk sorrendjében adja össze. 
-A bináris kupacot használó Sum.Priority a tagokat a sorban gyűjti, majd a végső összeg kiszámításához a sorból, amíg lehet, ismételten kiveszi a két legkisebb abszolút értékű elemet, azokat összeadja, és az eredményt a sorba visszahelyezi. A végeredmény a sorban maradó érték lesz.
-A Sum.Array nagyságrend szerinti részösszegeket tart nyílván, új tagot a nagyságrendjéhez tartozó részösszeghez adja hozzá. A nagyságrend a double érték IEEE 754 szabvány szerinti reprezentáció kitevője.
+A double véges pontosságának következménye, hogy nem minden szám reprezentálható double értékként, és többtagú összeg eredménye függhet a tagok összeadásának sorrendjétől, azaz az összeadások sorrendje befolyásolhatja az eredmény hibáját.
+A Sum három stratégiát ad az összeadások sorrendjéből származó hiba minimalizálására.
+A program használata közben a felhasználó ezek közül nem tud választani, a tesztek alapján legstabilabbnak ítélt elsőbbségi soron alapuló összegzést használja a közelítés.
+A legegyszerűbb Sum.Simple egyetlen változót használva a tagokat felsorolásuk sorrendjében adja össze.
+A bináris kupacot használó Sum.Priority a tagokat az elsőbbségi sorban gyűjti, majd a végső összeg kiszámításához a sorból, amíg lehet, ismételten kiveszi a két legkisebb abszolút értékű elemet, azokat összeadja, és az eredményt a sorba visszahelyezi. A végeredmény a sorban maradó érték lesz.
+A Sum.Array nagyságrend szerinti részösszegeket tart nyílván, új tagot a nagyságrendjéhez tartozó részösszeghez adja hozzá.
+A nagyságrend a double érték IEEE 754 szabvány szerinti reprezentációjának kitevője.
 
 A RealFunction interfész valóshoz valóst rendelő függvények reprezentációi.
-Egy függvény a helyettesítési értékén kívül az értelmezési tartományáról is információt kell adjon.
+Egy függvény a helyettesítési értékein kívül az értelmezési tartományáról is információt kell adjon.
 A grafikonmegjelenítő az x-tengely egy pixel által lefedett intervallumán akkor jelenít meg értéket, ha az az intervallum az értelmezési tartomány része.
 A Functions osztály a beépített elemi függvényeket tartalmazza.
 JavaScript-ben függvény a CustomFunction-nel adható meg.
@@ -379,7 +360,7 @@ A mintaközelítés eredménye ilyen típusú.
 A Matrix osztályban vannak megadva a valós mátrixok műveletei, mindegyik kétdimenziós double tömbökre.
 Az implementált műveletek a legkisebb négyzetek módszeréhez szükségesekre korlátozódnak.
 A Gauss-eliminációnál kiválasztható, hogy részleges sorcserére, vagy teljes sor és oszlopcserére kerüljön sor.
-{\color{red}A tesztek alapján a teljes csere egyértelműen csökkenti a számítás hibáját, a felhasználó részleges sorcserét nem is tud választani.}
+A tesztek alapján a teljes csere lényegesen csökkenti a számítás hibáját, a felhasználó részleges sorcserét nem tud választani.
 
 A LeastSquares osztályban lett megvalósítva a legkisebb négyzetek módszere. A csomag eddig felsorolt osztályaival itt lehet megadni a közelítéshez, a mintán kívül, az elemi függvényeket, és a pontosságot szabályozó paramétereket.
 A közelítés hibáját is ki lehet ezzel az osztállyal számolni.
@@ -410,7 +391,10 @@ Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a CSVReader 
 
 Ebben a csomagban, és a gui.sieve.eratosthenes alcsomagjában, a futási idők méréséhez implementált sziták vannak.
 
-\begin{tikzpicture}
+\begin{figure}[H]
+\centering
+\caption{A sziták osztály diagramja}
+\begin{tikzpicture}[framed]
 
 \umlclass[x=0.5, y=0, type=abstract]{OperationCounter}{}{
 +add() \\
@@ -456,8 +440,9 @@ Ebben a csomagban, és a gui.sieve.eratosthenes alcsomagjában, a futási idők 
 \umlinherit{Bucket1Sieve}{BucketSieve}
 \umlinherit{BucketNSieve}{BucketSieve}
 \end{tikzpicture}
+\end{figure}
 
-A szitál a Sieve osztály leszármazottai.
+A sziták a Sieve osztály leszármazottai.
 A példányaitól elvárás, hogy
 \begin{itemize}
 \item a szitálást szegmensenként végezzék
@@ -560,7 +545,34 @@ A vezérlő a gui segédosztályaira épít.
 
 A modell alapján az megjelenítéshez szükséges grafikus utasítások előállítása időigényes, a mintákat és a függvényeket pixel széles intervallumokon mintavételezve határozza meg a képernyő egy oszlopához tartozó minimum és maximum értékeket. Az interaktivitás érzésének fenntartásához az oszlopokra bontást a program egy háttérszálban végzi, és közben a részeredményeket rendszeresen átadja a nézetnek megjelenítésre. A felhasználó a háttérszámítások közben a modellt módosítva az addigi előszámításokat elveszíti, és egy új háttérszál indul.
 
-{\color{red} class diagram}
+\begin{figure}[h]
+\centering
+\caption{Új modell megjelenítésének szekvencia diagramja}
+\begin{tikzpicture}[framed]
+\begin{umlseqdiag}
+\umlobject{Swing}
+\umlobject[x=2]{vezérlő}
+\umlobject[class=GraphPlotter, x=6]{nézet}
+\begin{umlcall}[dt=5, op=getGraph(), with return]{vezérlő}{nézet}
+\end{umlcall}
+\begin{umlcall}[dt=5, op=setGraph()]{vezérlő}{nézet}
+\umlcreatecall[class=GraphRenderer, x=11]{nézet}{háttérszál}
+\end{umlcall}
+\begin{umlcall}[dt=8, op=checkAndPost()]{háttérszál}{nézet}
+\begin{umlcall}[op=paint(), type=asynchron]{nézet}{Swing}
+\end{umlcall}
+\end{umlcall}
+\begin{umlcall}[dt=5, op=checkAndPost()]{háttérszál}{nézet}
+\begin{umlcall}[op=paint(), type=asynchron]{nézet}{Swing}
+\end{umlcall}
+\end{umlcall}
+\begin{umlcall}[dt=5, op=checkAndPost()]{háttérszál}{nézet}
+\begin{umlcall}[op=paint(), type=asynchron]{nézet}{Swing}
+\end{umlcall}
+\end{umlcall}
+\end{umlseqdiag}
+\end{tikzpicture}
+\end{figure}
 
 \subsubsection{Modell}
 
@@ -621,165 +633,3 @@ Ennek a komponensnek a graph adattagja tartalmazza a legújabb modell értéket,
 A modell módosításakor a GraphPlotter objektum a graph adattag cseréjével biztosítja, hogy a régi modellre vonatkozó háttérszálak leállnak, és elindítja az új modell oszlopra bontását.
 Az előkészített modellről a CheckAndPost eseménykezelőjén keresztül értesül, aminek hatására az új grafikon kirajzolását ütemezi.
 A tényleges kirajzolásnál még egyszer ellenőrzi, hogy a grafikon a komponens tényleges méretére készült el, majd a már elkészült grafikon részleteket kirajzolja.
-
-\section{Sziták}
-
-Eratosztenész szitája, szegmentáltan is. COLS. Prioritásos sorral. Atkin szitája.
-
-Szegmentált szita inicializálása.
-
-Trial division. Pszeudoprím teszt.
-
-Feltételek. Elméleti sebesség.
-
-\section{Prioritásos sorok}
-
-\begin{algorithmic}[1]
-\State $q \gets$ \Call{Új-sor}{}
-\For{$i\gets 2, n$}
-	\While{$\exists (p, k) \in q: k \le i$}
-		\State $(p, k) \gets $ \Call{Sor-Eltávolít-Min}{q}
-		\State \Call{Megjelöl}{i}
-		\State \Call{Sor-Beszúr}{q, (p, k+p)}
-	\EndWhile
-	\If{$\neg$ \Call{Megjelölt?}{i}}
-		\State \Call{Sor-Beszúr}{q, (i, 2i)}
-	\EndIf
-\EndFor
-\end{algorithmic}
-
-\subsection{Bináris kupac}
-
-A mérések grafikonják pixelei alapján lassú. A beszúrásonkénti elméleti
-$\mathcal{O}(log_{}{|q|})$ ideje se biztató.
-
-\subsection{Bigyó} %%% EMIL: Ettől SOKKAL jobb nevet kell találni neki!!!!
-
-A bigyó egy monoton prioritásos sor.
-A sor monoton, minden állapotához tartozik egy érték, a sor aktuális pozíciója,
-aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
-A bigyó edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
-Egy eltárolt elem helyét a sorozatban az elem pozíciójának
-és a sor aktuális pozíciójának távolsága határozza meg.
-
-A távolságfüggvény legyen
-
-\begin{align*}
-d(x, y) := \lfloor log_{2}{}(x \oplus y) \rfloor & & (x, y \in \mathbb{N}, y > x \ge 0)
-\end{align*}
-
-ahol $\oplus$ a bitenkénti XOR.
-
-$d(x, y)$ a legnagyobb bit-index, ahol $x$ és $y$ eltér.
-
-Ha $q$ egy bigyó, legyen $q.a$ $q$ aktuális pozíciója, és $q.e[i]$ $q$ $i$. edénye. AZ edények, és a számpárok struktúrája...
-
-Egy q bigyó invariánsa
-\begin{align*}
-\forall (p, k) \in q &: &\\ 
-	& q.a < k\\
-	& \forall i \in \mathbb{N}_{0}: (p, k) \in q.e[i] \iff i=d(q.a, k) \\
-\forall (p, k) \not\in q &: \forall i \in \mathbb{N}_{0}: (p, k) \not\in q.e[i]
-\end{align*}
-
-Új, üres sor létrehozása tetszőleges kezdőpozíciótól, és meglévő sorba elem beszúrása...
-
-A sor elemeinek feldolgozása $i$-ig
-\begin{algorithmic}[1]
-\While{$q.a < i$}
-	\State $j \gets d(q.a, q.a + 1)$
-	\State $q.a \gets q.a + 1$
-	\ForAll{$(p, k) \in q.e[j]$}
-		\State \Call{Edény-Kivesz}{$q.e[j], (p, k)$}
-		\If{$k = i$}
-			\State \Call{Visszaad}{$(p, k)$}
-		\Else
-			\State \Call{Edény-Beszúr}{$d(q.a, k), (p, k)$}
-		\EndIf
-	\EndFor
-\EndWhile
-\end{algorithmic}
-
-\subsubsection{Helyesség}
-
-\subsubsection{Idő}
-
-\subsubsection{Hely}
-
-\subsubsection{Számrendszer}
-
-És számrendszer vs. tisztán funkcionálisban nincs bármekkora tömb, csak valami fával közelítve.
-
-Amúgy sincs bármekkora tömb...
-
-És exponenciálisan kell növelni...
-
-\subsubsection{Cache}
-
-És exponenciálisan kell növelni...
-
-\section{Memória}
-
-Összes prím, és pozíciója $2^32$-ig. Primitív típusok és boxing. Garbage collector.
-
-\section{A program ellenőrzése}
-
-Az megoldás szitáinak ellenőrzése a gui program elvárt feladata.
-Az init és generator program szegmensfájlai, és a gui szitáinak kimenetei is összehasonlíthatóak a ReferenceSegment osztály szitájával.
-Ezen keresztül a sziták kimenetének egyenlősége szúrópróbaszerűen ellenőrizhető.
-Ezeket az időigényes ellenőrzéséket végzi el a ''test-sieves'' szkript minden szitával több intervallumon.
-A teszt ellenőrzéséhez a szkript egy szándékosan hibás szegmens, és egy hibás szita ellenőrzését is elvégzi.
-
-A gui program ''math'' és ''util'' csomagjaira a program összes többi része épít, az adatbázisműveletek, a sziták, és a megjelenítés is. Erre a két csomagra a JUnit keretrendszerrel és a JaCoCo lefedettségmérővel teljes lefedettségű egységtesztek készültek.
-
-Az összesített statisztikák ellenőrzésére a ''test-prime-counts'' szkript a prímek számát a ''samples/test/prime-counts.csv'' fájlba írja az adatbázis alapján kettő hatványai helyeken, míg a ''test-max-prime-gaps'' a ''samples/test/max-prime-gaps.csv'' fájlba a maximális prímhézagokat metni.
-Ezek a publikált értékekkel\cite{gaps}\cite{pi} összevethetőek. Ezeket a fájlokat a gui program ''gui.test'' csomagjának osztályai készítik el. A program tesztelésénél ez a két statisztika $2^{47}(\approx1,4\cdot10^{14})$-ig egyezett.
-
-A minták és közelítő függvények megjelenítésének tesztelése ismert grafikonú mintákkal való összevetéssel történt.
-Táblázatkezelő programokkal, mint például a LibreOffice, formula alapján generált minták grafikonja ábrázolható, és a gui program által olvasott CSV formátu fájlba menthető.
-A formulákkal véletlenszerű zaj is hozzáadható a mintához.
-A ''samples/test/graph'' könyvtárban megtalálható néhány táblázatminta a teszteléshez.
-
-\subsection{Numerikus pontosság}
-
-A legkisebb négyzetek módszerének megvalósítása a mátrixműveletek pontosságát két paraméterrel tudja szabályozni, a mátrixszorzás összegzéseit három különböző algoritmussal lehet végezni, és a Gauss-eliminációt részleges sorcserével, vagy teljes sor-oszlop cserével is el lehet végezni.
-Ezeknek a paramétereknek a megválasztása a tesztek alapján sem egyértelmű.
-
-A ''test-measure-sums'' közelítések pontosságáról készít statisztikákat három változóban, és az eredményt a ''samples/test/measure-sums.csv'' fájlba menti. A három váltózó:
-\begin{itemize}
-\item az összegzést tömbbel, kupaccal, vagy egyetlen változóval végezze
-\item részleges vagy teljes csere
-\item x szerint rendezett-e a minta.
-\end{itemize}
-A három paraméter mindegyik lehetőségéhez a mérés elemi függvények függvények alapján egy mintát generál, majd ezt a mintát ugyanezekkel az elemi függvényekkel közelíti.
-Egy paraméter-kombinációhoz az összes közelítés négyzetes eltérését, és a közelítés idejét összesíti.
-A minták generálásához használt elemi függvények a ''MeasureSums'' osztályból kiolvashatóak.
-
-\begin{tabular}{|l|l|l|r|r|}
-\hline
-összegzés & csere & rendezett & $\sum{hiba^2}$ & idő (ns) \\ \cline{1-5}
-\multirow{4}{*}{változó} & \multirow{2}{*}{részleges} & igen & $2,53 \cdot 10^{25}$ & $1,26 \cdot 10^{9}$ \\ \cline{3-5}
-& & nem & $4,24 \cdot 10^{23}$ & $1,85 \cdot 10^{9}$ \\ \cline{2-5}
-& \multirow{2}{*}{teljes} & igen & $2,53 \cdot 10^{25}$ & $1,34 \cdot 10^{9}$ \\ \cline{3-5}
-& & nem & $4,21 \cdot 10^{23}$ & $1,82 \cdot 10^{9}$ \\ \cline{1-5}
-\multirow{4}{*}{tömb} & \multirow{2}{*}{részleges} & igen & $2,62 \cdot 10^{20}$ & $1,45 \cdot 10^{9}$ \\ \cline{3-5}
-& & nem & $9,75 \cdot 10^{19}$ & $2,45 \cdot 10^{9}$ \\ \cline{2-5}
-& \multirow{2}{*}{teljes} & igen & $1,87 \cdot 10^{20}$ & $1,56 \cdot 10^{9}$ \\ \cline{3-5}
-& & nem & $6,76 \cdot 10^{19}$ & $2,33 \cdot 10^{9}$ \\ \cline{1-5}
-\multirow{4}{*}{kupac} & \multirow{2}{*}{részleges} & igen & $1,12 \cdot 10^{21}$ & $1,37 \cdot 10^{10}$ \\ \cline{3-5}
-& & nem & $1,12 \cdot 10^{21}$ & $1,67 \cdot 10^{10}$ \\ \cline{2-5}
-& \multirow{2}{*}{teljes} & igen & $3,12 \cdot 10^{19}$ & $1,39 \cdot 10^{10}$ \\ \cline{3-5}
-& & nem & $3,12 \cdot 10^{19}$ & $1,68 \cdot 10^{10}$ \\
-\hline
-\end{tabular}\\
-
-A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
-\begin{itemize}
-\item legjobb, és leglassabb választás a kupac összegzés
-\item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két lehetőség
-\item az egy változóban összegzés hibája több nagyságrenddel nagyobb, mint a másik két összegzés hibája
-\item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
-\item a kupac összegzés a minta rendezettségére nem érzékeny
-\item a rendezetlen minta összegzése a változóval és tömbbel pontosabb, mint a rendezett.
-\end{itemize}
-Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a Gauss-eliminációban teljes sor és oszlopcserét hajt végre, ezt a felhasználó nem tudja megváltoztatni.

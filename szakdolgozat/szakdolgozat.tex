@@ -18,12 +18,16 @@
 \usepackage{color}
 \setcounter{secnumdepth}{3}
 \usepackage{algpseudocode}
+\usepackage{cellspace}
+\usepackage{float}
 \usepackage{listings}
+\usepackage{moresize}
 \usepackage{multirow}
+\usepackage{siunitx}
 \usepackage{tikz-uml}
 \usepackage{titlesec}
 \onehalfspacing
-\lstset{basicstyle=\tiny}
+\lstset{basicstyle=\ssmall\tt}
 \lstset{literate=
   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
@@ -89,6 +93,10 @@ Hatékonyság és implementálhatóság.
 
 \input{fejlesztoi.tex}
 
+\input{fejlesztoi-szitak.tex}
+
+\input{fejlesztoi-teszt.tex}
+
 \begin{thebibliography}{9}
 
 \bibitem{atkin}
@@ -104,7 +112,10 @@ Tomás Oliveira e Silva, Siegfried Herzog and Silvio Pardi: Empirical verificati
 Tomás Oliveira e Silva: Tables of values of pi(x) and of pi2(x), \url{http://sweet.ua.pt/tos/primes.html}, 2018.11.30.
 
 \bibitem{pseudoprime}
-{\color{red}erős pszeudoprím teszt}
+David M. Bressoud: Factorization and Primality Testing, Springer Verlag, 1989, 0-387-97040-1
+
+\bibitem{pseudoprimebase}
+Wojciech Izykowski, Jim Sinclair: Deterministic variants of the Miller-Rabin primality test, \url{https://miller-rabin.appspot.com/}, 2018.11.30.
 
 \end{thebibliography}
 

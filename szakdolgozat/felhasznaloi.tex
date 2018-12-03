@@ -105,25 +105,16 @@ Továbbá nagyobb prímeknek csak harminccal relatív prím többszöröseit ves
 \subsection{Gui}
 
 A program többi része a Java környezethez készült.
-A minták és függvények ábrázolásához használt Swing grafikus könyvtár
-a Java környezet része, egyszerű, hordozható, támogatja az élsimítást,
-és a sebessége elfogadható a feladatra.
-A Java sztenderd konténerosztályai habár kényelmesen használhatóak, és változatosak,
-de sebesség és memóriakihasználtsági problémák miatt több helyen is alacsonyabb szintű
-megoldást kellett választani.  %%% EMIL: Most kezdek azon morfondírozni hogy itt sokat írsz a fejlesztői döntésekről és keveset a program felhasználásáról. Ezt majd érdemes lesz figyelembe venni.
-%%% EMIL: Itt ha gondolod inkább ilyen Gauss és hasonló prímek eloszlására vonatkozó rizsát lehet írni és valahogy összekötni azzal hogy mit old meg a program (ahelyett hogy leírod hogy HOGYAN oldja meg ezeket)
 
-A program a mintákat alapfüggvények lineáris kombinációjával képes közelíteni,
-a legkisebb négyzetek módszerével. A minták elemeinek nagy száma, és a mintaértékek
+A program az adatbázisában hosszabb távon egyedül a prímek szegmensenkénti statisztikáit tárolja,
+amit csak sorban dolgoz fel, és a statisztikák összmérete sem indokolna egy egyszerű bináris fájlnál bonyolultabb megoldást.
+Az adatvesztés elkerüléséhez elég a statisztikafájl csere alapú felülírása.
+
+A program a mintákat alapfüggvények lineáris kombinációjával közelíti a legkisebb négyzetek módszerével. A minták elemeinek nagy száma, és a mintaértékek
 nagy terjedelme miatt szükséges volt a numerikus algoritmusok nagyobb pontosságú
 implementációja, ami a számítási idő növekedésével jár.
 
-A program hosszabb távon egyedül a prímek szegmensenkénti statisztikáit tárolja,
-amit csak sorban dolgoz fel, és a statisztikák összmérete sem indokolna
-egy egyszerű bináris fájlnál bonyolultabb megoldást. Az adatvesztés elkerüléséhez
-elég a statisztikafájl csere alapú felülírása.
-
-A Java program tartalmaz több prímszita implementációt is, ezeknek az algoritmikus
+A gui program tartalmaz több prímszita implementációt is, ezeknek az algoritmikus
 bonyolultsága különböző, de a futási idejük összehasonlíthatóságához a közös részek közös
 implementációt kaptak, és az eltérő részek hasonló szinten optimalizáltak.
 A sziták helyességének ellenőrzéséhez a sziták eredménye egymással összehasonlítható.
@@ -134,14 +125,13 @@ A legegyszerűbb implementált eratoszthenészi szita a prímek listáját minde
 A prioritásos soron alapuló sziták a prímeket részlegesen rendezik az alapján, hogy hány szegmensnyire van az éppen szitált szegmenstől a prím következő többszöröse, a sor elejéről eltávolítják a szegmensben szitáló prímeket, és az új pozíciójukkal a sorba visszahelyezik.
 Ilyen a bináris kupacot, és az edénysort használó szita.
 
-A {\color{red}cache optimized linear sieve}\cite{cols} a prímeket teljesen rendezi az alapján, hogy legközelebb melyik szegmensben fognak szitálni, és a prímek nagyság szerinti csoportosításával a rendezés fenntartásához az elemek memóriabeli mozgatását is kerüli.
+A Cache Optimalizált Lineáris Szita a prímeket teljesen rendezi az alapján, hogy legközelebb melyik szegmensben fognak szitálni, és a prímek nagyság szerinti csoportosításával a rendezés fenntartásához az elemek memóriabeli mozgatását is kerüli.
 
 Atkin szitája\cite{atkin} az előbbi algoritmusoktól jelentősen eltér, a prímek többszörösei
 helyett $n=ax^2+by^2$ egyenlet megoldásait keresi egy $n$ szám vizsgálatához, $x$ és $y$ pozitív egészek befutásával, $a$ és $b$ egész konstansok.
-A pontos kvadratikus formát, és $x$ és $y$ lehetséges értékeit Atkin az egészek algebrai bővítésével
-határozza meg, $n \in 4\mathbb{Z}+1$ esetén a Gauss-egészek, $n \in 6\mathbb{Z}+1$ esetén az Eisenstein-egészek, és $n \in 12\mathbb{Z}+11$ esetén a $\mathbb{Z}[\sqrt{3}]$ segítségével.
+A pontos kvadratikus formát, és $x$ és $y$ lehetséges értékeit Atkin az egészek algebrai bővítésével határozza meg, $n \in 4\mathbb{Z}+1$ esetén a Gauss-egészek, $n \in 6\mathbb{Z}+1$ esetén az Eisenstein-egészek, és $n \in 12\mathbb{Z}+11$ esetén a $\mathbb{Z}[\sqrt{3}]$ segítségével.
 
-A sziták között kapott helyet a próbaosztás, és az erős pszeudoprím teszt is, de ezek a lassúságuk miatt csak igen rövid tartományokon használhatóak.
+A sziták között kapott helyet a próbaosztás, és az erős pszeudoprím teszt\cite{pseudoprime} is, de ezek a lassúságuk miatt csak igen rövid tartományokon használhatóak.
 A próbaosztás egy faktorizációs eljárás, ami egyetlen számot nem-triviális szorzatra próbál bontani.
 Az (erős) pszeudoprím teszt egy prímteszt, egyetlen számról próbálja eldönteni, hogy az prím-e.
 A prímteszteket általában több nagyságrenddel nagyobb számokra alkalmazzák, mint a szitákat, és teljes módszer helyett sokszor megelégednek egy valószínűségi válasszal.
@@ -161,8 +151,6 @@ A C programot a generator könyvtárban található Makefile segítségével leh
 \begin{lstlisting}[language=bash]
 generator$ make clean build
 \end{lstlisting}
-
-%%% EMIL: Ez a szöveg is a \tiny{..}ban van, és furcsák a sortávolságok.  A listings bash beállításait érdemes piszkálni, hogy automatikusan azt csinálja amit szeretnél. https://tex.stackexchange.com/questions/180222/how-to-change-font-size-for-specific-lstlisting
 
 A Java program a NetBeans 8-as verziójával készült,
 parancssorból a project ant fájlának segítségével lehet
@@ -258,10 +246,9 @@ táblafájlokból is kiolvashatóak.
 
 \section{Mintaadatbázis karbantartása}
 
-A mintaadatbázis a lementett szitatáblák összesített statisztikáit tárolja.
+A mintaadatbázis a szitatáblák összesített statisztikáit tárolja.
 A programok az adatbázis könyvtárában kétfajta fájlt vesznek figyelembe.
-A ''primes\textbackslash.[0-9a-f]\{16\}'' reguláris kifejezésnek megfelelő nevű  %%% EMIL: \fonttt{...} parancsot ismered?
-fájlok a szegmensek szitatáblái.
+A szegmensek szitatáblái a {\tt''primes\textbackslash.[0-9a-f]\{16\}''} reguláris kifejezésnek megfelelő nevű fájlok.
 A fájlnév második fele a szegmens kezdőszáma hexadecimálisan.
 A fájl a páratlan számok bittérképe mellett tartalmazza a szegmens
 szitálásának megkezdésére, és a szitálására fordított időt,
@@ -356,21 +343,22 @@ szegmensfájlok: hiányzó szegmensek száma: 18,446,744,073,709,551,593
 
 új szegmensfájlok: 7
 
-scripts$ ./database info crunch 100
-100.0%
-szegmensfájlok: szegmensek száma: 7
+scripts$ ./database info crunch 1024
+100.0%                     
+szegmensfájlok: szegmensek száma: 4
 szegmensfájlok: első szegmens kezdete: 1
-szegmensfájlok: utolsó szegmens kezdete: 6,442,450,945
-szegmensfájlok: első hiányzó szegmens kezdete: 7,516,192,769
-szegmensfájlok: hiányzó szegmensek száma: 18,446,744,073,709,551,593
+szegmensfájlok: utolsó szegmens kezdete: 3,221,225,473
+szegmensfájlok: első hiányzó szegmens kezdete: 4,294,967,297
+szegmensfájlok: hiányzó szegmensek száma: 18,446,744,073,709,551,596
 
-összesítések: szegmensek száma: 62,881
+összesítések: szegmensek száma: 140,292
 összesítések: első szegmens kezdete: 1
-összesítések: utolsó szegmens kezdete: 67,516,885,893,121
-összesítések: első hiányzó szegmens kezdete: 67,517,959,634,945
-összesítések: hiányzó szegmensek száma: 18,446,744,073,709,488,719
+összesítések: utolsó szegmens kezdete: 150,636,314,230,785
+összesítések: első hiányzó szegmens kezdete: 150,637,387,972,609
+összesítések: hiányzó szegmensek száma: 18,446,744,073,709,411,308
 
-crunch: ../generator/generator.bin ../db start 0x3d6840000001 segments 0x64
+crunch: ../generator/generator.bin /stuff/unistuff/scratch/szakdolgozat/db
+start 0x890100000001 segments 0x400
 \end{lstlisting}
 
 A ''crunch'' utótag és szitálni kívánt szegmensek számának megadásával az utolsó sorban
@@ -381,6 +369,11 @@ A ''crunch-numbers'' script ezt a feladatot kísérli meg elvégezni.
 Az info megjeleníti az új szegmensfájlok számát is, azokat,
 amikhez vagy nem tartozik összesített adat, vagy tartozik,
 de az ott tárolt utolsó módosításnál újabb a szegmensfájl.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=1]{info.png}
+\end{figure}
 
 \subsection{Szegmensek összesítése}
 
@@ -412,7 +405,6 @@ scripts$ ./database import aggregates ../db/aggregates.large
 100.0%
 \end{lstlisting}
 
-{\color{red}screenshot}
 %%% EMIL: ezt a részt kicst kuszának tartom. Én személy szerint, lehet úgy csinálnam, pl (feltéve hogy már rendesen bevezetted a generátor, init, stb programokat), és akkor először felsorolnám a műveleteket, hogy egy-egy program milyen parancsokat tud, aztán meg külön külön leírnám azok működését. Valahogy "nem elég száraz" a szöveg, egymásba folynak a mondatok... és szerintem itt most épp egy kicsit szárazabb, szakmaibb leírás kellene.
 
 \section{Szitatáblák ellenőrzése}
@@ -445,8 +437,6 @@ hogy az init program által előállított négy darab szegmensfájlt tartalmazz
 az adatbáziskönyvtár, mert a szita kezdőszámra pozícionálásához a prímszámokat
 innen olvassa fel a program.
 
-{\color{red}screenshot}
-
 \section{Sziták ellenőrzése}
 
 Az sebességek összehasonlításához írt sziták eredményét is lehet ellenőrizni,
@@ -464,7 +454,7 @@ Az ellenőrizhető sziták nevei:
 
 \begin{itemize}
 \item atkin: Atkin szitája\cite{atkin}
-\item cols: {\color{red}Cache optimized linear sieve}\cite{cols}
+\item cols: Cache Optimalizált Lineáris Szita
 \item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
 \item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
 	az bin-heap-inplace a kupac javítását helyben végzi
@@ -489,7 +479,10 @@ scripts$ ./check-sieve buckets-3 3000000000001 3010000000001
 Ha a kezdőszám nagyobb, mint egy, az ellenőrzéshez ilyenkor is szükséges,
 hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
-{\color{red}screenshot}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=1]{check-sieve.png}
+\end{figure}
 
 \section{Minta megjelenítése}
 
@@ -516,41 +509,33 @@ A felső harmada az összes betöltött mintát mutatja.
 Az ablak jobb oldalának alsó két harmadában az itt kiválasztott minta részletei
 látszódnak.
 
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.5]{graph.png}
+\end{figure}
+
 \subsection{Minta hozzáadása} %%% EMIL: Ez itt "hozzáadása" nem inkább beolvasása... betöltése... hmm... nem tom.
 
 A "Minta hozzáadásánál" három adatforrásból lehet választani.
-A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő,
-az első oszlopot x, a második oszlopot y értékeknek próbálja értelmezni,
-a fel nem ismert sorokat eldobja. Ha az első sor első oszlopa "BARS",
+A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő, az első oszlopot x, a második oszlopot y értékeknek próbálja értelmezni, a fel nem ismert sorokat eldobja.
+Ha az első sor első oszlopa "BARS",
 akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 
-A "Prímstatisztikák" a generator kimeneteléből összesített statisztikák,
-amiket az adatbáziskönyvtárban keres.
+A "Prímstatisztikák" a generator kimeneteléből összesített statisztikák, amiket az adatbáziskönyvtárban keres.
 A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
-A statisztikáknak három csoportja van. A prímek száma, és néhány kiemelt alakú prím száma
-a szegmensek végén. Ide tartozik ugyanezeken a helyeken a prímszámtétel
-becslése, és a becslés abszolút és relatív hibája is.
-A prímhézagok statisztikái a szegmensek teljes kezdőszeletére vonatkozik. Ezek
-az előfordult hézagok gyakorisága, első előfordulása, jósága, és az legnagyobb
-prímhézag adott számig.
-Ezeken kívül a szegmensek szitálásának ideje is betölthető. Az összesített
-idő a szegmensek végig az összes addigi szegmens összes ideje,
-a szegmensenkénti a szegmensek végéhez az adott szegmens szitálásának idejét rendeli.
+A statisztikáknak három csoportja van. A prímek száma, és néhány kiemelt alakú prím száma a szegmensek végén. Ide tartozik ugyanezeken a helyeken a prímszámtétel becslése, és a becslés abszolút és relatív hibája is.
+A prímhézagok statisztikái a szegmensek teljes kezdőszeletére vonatkozik.
+Ezek az előfordult hézagok gyakorisága, első előfordulása, jósága, és az legnagyobb prímhézag adott számig.
+Ezeken kívül a szegmensek szitálásának ideje is betölthető.
+Az összesített idő a szegmensek végig az összes addigi szegmens összes ideje, a szegmensenkénti a szegmensek végéhez az adott szegmens szitálásának idejét rendeli.
 
 A minták harmadik forrása a programba épített sziták futási idejének mérése.
-Ehhez meg kell adni a szitát, a szitált intervallum elejét és végét,
-a szita belső szegmensméretét, a generálandó minták számát, és a mérések számát,
-a mértéket, és hogy az eredményt összesítse-e.
+Ehhez meg kell adni a szitát, a szitált intervallum elejét és végét, a szita belső szegmensméretét, a generálandó minták számát, és a mérések számát, a mértéket, és hogy az eredményt összesítse-e.
 A sziták listája ugyanaz, mint a sziták ellenőrzősénél.
-A mintákat a program a szitált intervallumon egyenletesen osztja el a megadott méretű
-szegmensek határainál. A teljes szitálást a megadott mérések számászor végzi el,
-és az eredményt átlagolja.
-Összesítést kiválasztva a minta értéke a szitált intervallum elejétől
-az adott számig szitálás teljes ideje, különben az előző minta helyétől.
-A mérték szabályozza, hogy a tényleges eltelt időt mérje a program nanoszekundumban,
-vagy az elvégzett műveletek számát.
-
-{\color{red}screenshot}
+A mintákat a program a szitált intervallumon egyenletesen osztja el a megadott méretű szegmensek határainál.
+A teljes szitálást a megadott mérések számászor végzi el, és az eredményt átlagolja.
+Összesítést kiválasztva a minta értéke a szitált intervallum elejétől az adott számig szitálás teljes ideje, különben az előző minta helyétől.
+A mérték szabályozza, hogy a tényleges eltelt időt mérje a program nanoszekundumban, vagy az elvégzett műveletek számát.
 
 \subsection{Minta közelítése}
 
@@ -621,7 +606,10 @@ A program ezt az eltérés összeget jeleníti meg a közelítés
 hibájaként, valamint a $c_i$ skalárok
 a közelítés elemi függvényeinek együtthatói.
 
-{\color{red}screenshot}
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.75]{functions}
+\end{figure}
 
 \section{Sziták mérése szkriptekkel}
 
