@@ -1,3 +1,4 @@
+\pagebreak
 \section{A program ellenőrzése}
 
 Az megoldás szitáinak ellenőrzése a gui program elvárt feladata.
@@ -31,6 +32,17 @@ A három paraméter mindegyik lehetőségéhez a mérés elemi függvények alap
 Egy paraméter-kombinációhoz az összes közelítés négyzetes eltérését, és a közelítés idejét összesíti.
 A minták generálásához használt elemi függvények a ''MeasureSums'' osztályból kiolvashatóak.
 
+A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
+\begin{itemize}
+\item legjobb, és leglassabb választás a kupac összegzés teljes cserével
+\item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két összegzés
+\item az egy változóban összegzés hibája több nagyságrenddel nagyobb, mint a másik két összegzés hibája
+\item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
+\item a kupac összegzés a minta rendezettségére nem érzékeny
+\item a rendezetlen minta összegzése a változóval és tömbbel pontosabb, mint a rendezett.
+\end{itemize}
+Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a Gauss-eliminációban teljes sor és oszlopcserét hajt végre, ezt a felhasználó nem tudja megváltoztatni.
+
 \begin{table}[h]
 \renewcommand\arraystretch{1.2}
 \centering
@@ -53,14 +65,3 @@ A minták generálásához használt elemi függvények a ''MeasureSums'' osztá
 \hline
 \end{tabular}
 \end{table}
-
-A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
-\begin{itemize}
-\item legjobb, és leglassabb választás a kupac összegzés teljes cserével
-\item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két összegzés
-\item az egy változóban összegzés hibája több nagyságrenddel nagyobb, mint a másik két összegzés hibája
-\item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
-\item a kupac összegzés a minta rendezettségére nem érzékeny
-\item a rendezetlen minta összegzése a változóval és tömbbel pontosabb, mint a rendezett.
-\end{itemize}
-Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a Gauss-eliminációban teljes sor és oszlopcserét hajt végre, ezt a felhasználó nem tudja megváltoztatni.

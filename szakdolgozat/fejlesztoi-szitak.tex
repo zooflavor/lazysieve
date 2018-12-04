@@ -1,99 +1,171 @@
 \section{Sziták}
 
-Eratosztenész szitája, szegmentáltan is. COLS. Prioritásos sorral. Atkin szitája.
+A gui program tartalmazza Eratoszthenész szitájának több megvalósítását.
+Ezek az implementációk mind szegmentáltak, azaz csak egy rövidebb intervallumon szitálnak,
+és annak befejezéséig nem kezdenek bele új intervallumba.
+Egy intervallum szitáláshoz szükséges az intervallum négyzetgyökének végéig a prímek listája.
+A prímeket ismerve maradékos osztással meghatározható, hogy melyik a legkisebb többszörösük, ami legalább akkora, mint az intervallum kezdete, és onnantól összeadással az intervallum végéig meghatározható a többi többszörösük.
+A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 
-Szegmentált szita inicializálása.
-
-Trial division. Pszeudoprím teszt.
-
-Feltételek. Elméleti sebesség.
-
-\subsection{Prioritásos sorok}
-
+\begin{algorithm}
+\floatname{algorithm}{Algoritmus}
+\caption{Az $[u, v[$ intervallum szitálása}
+\label{alg:eratosthenes-segment}
 \begin{algorithmic}[1]
-\State $q \gets$ \Call{Új-sor}{}
-\For{$i\gets 2, n$}
-	\While{$\exists (p, k) \in q: k \le i$}
-		\State $(p, k) \gets $ \Call{Sor-Eltávolít-Min}{q}
-		\State \Call{Megjelöl}{i}
-		\State \Call{Sor-Beszúr}{q, (p, k+p)}
-	\EndWhile
-	\If{$\neg$ \Call{Megjelölt?}{i}}
-		\State \Call{Sor-Beszúr}{q, (i, 2i)}
+\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
+\For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
+	\For{$o \gets p \left \lceil{\frac{u}{p}}\right \rceil ; v > o; o \gets o+p$}
+		\State legyen $o$ megjelölve
+	\EndFor
+\EndFor
+\For{$o \in [u, v[$}
+	\If{$o$ nincs megjelölve}
+		\State $o$ prím
 	\EndIf
 \EndFor
 \end{algorithmic}
+\end{algorithm}
 
-\subsection{Bináris kupac}
+Ha több egymás utáni intervallumot kell szitálni, akkor minden prímhez eltárolható, hogy melyik pozícióban fog legközelebb szitálni.
+Ezzel az osztások időbeli költsége tárhely költségre váltható.
+A legegyszerűbb megoldás a prím-pozíció párok tárolása egy tömbben.
+A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálását írja le, ahol $v=u+kd$, és $d$ hosszú részintervallumonként szitál.
 
-A mérések grafikonják pixelei alapján lassú. A beszúrásonkénti elméleti
-$\mathcal{O}(log_{}{|q|})$ ideje se biztató.
+\begin{algorithm}
+\floatname{algorithm}{Algoritmus}
+\caption{Az $[u, v[$ intervallum szitálása, $v=u+kd$}
+\label{alg:eratosthenes-segments}
+\begin{algorithmic}[1]
+\State legyen $t$ egy tömb
+\State $tl \gets 0$ \Comment{a tömb elemeinek száma}
+\For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
+	\State $t[tl] \gets (p: p, o: p \left \lceil{\frac{u}{p}}\right \rceil)$
+	\State $tl \gets tl+1$
+\EndFor
+\For{$l \gets 1, v \gets u+d; k \ge l; l \gets l+1, u \gets u+d, v \gets v+d$}
+	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
+	\For{$i \in [1, tl]$}
+		\For{$; v > t[i].o; t[i].o \gets t[i].o+t[i].p$}
+			\State legyen $t[i].o$ megjelölve
+		\EndFor
+	\EndFor
+	\For{$o \in [u, v[$}
+		\If{$o$ nincs megjelölve}
+			\State $o$ prím
+		\EndIf
+	\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
-\subsection{Bigyó} %%% EMIL: Ettől SOKKAL jobb nevet kell találni neki!!!!
+A gui programban az ''Eratoszthenész szitája'' ezt az algoritmust valósítja meg.
+Ezzel a módszerrel a program minden rövid szegmensben a tömb minden elemét sorra veszi, azokat is, amik a szegmensben nem szitálnak.
+A többi implementált eratoszthenészi szita összetettebb struktúrákkal próbálja kiválasztani a ténylegesen szitáló elemeket.
+A többi implementált szita prioritásos sort használ az elemek részleges rendezéséhez, és sor elejének feldolgozásával választja ki a szegmensben szitáló elemeket.
+A bináris kupac és az edénysort használó szita mellett a Cache Optimalizált Lineáris Szita is soron alapul.
 
-A bigyó egy monoton prioritásos sor.
-A sor monoton, minden állapotához tartozik egy érték, a sor aktuális pozíciója,
-aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
-A bigyó edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
-Egy eltárolt elem helyét a sorozatban az elem pozíciójának
-és a sor aktuális pozíciójának távolsága határozza meg.
+\subsection{Prioritásos sorok}
 
-A távolságfüggvény legyen
+A prioritásos soron alapuló szita algoritmusa nagyon hasonló a \ref{alg:eratosthenes-segments} algoritmushoz.
+Az elemek sorban feldolgozása helyett a sor elejét addig veszi ki, amíg az az éppen szitált szegmensbe esik.
+Ezekkel az elemekkel a szitálást elvégzi a szegmensben, majd a sorba visszahelyezi, már az új, mostani szegmensnél nagyobb pozícióval.
+Az elemek sorrendjét a legközelebbi szitált pozíció határozza meg, a sor eleje az éppen szitált szegmenshez legközelebbi elem.
+Az elemek sorrendjénél a szegmensen belüli sorrend vizsgálata felesleges.
+A prioritásos soron alapuló szitálás algoritmusát a \ref{alg:eratosthenes-queue} adja meg, a sor adatszerkezet meghatározása nélkül.
+A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a helyben módosítást és a struktúra invariánsának visszaállítását is választhatja.
 
+\begin{algorithm}
+\floatname{algorithm}{Algoritmus}
+\caption{Az $[u, v=u+kd[$ intervallum szitálása, prioritásos sorral}
+\label{alg:eratosthenes-queue}
+\begin{algorithmic}[1]
+\State legyen $q$ egy üres sor
+\For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
+	\State hozzáad$(q, (p: p, o: p \left \lceil{\frac{u}{p}}\right \rceil))$
+\EndFor
+\For{$l \gets 1, v \gets u+d; k \ge l; l \gets l+1, u \gets u+d, v \gets v+d$}
+	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
+	\While{$v > \min(q).o$}
+		\State $(p, o) \gets \textrm{eltávolít-min}(q)$
+		\For{$; v > o; o \gets o+p$}
+			\State legyen $o$ megjelölve
+		\EndFor
+		\State hozzáad$(q, (p, o))$
+	\EndWhile
+	\For{$o \in [u, v[$}
+		\If{$o$ nincs megjelölve}
+			\State $o$ prím
+		\EndIf
+	\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+A gui program szitái közül ezt az algoritmust követi az edénysor szita, a bináris kupac szita, és a COLS körkörös listája is. A bináris kupac szitánál az eltávolítás-hozzáadás és a helyben megjavítás között a felhasználó választhat.
+
+\subsection{Edénysor}
+
+A edénysor egy monoton prioritásos sor.
+Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
+A sor pozíciójának megnövelése a sor elejének eltávolításával is együtt jár.
+A sor edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
+Egy eltárolt elem helyét az edények között az elem pozíciójának és a sor aktuális pozíciójának távolsága határozza meg.
+A sor által használt távolságfüggvény
 \begin{align*}
 d(x, y) := \lfloor log_{2}{}(x \oplus y) \rfloor & & (x, y \in \mathbb{N}, y > x \ge 0)
 \end{align*}
+ahol $\oplus$ a bitenkénti kizáró-vagy művelet. $d(x, y)$ a legnagyobb bit helyiértéke, ahol $x$ és $y$ eltér.
 
-ahol $\oplus$ a bitenkénti XOR.
-
-$d(x, y)$ a legnagyobb bit-index, ahol $x$ és $y$ eltér.
-
-Ha $q$ egy bigyó, legyen $q.a$ $q$ aktuális pozíciója, és $q.e[i]$ $q$ $i$. edénye. AZ edények, és a számpárok struktúrája...
-
-Egy q bigyó invariánsa
+Legyen
+\begin{itemize}
+\item $q$ egy edénysor
+\item $p(q) \in \mathbb{N}_0$ a $q$ sor pozíciója
+\item $e(q, i) (i \in \mathbb{N}_0)$ a $q$ sor $i$. edénye
+\item $p(e) \in \mathbb{N} (e \in q)$ a $q$ sor $e$ elemének pozíciója.
+\end{itemize}
+Ekkor a $q$ sor invariánsa:
 \begin{align*}
-\forall (p, k) \in q &: &\\ 
-	& q.a < k\\
-	& \forall i \in \mathbb{N}_{0}: (p, k) \in q.e[i] \iff i=d(q.a, k) \\
-\forall (p, k) \not\in q &: \forall i \in \mathbb{N}_{0}: (p, k) \not\in q.e[i]
+\forall e \in q &: &\\ 
+	& p(q) < p(e) \\
+	& \forall i \in \mathbb{N}_0: e \in e(q, i) \iff i=d(p(q), p(e)) \\
+\forall e \not\in q &: \forall i \in \mathbb{N}_0: e \not\in e(q, i)
 \end{align*}
 
-Új, üres sor létrehozása tetszőleges kezdőpozíciótól, és meglévő sorba elem beszúrása...
+Új sor létrehozásához az edények listáját kell létrehozni, a sor kezdő pozíciója bármi lehet.
+Új elemet a sorhoz a távolságfüggvény kiértékelése után ez elem edénybe szúrásával lehet adni,
+az új $e$ elem az $e(q, d(p(q), p(e)))$ edénybe kell kerüljön. Ez a művelet az invariánst fenntartja.
 
-A sor elemeinek feldolgozása $i$-ig
+A sor pozíciójának eggyel megnövelésével a sor invariánsa kétféleképpen válhat hamissá:
+\begin{itemize}
+\item egy elem pozíció és a sor pozíciója egyenlő lesz. A pozíció növelése művelet ezeket az elemeket a sorból eltávolítja, és a művelet eredményeként visszaadja.
+\item az elem és a sor pozíciójának távolsága csökken. Az invariáns visszaállításához a művelet ezeket az elemeket áthelyezi az új távolság szerinti edénybe.
+\end{itemize}
+A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távolíthat el a sorból, és nem üres sor esetén is előfordulhat, hogy a sor elejének eltávolítása nem ad vissza elemeket.
+
+\begin{algorithm}
+\floatname{algorithm}{Algoritmus}
+\caption{A $q$ edénysor elejének eltávolítása}
+\label{alg:buckets-remove-min}
 \begin{algorithmic}[1]
-\While{$q.a < i$}
-	\State $j \gets d(q.a, q.a + 1)$
-	\State $q.a \gets q.a + 1$
-	\ForAll{$(p, k) \in q.e[j]$}
-		\State \Call{Edény-Kivesz}{$q.e[j], (p, k)$}
-		\If{$k = i$}
-			\State \Call{Visszaad}{$(p, k)$}
+\Function{eltávolít-min}{$q$}
+	\State $l \gets$ üres lista
+	\State $i \gets d(p(q), p(q)+1)$
+	\State $p(q) \gets p(q)+1$
+	\While{$e(q, i)$ nem üres}
+		\State $e \gets$ eltávolít$(e(q, i))$
+		\If{$p(e) = p(q)$}
+			\State hozzáad$(l, e)$
 		\Else
-			\State \Call{Edény-Beszúr}{$d(q.a, k), (p, k)$}
+			\State hozzáad$(e(q, d(p(q), p(e)))$
 		\EndIf
-	\EndFor
-\EndWhile
+	\EndWhile
+	\State \Return l
+\EndFunction
 \end{algorithmic}
+\end{algorithm}
 
-\subsubsection{Helyesség}
+{\color{red}igazi adatstruktúra: láncolt lista láncolt listája, közepesen igazi: láncolt listák tömbje. helyesség. idő. hely. számrendszer. funkcionális}
 
-\subsubsection{Idő}
+\subsection{A sziták műveletigénye}
 
-\subsubsection{Hely}
-
-\subsubsection{Számrendszer}
-
-És számrendszer vs. tisztán funkcionálisban nincs bármekkora tömb, csak valami fával közelítve.
-
-Amúgy sincs bármekkora tömb...
-
-És exponenciálisan kell növelni...
-
-\subsubsection{Cache}
-
-És exponenciálisan kell növelni...
-
-\subsection{Memória}
-
-Összes prím, és pozíciója $2^32$-ig. Primitív típusok és boxing. Garbage collector.
+\subsection{A sziták tárigénye}
