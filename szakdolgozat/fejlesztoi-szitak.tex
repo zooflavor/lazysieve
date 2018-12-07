@@ -110,25 +110,40 @@ Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél 
 A sor pozíciójának megnövelése a sor elejének eltávolításával is együtt jár.
 A sor edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
 Egy eltárolt elem helyét az edények között az elem pozíciójának és a sor aktuális pozíciójának távolsága határozza meg.
-A sor által használt távolságfüggvény
+Két szám távolságát egy számrendszerben két érték határozza meg, a legnagyobb helyiérték, amiben eltérnek a számjegyeik, és  a nagyobbik szám számjegye ezen a helyiértéken.
+
+Legyen $a \in \mathbb{N}, a > 1$ a sor számrendszerének alapszáma.
+$x$ $i$-edik számjegyét $a$ alapú számrendszerben jelölje $x_i$, ahol $x \in \mathbb{N}_0$.
+Legyen $h(x, y)$ a legnagyobb helyiérték, ahol $x$ és $y$ eltér.
+A sor által használt $d(x, y)$ távolságfüggvény az eltérés diszkrét logaritmusát követi.
+\begin{equation}
+x = \sum_{i=0}^{\infty} x_i a^i (i \in \mathbb{N}_0, x_i \in \mathbb{N}_0, x_i < a)
+\end{equation}
+\begin{equation}
+h(x, y) = \max{\{i \in \mathbb{N}_0 | x_i \not= y_i\}} (x, y \in \mathbb{N}_0, x<y)\\
+\end{equation}
+\begin{equation}
+\label{ddef}
+d(x, y) = (a-1) h(x, y) + y_{h(x, y)} - 1
+\end{equation}
+Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-vagy művelettel is megadható,
 \begin{align*}
-d(x, y) := \lfloor log_{2}{}(x \oplus y) \rfloor & & (x, y \in \mathbb{N}, y > x \ge 0)
+d(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
 \end{align*}
-ahol $\oplus$ a bitenkénti kizáró-vagy művelet. $d(x, y)$ a legnagyobb bit helyiértéke, ahol $x$ és $y$ eltér.
 
 Legyen
 \begin{itemize}
-\item $q$ egy edénysor
+\item $q$ egy edénysor, $a$ alapszámmal
 \item $p(q) \in \mathbb{N}_0$ a $q$ sor pozíciója
 \item $e(q, i) (i \in \mathbb{N}_0)$ a $q$ sor $i$. edénye
-\item $p(e) \in \mathbb{N} (e \in q)$ a $q$ sor $e$ elemének pozíciója.
+\item $p(r) \in \mathbb{N} (r \in q)$ a $q$ sor $r$ elemének pozíciója.
 \end{itemize}
 Ekkor a $q$ sor invariánsa:
 \begin{align*}
-\forall e \in q &: &\\ 
-	& p(q) < p(e) \\
-	& \forall i \in \mathbb{N}_0: e \in e(q, i) \iff i=d(p(q), p(e)) \\
-\forall e \not\in q &: \forall i \in \mathbb{N}_0: e \not\in e(q, i)
+\forall r \in q &: &\\ 
+	& p(q) < p(r) \\
+	& \forall i \in \mathbb{N}_0: r \in e(q, i) \iff i=d(p(q), p(r)) \\
+\forall r \not\in q &: \forall i \in \mathbb{N}_0: r \not\in e(q, i)
 \end{align*}
 
 Új sor létrehozásához az edények listáját kell létrehozni, a sor kezdő pozíciója bármi lehet.
@@ -142,7 +157,7 @@ A sor pozíciójának eggyel megnövelésével a sor invariánsa kétféleképpe
 \end{itemize}
 A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távolíthat el a sorból, és nem üres sor esetén is előfordulhat, hogy a sor elejének eltávolítása nem ad vissza elemeket.
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \floatname{algorithm}{Algoritmus}
 \caption{A $q$ edénysor elejének eltávolítása}
 \label{alg:buckets-remove-min}
@@ -164,8 +179,143 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 \end{algorithmic}
 \end{algorithm}
 
-{\color{red}igazi adatstruktúra: láncolt lista láncolt listája, közepesen igazi: láncolt listák tömbje. helyesség. idő. hely. számrendszer. funkcionális}
+\subsubsection{Funkcionális megvalósítás}
 
-\subsection{A sziták műveletigénye}
+Az edénysoron alapuló szitára tisztán funkcionális megoldás adható.
+Az edénysor műveleteit láncolt listákkal ábrázolt számok összeadására lehet visszavezetni,
+de ezzel a műveletigény akkor is a számjegyenkénti összeadást követi, ha a számítási modellben az összeadás konstans idejű.
 
-\subsection{A sziták tárigénye}
+Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy gyors modellben is, azzal, hogy egy, a sorba került, prímnél nem garantálható, hogy korlátos számú átrendezéssel kerül ki a sorból. Egy prím átrendezéseinek száma felülről korlátos a számjegyeinek konstans-szorosával.
+
+A CD mellékleten megtalálható az edénysor szita egy Haskell megvalósítása a ''hs'' könyvtárban.
+A program kettes számrendszerű edénysort használ, és a szitálás minden műveletét bit-listák feldolgozására vezeti vissza.
+
+\subsubsection{Sebesség}
+
+A generator program az edény-szita optimalizált változata.
+Az optimalizálások közül a szegmensméret, a sor számrendszerének alapja, és a kerék szita mérete tág határok között megválasztható. A szegmens hosszánál kisebb prímek függnek a szegmens méretétől, és a 64-nél kisebb prímek a felhasznált 64bites C típustól függnek, ezek szabadon nem választhatók meg.
+A ''measure-generator'' szkript a szegmensméret és számrendszer választások sebességét méri meg.
+Mindkét paramétert 2 hatványainak választja, a szegmensméretet $2^{16}$-tól $2^{24}$-ig, a számrendszert $2^1$-től $2^8$-ig.
+
+\begin{table}[H]
+\renewcommand\arraystretch{1.2}
+\centering
+\caption{A generator futási ideje (ns), szitatábla $[2^{63}$, $2^{63}+2^{34}[$}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\bf{szegmens / alap} & \bf{$2^1$} & \bf{$2^2$} & \bf{$2^4$} & \bf{$2^8$} \\ \cline{1-5}
+$2^{16}$ & \num{3,17e11} & \num{2,30e11} & \num{1,49e11} & \num{1,06e11} \\ \cline{1-5}
+$2^{17}$ & \num{2,73e11} & \num{2,13e11} & \num{1,34e11} & \num{9,58e10} \\ \cline{1-5}
+$2^{18}$ & \num{2,35e11} & \num{1,78e11} & \num{1,22e11} & \num{8,87e10} \\ \cline{1-5}
+$2^{19}$ & \num{2,06e11} & \num{1,68e11} & \num{1,14e11} & \num{8,73e10} \\ \cline{1-5}
+$2^{20}$ & \num{1,79e11} & \num{1,44e11} & \num{1,06e11} & \num{8,36e10} \\ \cline{1-5}
+$2^{21}$ & \num{1,57e11} & \num{1,33e11} & \num{9,80e10} & \num{7,92e10} \\ \cline{1-5}
+$2^{22}$ & \num{1,40e11} & \num{1,18e11} & \num{9,31e10} & \num{7,55e10} \\ \cline{1-5}
+$2^{23}$ & \num{1,34e11} & \num{1,18e11} & \num{9,09e10} & \num{7,63e10} \\ \cline{1-5}
+$2^{24}$ & \num{1,67e11} & \num{1,52e11} & \num{1,25e11} & \num{1,15e11} \\ \cline{1-5}
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\renewcommand\arraystretch{1.2}
+\centering
+\caption{A generator futási ideje (ns), szitatábla $[2^{63}$, $2^{63}+2^{34}[$}
+\begin{tikzpicture}
+
+\begin{axis}[%
+scale only axis,
+xmin=16, xmax=24,
+xlabel={szegmens méret $2^x$},
+xmajorgrids,
+ymin=0, ymax=3.3e11,scaled y ticks={base 10:6},
+ylabel={futási idő (ns)},
+ymajorgrids,
+axis lines=left,
+title={ },
+legend style={nodes=right}]
+\addplot [
+color=black,
+dotted
+] coordinates {(16,3.17e11) (17,2.73e11) (18,2.35e11) (19,2.06e11) (20,1.79e11) (21,1.57e11) (22,1.40e11) (23,1.34e11) (24,1.67e11)};
+\addlegendentry{$a=2^1$};
+\addplot [
+color=black,
+dashed
+] coordinates {(16,2.30e11) (17,2.13e11) (18,1.78e11) (19,1.68e11) (20,1.44e11) (21,1.33e11) (22,1.18e11) (23,1.18e11) (24,1.52e11)};
+\addlegendentry{$a=2^2$};
+\addplot [
+color=black,
+dashdotted
+] coordinates {(16,1.49e11) (17,1.34e11) (18,1.22e11) (19,1.14e11) (20,1.06e11) (21,9.80e10) (22,9.31e10) (23,9.09e10) (24,1.25e11)};
+\addlegendentry{$a=2^4$};
+\addplot [
+color=black,
+solid
+] coordinates {(16,1.06e11) (17,9.58e10) (18,8.87e10) (19,8.73e10) (20,8.36e10) (21,7.92e10) (22,7.55e10) (23,7.63e10) (24,1.15e11)};
+\addlegendentry{$a=2^8$};
+
+\end{axis}
+\end{tikzpicture}
+\end{figure}
+
+\pagebreak
+\subsubsection{Az edénysor helyessége}
+
+Egy szám számjegyenkénti felírásából, és a távolságfüggvény definíciójából következik, hogy
+\begin{equation}
+\label{kisebb}
+x_{h(x, y)} < y_{h(x, y)}\ (x, y \in \mathbb{N}_0, x<y)
+\end{equation}
+
+A sor pozíciójának pontosan eggyel növelésének következménye, hogy a legnagyobb megváltozott helyiértéken eggyel nő a számjegy, és az összes kisebb helyiértéken a legnagyobb számjegy 0-ra vált. Ha $x=p(q)$, $y=p(q)+1$, $d'=d(x, y)$, $k=h(x, y)$, akkor
+\begin{equation}
+\label{eggyel}
+x_k+1=y_k
+\end{equation}
+\begin{equation}
+\label{valtozatlan}
+\forall i \in \mathbb{N}, i > k: x_k=y_k
+\end{equation}
+\begin{equation}
+\label{szamjegy}
+\forall i \in \mathbb{N} , i < k : x_k = a-1 \textrm{ és } y_k = 0
+\end{equation}
+
+A sor elejének eltávolítása algoritmus helyessége következik abból, hogy a $d'$-nél kisebb indexű edények üresek, a $d'$-nél nagyobb indexű edények elemeinek távolsága nem változik a sor pozíciójának növelésével, és a $d'$ edény elemeit az algoritmus újrarendezi.
+\begin{equation}
+\label{ures}
+\forall i \in \mathbb{N}_0, i<d': e(q, i) = \emptyset
+\end{equation}
+\begin{equation}
+\label{marad}
+\forall i \in \mathbb{N}_0, i>d': \forall r \in e(q, i) : i = d(p(q), p(r)) = d(p(q)+1, p(r))
+\end{equation}
+
+\ref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in e(q, i)$.
+Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
+\begin{align*}
+d(p(q), p(r)) = i < d' = d(p(q), p(q)+1)
+\end{align*}
+Ha $k' \not = k$, \ref{kisebb} és \ref{szamjegy} ellentmondáshoz vezet:
+\begin{align*}
+p(q)_{k'} = a-1 < p(r)_{k'} < a
+\end{align*}
+Ha $k' = k$, akkor \ref{kisebb} és \ref{eggyel} mond egymásnak ellent:
+\begin{align*}
+p(q)_k < p(r)_k < (p(q)+1)_k = p(q)_k + 1
+\end{align*}
+Tehát az indirekt feltevés ellentmondáshoz vezet, azaz \ref{ures} igaz, a $d'$-nél kisebb indexű edények üresek.
+
+Legyen $i \in \mathbb{N}_0, i>d', r \in e(q, i), k'=h(p(q), p(r))$. Ha $k' = k$, akkor
+\begin{align*}
+d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
+\end{align*}
+Ha $k \not = k'$, akkor \ref{ddef} szerint $k < k'$.
+\ref{valtozatlan} szerint
+\begin{align*}
+p(q)_{k'} = (p(q)+1)_{k'} \\
+h(p(q), p(r)) = k' = h(p(q)+1, p(r)) \\
+d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
+\end{align*}
+Ez alapján \ref{marad} igaz.

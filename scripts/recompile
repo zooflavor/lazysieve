@@ -16,6 +16,13 @@ if [ "0" != "$?" ]; then
 fi
 cd ..
 
+cd hs
+./compile
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+cd ..
+
 cd szakdolgozat
 rm -f *.aux
 rm -f *.dvi

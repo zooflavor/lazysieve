@@ -1,0 +1,6 @@
+#!/bin/bash
+./compile
+if [ "0" != "$?" ]; then
+	exit 1
+fi
+./bucket-sieve.bin 100
