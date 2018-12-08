@@ -1,67 +1,81 @@
 \pagebreak
 \section{A program ellenőrzése}
 
-Az megoldás szitáinak ellenőrzése a gui program elvárt feladata.
-Az init és generator program szegmensfájlai, és a gui szitáinak kimenetei is összehasonlíthatóak a ReferenceSegment osztály szitájával.
+Az megoldás szitáinak ellenőrzése a \texttt{gui} program feladata.
+Az \texttt{init} és \texttt{generator} program szegmensfájlai, és a \texttt{gui} szitáinak kimenetei is a \texttt{ReferenceSegment} osztály szitájával összehasonlíthatóak.
 Ezen keresztül a sziták kimenetének egyenlősége szúrópróbaszerűen ellenőrizhető.
-Ezeket az időigényes ellenőrzéséket végzi el a ''test-sieves'' szkript minden szitával több intervallumon.
+Ezeket az időigényes ellenőrzéséket végzi el a \texttt{test-sieves} szkript minden szitával több intervallumon.
 A teszt ellenőrzéséhez a szkript egy szándékosan hibás szegmens, és egy hibás szita ellenőrzését is elvégzi.
 
-A gui program ''math'' és ''util'' csomagjaira a program összes többi része épít, az adatbázisműveletek, a sziták, és a megjelenítés is. Erre a két csomagra a JUnit keretrendszerrel és a JaCoCo lefedettségmérővel teljes lefedettségű egységtesztek készültek.
+A \texttt{gui} program \texttt{gui.math} és \texttt{gui.util} csomagjaira a program összes többi része épít, az adatbázis műveletek, a sziták, és a megjelenítés is. Erre a két csomagra a JUnit keretrendszerrel és a JaCoCo lefedettségmérővel teljes lefedettségű egységtesztek készültek.
 
-Az összesített statisztikák ellenőrzésére a ''test-prime-counts'' szkript a prímek számát a ''samples/test/prime-counts.csv'' fájlba írja az adatbázis alapján kettő hatványai helyeken, míg a ''test-max-prime-gaps'' a ''samples/test/max-prime-gaps.csv'' fájlba a maximális prímhézagokat metni.
-Ezek a publikált értékekkel\cite{gaps}\cite{pi} összevethetőek. Ezeket a fájlokat a gui program ''gui.test'' csomagjának osztályai készítik el. A program tesztelésénél ez a két statisztika $2^{47}(\approx1,4\cdot10^{14})$-ig egyezett.
+Az összesített statisztikák ellenőrzésére a \texttt{test-prime-counts} szkript a prímek számát a \texttt{samples/test/prime-counts.csv} fájlba írja az adatbázis alapján kettő hatványai helyeken, míg a \texttt{test-max-prime-gaps} szkript a maximális prímhézagokat a \texttt{samples/test/max-prime-gaps.csv} fájlba menti.
+Ezek a publikált értékekkel\cite{gaps}\cite{pi} összevethetőek.
+Ezeket a fájlokat a \texttt{gui} program \texttt{gui.test} csomagjának osztályai készítik el.
+A program tesztelésénél ez a két statisztika $2^{47}(\approx1,4\cdot10^{14})$-ig egyezett.
 
 A minták és közelítő függvények megjelenítésének tesztelése ismert grafikonú mintákkal való összevetéssel történt.
-Táblázatkezelő programokkal, mint például a LibreOffice, formula alapján generált minták grafikonja ábrázolható, és a gui program által olvasott CSV formátu fájlba menthető.
+Táblázatkezelő programokkal, mint például a LibreOffice, formula alapján generált minták grafikonja ábrázolható, és a \texttt{gui} program által olvasott CSV formátumú fájlba menthető.
 A formulákkal véletlenszerű zaj is hozzáadható a mintához.
-A ''samples/test/graph'' könyvtárban megtalálható néhány táblázatminta a teszteléshez.
+A \texttt{samples/test/graph} könyvtárban megtalálható néhány táblázatminta a teszteléshez.
 
 \subsection{Numerikus pontosság}
 
-A legkisebb négyzetek módszerének megvalósítása a mátrixműveletek pontosságát két paraméterrel tudja szabályozni, a mátrixszorzás összegzéseit három különböző algoritmussal lehet végezni, és a Gauss-eliminációt részleges sorcserével, vagy teljes sor-oszlop cserével is el lehet végezni.
+A legkisebb négyzetek módszerének megvalósítása a mátrixműveletek pontosságát két paraméterrel tudja szabályozni, a mátrixszorzás összegzéseit három különböző algoritmussal lehet végezni, és a lineáris egyenletrendszereket meg lehet oldani QR felbontással, és Gauss-eliminációval részleges sorcserével és teljes sor és oszlop cserével.
 Ezeknek a paramétereknek a megválasztása a tesztek alapján sem egyértelmű.
 
-A ''test-measure-sums'' közelítések pontosságáról készít statisztikákat három változóban, és az eredményt a ''samples/test/measure-sums.csv'' fájlba menti. A három váltózó:
+A \texttt{test-measure-sums} közelítések pontosságáról készít statisztikákat három változóban, és az eredményt a \texttt{samples/test/measure-sums.csv} fájlba menti.
+A három váltózó:
 \begin{itemize}
 \item az összegzést tömbbel, kupaccal, vagy egyetlen változóval végezze
-\item részleges vagy teljes csere
+\item az egyenletrendszerek megoldását QR felbontással, részleges vagy teljes Gauss-eliminációval végezze
 \item x szerint rendezett-e a minta.
 \end{itemize}
 A három paraméter mindegyik lehetőségéhez a mérés elemi függvények alapján egy mintát generál, majd ezt a mintát ugyanezekkel az elemi függvényekkel közelíti.
 Egy paraméter-kombinációhoz az összes közelítés négyzetes eltérését, és a közelítés idejét összesíti.
-A minták generálásához használt elemi függvények a ''MeasureSums'' osztályból kiolvashatóak.
+A minták generálásához használt elemi függvények a \texttt{MeasureSums} osztályból kiolvashatóak.
 
 A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
 \begin{itemize}
-\item legjobb, és leglassabb választás a kupac összegzés teljes cserével
+\item legjobb, és leglassabb választás a kupac összegzés teljes cserét végrehajtó Gauss-eliminációval
 \item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két összegzés
 \item az egy változóban összegzés hibája több nagyságrenddel nagyobb, mint a másik két összegzés hibája
 \item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
+\item a QR felbontás általában nagyobb hibát eredményez, mint a Gauss-elimináció
 \item a kupac összegzés a minta rendezettségére nem érzékeny
 \item a rendezetlen minta összegzése a változóval és tömbbel pontosabb, mint a rendezett.
 \end{itemize}
-Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a Gauss-eliminációban teljes sor és oszlopcserét hajt végre, ezt a felhasználó nem tudja megváltoztatni.
+Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a lineáris egyenletrendszerek megoldására Gauss-eliminációt használ teljes sor és oszlopcserével, ezt a felhasználó nem tudja megváltoztatni.
 
-\begin{table}[h]
+\begin{table}[H]
 \renewcommand\arraystretch{1.2}
 \centering
-\caption{Összegző algoritmusok összehasonlítása}
+\caption{Numerikus algoritmusok összehasonlítása}
 \begin{tabular}{|l|l|l|l|l|}
 \hline
-\bf{Összegzés} & \bf{Csere} & \bf{Rendezett} & \bf{$\sum{\textrm{hiba}^2}$} & \bf{Idő (ns)} \\ \cline{1-5}
-\multirow{4}{*}{változó} & \multirow{2}{*}{részleges} & igen & \num{2,53e25} & \num{1,26e9} \\ \cline{3-5}
-& & nem & \num{4,24e23} & \num{1,85e9} \\ \cline{2-5}
-& \multirow{2}{*}{teljes} & igen & \num{2,53e25} & \num{1,34e9} \\ \cline{3-5}
-& & nem & \num{4,21e23} & \num{1,82e9} \\ \cline{1-5}
-\multirow{4}{*}{tömb} & \multirow{2}{*}{részleges} & igen & \num{2,62e20} & \num{1,45e9} \\ \cline{3-5}
-& & nem & \num{9,75e19} & \num{2,45e9} \\ \cline{2-5}
-& \multirow{2}{*}{teljes} & igen & \num{1,87e20} & \num{1,56e9} \\ \cline{3-5}
-& & nem & \num{6,76e19} & \num{2,33e9} \\ \cline{1-5}
-\multirow{4}{*}{kupac} & \multirow{2}{*}{részleges} & igen & \num{1,12e21} & \num{1,37e10} \\ \cline{3-5}
-& & nem & \num{1,12e21} & \num{1,67e10} \\ \cline{2-5}
-& \multirow{2}{*}{teljes} & igen & \num{3,12e19} & \num{1,39e10}  \\ \cline{3-5}
-& & nem & \num{3,12e19} & \num{1,68e10} \\
+\bf{Összegzés} & \bf{LER-m.o.} & \bf{Rendezett} & \bf{$\sum{\textrm{hiba}^2}$} & \bf{Idő (ns)} \\ \cline{1-5}
+
+\multirow{6}{*}{változó} & \multirow{2}{*}{részleges G.E.} & igen & \num{2,53e25} & \num{1,27e9} \\ \cline{3-5}
+& & nem & \num{4,24e23} & \num{1,83e9} \\ \cline{2-5}
+& \multirow{2}{*}{teljes G.E.} & igen & \num{2,53e25} & \num{1,28e9} \\ \cline{3-5}
+& & nem & \num{4,21e23} & \num{1,84e9} \\ \cline{2-5}
+& \multirow{2}{*}{QR} & igen & \num{9,47e24} & \num{1,34e9} \\ \cline{3-5}
+& & nem & \num{2,58e23} & \num{1,83e9} \\ \cline{1-5}
+
+\multirow{6}{*}{tömb} & \multirow{2}{*}{részleges G.E.} & igen & \num{2,62e20} & \num{1,46e9} \\ \cline{3-5}
+& & nem & \num{9,75e19} & \num{2,43e9} \\ \cline{2-5}
+& \multirow{2}{*}{teljes G.E.} & igen & \num{1,87e20} & \num{1,53e9} \\ \cline{3-5}
+& & nem & \num{6,76e19} & \num{2,37e9} \\ \cline{2-5}
+& \multirow{2}{*}{QR} & igen & \num{6,41e23} & \num{1,61e9} \\ \cline{3-5}
+& & nem & \num{3,63e20} & \num{2,43e9} \\ \cline{1-5}
+
+\multirow{6}{*}{kupac} & \multirow{2}{*}{részleges G.E.} & igen & \num{1,12e21} & \num{1,40e10} \\ \cline{3-5}
+& & nem & \num{1,12e21} & \num{1,76e10} \\ \cline{2-5}
+& \multirow{2}{*}{teljes G.E.} & igen & \num{3,12e19} & \num{1,39e10}  \\ \cline{3-5}
+& & nem & \num{3,12e19} & \num{1,77e10} \\ \cline{2-5}
+& \multirow{2}{*}{QR} & igen & \num{1,30e22} & \num{1,44e10} \\ \cline{3-5}
+& & nem & \num{1,30e22} & \num{1,75e10} \\ \cline{1-5}
+
 \hline
 \end{tabular}
 \end{table}

@@ -1,6 +1,6 @@
 \section{Sziták}
 
-A gui program tartalmazza Eratoszthenész szitájának több megvalósítását.
+A \texttt{gui} program tartalmazza Eratoszthenész szitájának több megvalósítását.
 Ezek az implementációk mind szegmentáltak, azaz csak egy rövidebb intervallumon szitálnak,
 és annak befejezéséig nem kezdenek bele új intervallumba.
 Egy intervallum szitáláshoz szükséges az intervallum négyzetgyökének végéig a prímek listája.
@@ -58,7 +58,7 @@ A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálás�
 \end{algorithmic}
 \end{algorithm}
 
-A gui programban az ''Eratoszthenész szitája'' ezt az algoritmust valósítja meg.
+A \texttt{gui} programban ''Eratoszthenész szitája'' ezt az algoritmust valósítja meg.
 Ezzel a módszerrel a program minden rövid szegmensben a tömb minden elemét sorra veszi, azokat is, amik a szegmensben nem szitálnak.
 A többi implementált eratoszthenészi szita összetettebb struktúrákkal próbálja kiválasztani a ténylegesen szitáló elemeket.
 A többi implementált szita prioritásos sort használ az elemek részleges rendezéséhez, és sor elejének feldolgozásával választja ki a szegmensben szitáló elemeket.
@@ -101,7 +101,7 @@ A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a h
 \end{algorithmic}
 \end{algorithm}
 
-A gui program szitái közül ezt az algoritmust követi az edénysor szita, a bináris kupac szita, és a COLS körkörös listája is. A bináris kupac szitánál az eltávolítás-hozzáadás és a helyben megjavítás között a felhasználó választhat.
+A \texttt{gui} program szitái közül ezt az algoritmust követi az edénysor szita, a bináris kupac szita, és a COLS körkörös listája is. A bináris kupac szitánál az eltávolítás-hozzáadás és a helyben megjavítás között a felhasználó választhat.
 
 \subsection{Edénysor}
 
@@ -148,11 +148,12 @@ Ekkor a $q$ sor invariánsa:
 
 Új sor létrehozásához az edények listáját kell létrehozni, a sor kezdő pozíciója bármi lehet.
 Új elemet a sorhoz a távolságfüggvény kiértékelése után ez elem edénybe szúrásával lehet adni,
-az új $e$ elem az $e(q, d(p(q), p(e)))$ edénybe kell kerüljön. Ez a művelet az invariánst fenntartja.
+az új $r$ elem az $e(q, d(p(q), p(r)))$ edénybe kell kerüljön.
+Ez a művelet az invariánst fenntartja.
 
 A sor pozíciójának eggyel megnövelésével a sor invariánsa kétféleképpen válhat hamissá:
 \begin{itemize}
-\item egy elem pozíció és a sor pozíciója egyenlő lesz. A pozíció növelése művelet ezeket az elemeket a sorból eltávolítja, és a művelet eredményeként visszaadja.
+\item egy elem pozíciója és a sor pozíciója egyenlő lesz. A pozíció növelése művelet ezeket az elemeket a sorból eltávolítja, és a művelet eredményeként visszaadja.
 \item az elem és a sor pozíciójának távolsága csökken. Az invariáns visszaállításához a művelet ezeket az elemeket áthelyezi az új távolság szerinti edénybe.
 \end{itemize}
 A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távolíthat el a sorból, és nem üres sor esetén is előfordulhat, hogy a sor elejének eltávolítása nem ad vissza elemeket.
@@ -167,11 +168,11 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 	\State $i \gets d(p(q), p(q)+1)$
 	\State $p(q) \gets p(q)+1$
 	\While{$e(q, i)$ nem üres}
-		\State $e \gets$ eltávolít$(e(q, i))$
-		\If{$p(e) = p(q)$}
-			\State hozzáad$(l, e)$
+		\State $r \gets$ eltávolít$(e(q, i))$
+		\If{$p(r) = p(q)$}
+			\State hozzáad$(l, r)$
 		\Else
-			\State hozzáad$(e(q, d(p(q), p(e)))$
+			\State hozzáad$(e(q, d(p(q), p(r)))$
 		\EndIf
 	\EndWhile
 	\State \Return l
@@ -183,18 +184,19 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 
 Az edénysoron alapuló szitára tisztán funkcionális megoldás adható.
 Az edénysor műveleteit láncolt listákkal ábrázolt számok összeadására lehet visszavezetni,
-de ezzel a műveletigény akkor is a számjegyenkénti összeadást követi, ha a számítási modellben az összeadás konstans idejű.
+ezzel a műveletigény akkor is a számjegyenkénti összeadást követi, ha a számítási modellben az összeadás konstans idejű.
+Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 
-Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy gyors modellben is, azzal, hogy egy, a sorba került, prímnél nem garantálható, hogy korlátos számú átrendezéssel kerül ki a sorból. Egy prím átrendezéseinek száma felülről korlátos a számjegyeinek konstans-szorosával.
+Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy gyors modellben is. Egy elem a sorból kikerüléséig $h(x, x+y)$ edényt bejárhat, és ez az érték legalább annyi, mint y számjegyeinek száma, $\log_{a}{y}$.
 
-A CD mellékleten megtalálható az edénysor szita egy Haskell megvalósítása a ''hs'' könyvtárban.
+A CD mellékleten megtalálható az edénysor szita egy Haskell megvalósítása a \texttt{hs} könyvtárban.
 A program kettes számrendszerű edénysort használ, és a szitálás minden műveletét bit-listák feldolgozására vezeti vissza.
 
 \subsubsection{Sebesség}
 
-A generator program az edény-szita optimalizált változata.
-Az optimalizálások közül a szegmensméret, a sor számrendszerének alapja, és a kerék szita mérete tág határok között megválasztható. A szegmens hosszánál kisebb prímek függnek a szegmens méretétől, és a 64-nél kisebb prímek a felhasznált 64bites C típustól függnek, ezek szabadon nem választhatók meg.
-A ''measure-generator'' szkript a szegmensméret és számrendszer választások sebességét méri meg.
+A \texttt{generator} program az edénysoron alapuló szita optimalizált változata.
+Az optimalizálások közül a szegmensméret, a sor számrendszerének alapja tág határok között megválasztható. A szegmens hosszánál kisebb prímek függnek a szegmens méretétől, és a 64-nél kisebb prímek a felhasznált 64bites C típustól függnek, ezek szabadon nem választhatók meg.
+A \texttt{measure-generator} szkript a szegmensméret és számrendszer választások sebességét méri meg.
 Mindkét paramétert 2 hatványainak választja, a szegmensméretet $2^{16}$-tól $2^{24}$-ig, a számrendszert $2^1$-től $2^8$-ig.
 
 \begin{table}[H]
@@ -262,7 +264,7 @@ solid
 \pagebreak
 \subsubsection{Az edénysor helyessége}
 
-Egy szám számjegyenkénti felírásából, és a távolságfüggvény definíciójából következik, hogy
+Egy szám számjegyenkénti felírásából, és $h$ definíciójából következik, hogy
 \begin{equation}
 \label{kisebb}
 x_{h(x, y)} < y_{h(x, y)}\ (x, y \in \mathbb{N}_0, x<y)
@@ -301,7 +303,7 @@ Ha $k' \not = k$, \ref{kisebb} és \ref{szamjegy} ellentmondáshoz vezet:
 \begin{align*}
 p(q)_{k'} = a-1 < p(r)_{k'} < a
 \end{align*}
-Ha $k' = k$, akkor \ref{kisebb} és \ref{eggyel} mond egymásnak ellent:
+Ha $k' = k$, akkor $i < d'$ és \ref{ddef} miatt $p(r)_k < (p(q)+1)_k$. Ekkor \ref{kisebb} és \ref{eggyel} ellentmond egymásnak:
 \begin{align*}
 p(q)_k < p(r)_k < (p(q)+1)_k = p(q)_k + 1
 \end{align*}
@@ -314,11 +316,11 @@ d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
 Ha $k \not = k'$, akkor \ref{ddef} szerint $k < k'$.
 \ref{valtozatlan} szerint
 \begin{align*}
-p(q)_{k'} = (p(q)+1)_{k'} \\
-h(p(q), p(r)) = k' = h(p(q)+1, p(r)) \\
-d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
+p(q)_{k'} &= (p(q)+1)_{k'} \\
+h(p(q), p(r)) &= k' = h(p(q)+1, p(r)) \\
+d(p(q), p(r)) &= (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
 \end{align*}
-Ez alapján \ref{marad} igaz.
+Ezek alapján \ref{marad} igaz, az elem távolsága nem változik a sor elejéhez képest.
 
 %%% Local Variables:
 %%% mode: latex
