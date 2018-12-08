@@ -25,6 +25,7 @@ kezdete és vége szabályozható. A megvalósított sziták:
 \end{itemize}
 \end{itemize}
 
+%%% EMIL: Itt mondhatál példát, vagy kicsit utalhanál milyen paraméterekről van szó (pl. a memória kezelésért felelős paraméterek)
 A programnak grafikusan ábrázolja a futási időket, és lehetőséget ad
 ezek közelítésére függvényekkel. A közelítéshez a legkisebb négyzetek módszerét használja,
 és a közelítés elemi függvényei megválaszthatóak.
@@ -65,6 +66,7 @@ bármikor adatvesztés leállítható, és később folytatható.
 \pagebreak
 \section{A program komponensei}
 
+%%% EMIL: Ez az ábra NAGYON jó! Lehet a felhasználóiba is már betehetnéd!  Mindent értelmesebbé tesz
 \begin{figure}[h]
 \centering
 \caption{A program adatáramlás diagramja}
@@ -105,7 +107,7 @@ bármikor adatvesztés leállítható, és később folytatható.
 \end{figure}
 
 A program az adatbáziskönyvtárban tárolja az átszitált szegmensek tábláit, és az ezekből készült statisztikákat.
-A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az az szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 (mod\ 2^{30})$.
+A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az az szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 \pmod{2^{30}}$.
 
 Az első négy szegmenst az init program készíti el, így ezek $2^{32}$-ig tartalmazzák a prímszámokat.
 A program többi szitája ezek alapján inicializálja magát, ha $3$-nál nagyobb számtól kell a szitálást elkezdeni.
@@ -131,16 +133,19 @@ Az összesítő az adatbáziskönyvtárban található szegmensfájlok statiszti
 A szegmensstatisztikák alapján a végső statisztikákat közvetlenül a megjelenítés előtt készíti el az összesítő.
 Az összesítéshez sem szükséges, hogy a szegmensek sorban kerüljenek összesítésre, így akár több gépen párhuzamosan is lehetne szitálni, összesíteni, majd az eredményt összefésülni.
 
+%%% EMIL: Algoritmusú \in Magyar nyelv?
 A program része több, különböző algoritmusú prímszita.
 Ezeknek az eredménye ellenőrizhető a szegmensfájlok ellenőrzéséhez használt szitával, szintén a sziták helyességének teszteléséhez.
 A feladat része, hogy ezeknek a szitáknak a futási idejét össze lehessen hasonlítani, ezért mindegyik szita néhány jól meghatározott ötlet egyszerű megvalósítása optimalizálások nélkül.
 Mindegyik szita szegmentált, a szitálást fix hosszúságú intervallumokon végzi, bármelyik szegmenstől képes kezdeni a szitálást, és egy szegmens szitálása után további előkészület nélkül képes szitálni a következő szegmenst, így egyetlen menetben akár több szegmenshez tartozó futási idő is megmérhető, nem szükséges minden mintavételi pontig a teljes szitálást elvégezni.
+%%% EMIL: és itt a vége egy 5 sor hosszú mondatnak... ez kicsit... hát...
 
 A minták közelítése alapfüggvények lineáris kombinációjával történik, a legkisebb négyzetek módszerét használva.
 
-A program a mintákat és közelítő függvényeket Descartes-féle koordináta rendszerben jeleníti meg, ehhez a mintákat és a függvényeket mintavételezi az x tengely kiválasztott szakaszának pixelenkénti felosztása szerint.
+A program a mintákat és közelítő függvényeket Descartes-féle koordináta rendszerben jeleníti meg, ehhez a mintákat és a függvényeket mintavételezi az $x$ tengely kiválasztott szakaszának pixelenkénti felosztása szerint.
 
 \section{Az adatbázis}
+%%% EMIL: Ez már akartam korábban is mondani.  Véletlenül egy adatbázisos tanárnál védesz... tisztázd le hogy nálad az adatbázis az tisztán egy könyvtár bináris fájlokkal - nehogy keressenek valamilyne (nem) relációs adatbázist a progidban.
 
 A program adatbázisa két fajta adatot tárol, a szitált szegmenseket, azaz a szitatábla bitvektorait, és a szegmensek összesítéseit.
 Mindkettő a szegmens első számával van azonosítva, a szegmens hossza mindig $2^{30}$ szám, és az $n \in \mathbb{N}$ megengedett kezdő szám, ha $n < 2^{64}-2^{34}$ és $n \equiv 1 \pmod{2^{30}}$.
@@ -149,7 +154,7 @@ Minden szegmens egy külön fájl az adatbázis könyvtárában, és az összes 
 Az init program az első 4 szegmensfájlt írja, a generator az első 4 szegmensfájlt olvassa, és az összes többi szegmensfájlt írja, a gui az összes szegmensfájlt olvassa, és egyiket se írja, és szegmensstatisztika fájlt csak a gui használja.
 
 Egy szegmensfájlok nevei ''primes.'' előtaggal kel kezdődjön, és a pontosan 16 hexadecimális számjegy kell kövesse, ami a szegmens által leírt első szám.
-A fájl bináris fájl, a legkisebb helyiértékű bájt elöl.
+A fájl bináris fájl, a legkisebb helyiértékű bájt elöl.  %%% EMIL: Little endian, ugye?
 A tartalma:
 \begin{itemize}
 \item a szegmens elejével kezdve $2^{29}$ egymást követő páratlan szám bitvektora.
@@ -172,7 +177,7 @@ kiíródott a háttértárra, így ez csak a program leállíthatóságát garan
 A szegmensstatisztikák az ''aggregates'' fájlban vannak. A szegmensek a fájlban a kezdőszámok sorrendjében követik egymást, egy szegmensnek legfeljebb egy statisztikája lehet.
 A fájl bináris, a legnagyobb helyiértékű bájt elöl. A fájl fejléce:
 \begin{itemize}
-\item formátum azonosító: 0xd1d1b0b0, 4 bájt
+\item formátum azonosító: 0xd1d1b0b0, 4 bájt  %%% EMIL: didibobo? ez most komoly? :P
 \item verziószám: 1, 4 bájt.
 \end{itemize}
 Ezután minden statisztika egy változó méretű blokkban van tárolva, a fájl végéig. Minden block két részből áll, az első 4 bájt a második rész mérete bájtokban. Ez a második rész a szegmensstatisztika. A statisztika gzip-pel tömörített, kitömörítve bináris adat, a legnagyobb helyiértékű bájt elöl, aminek a formátuma:
@@ -280,6 +285,7 @@ A prímek, amik $64$-nél nagyobbak, de a kis szegmensek hosszánál kisebbek, a
 A kis szegmensek hosszánál nagyobb prímek egy kis szegmensben legfeljebb egyszer szitálnak, és van olyan szegmens, ahol egyszer sem.
 A generator ezeket a prímeket egy prioritásos sorban tárolja, amiben az elemek sorrendjét a következő szegmens száma határozza meg, amiben az a prím szitálni fog, a szegmensen belüli sorrendet a sor nem veszi figyelembe.
 Ezeknél a nagy prímeknél nem csak a páros többszörösöket ugorja át a szita, hanem a 3-mal és 5-tel osztható többszörösöket is kihagyja.
+%%% EMIL: Ezt a 3-mal és 5-tel átugrásokat nem teljesen értem mikor és hol csinálja?
 
 Az edénysor algoritmusának részletes leírására egy későbbi fejezetben kerül sor.
 Az ott leírt távolság függvényt implementálja a bucketIndex függvény a forráskódban.
@@ -351,7 +357,7 @@ A nagyságrend a double érték IEEE 754 szabvány szerinti reprezentációjána
 
 A RealFunction interfész valóshoz valóst rendelő függvények reprezentációi.
 Egy függvény a helyettesítési értékein kívül az értelmezési tartományáról is információt kell adjon.
-A grafikonmegjelenítő az x-tengely egy pixel által lefedett intervallumán akkor jelenít meg értéket, ha az az intervallum az értelmezési tartomány része.
+A grafikonmegjelenítő az $x$-tengely egy pixel által lefedett intervallumán akkor jelenít meg értéket, ha az az intervallum az értelmezési tartomány része.
 A Functions osztály a beépített elemi függvényeket tartalmazza.
 JavaScript-ben függvény a CustomFunction-nel adható meg.
 A LinearCombinationFunction már létező függvények lineáris kombinációja.
@@ -369,6 +375,7 @@ A közelítés hibáját is ki lehet ezzel az osztállyal számolni.
 
 A gui.io csomagban az adatbázis kezelését leíró osztályok vannak.
 Az adatbázis funkciók a Database egy objektumán keresztül érhetőek el, ez a common.h-val párhuzamosan definiálja a szegmensfájlok neveit.
+%%% EMIL: A következő sorokban az "info()" (és nem simán "info") jelölést használod a metódusokra.  Én is ezt pártolom. De ezt jó lenne konzisztessen csinálni, korábban volt pár függvény amit csak "fun"-nal jelöltél és nem "fun()"nal.. és ahogy valamikor az elején érdemes a \texttt{}-parancsot használni az ilyen programozós dolgokta... szóval \texttt{info()} 
 A felhasználói műveletek közül az adatbázis információk lekérését, a szegmensfájlok összesítését, és összesítés importálását Database osztály info(), reaggregate(), és importAggreagtes() metódusai
 valósítják meg.
 A sziták az inicializálásukkor a Database.largePrimes() metódust használva olvassák be az első 4 szegmensfájlból a prímeket.
