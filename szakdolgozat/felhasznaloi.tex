@@ -11,13 +11,16 @@ A prímszámok statisztikáinak előállításához a programhoz tartozik egy op
 szita-implementáció, amivel $2^{64}$-ig lehet szitálni, és az eredményt rögzíteni.
 Az elmentett prímlistákat a program egy külön része összesíti több statisztika szerint,
 és a megjelenítést az összesítések alapján végzi el.
+%%% EMIL: ez a "program egy külön része" az amit az első paragrafusban írtál le? Ha igen kicsit kusza a dolog.
 
 Különböző szita-algoritmusok futási idejének összehasonlításához a program tartalmazza
 Atkin\cite{atkin} szitájának egy implementációját,
 és Eratoszthenész szitájának néhány variációját.
+%%% EMIL: Hasonlóan, ez az amit egy bekezdéssel korábban emlegetsz, vagy egy harmadik dolog? Ez egy triviális kérdés, nyilván ha valaki megnézi a kódot, látja rögtön, de írd is le a dolgozatba, akár mennyire trivinek is tűnik.
 
 \section{Felhasznált módszerek}
 
+%%% EMIL: Tudomásom szerint, ilyenkor azt illik csinálni hogy egy-egy új fogalom, elnevezés bevezetésénél, használsz pl idézőjeleket ``init'', ``generator'' és/vagy még ezeket dőlt betűkkel írod (az idézőjeleket csak első alkalommal kell kiírni).  Illetve itt talán a \texttt{init} és \texttt{} ha ezek a futtatható állományok nevei.
 A program két elkülönülő részből áll. A prímszámok statisztikáinak
 előállításához először szükséges a prímek listájának előállítása.
 Ehhez egy optimalizált, gyors szita C nyelven készült el.
@@ -25,12 +28,14 @@ A könnyebb implementálhatóság miatt ez is két külön program, a kis
 számokat szitáló init, és a nagyobb számokkal dolgozó generator.
 A két program a működési elvében hasonló.
 
+%%% EMIL: szintén \texttt{gui}
 A program többi része Java nyelven van megírva, ez a gui nevű program.
 Ez összesíti a prímek listáját, tartalmazza a futási idők összehasonlításához
 írt szitákat, és jeleníti meg a prímek statisztikáit, és a futási idők
 mintáit.
 
 A program több prímszitát tartalmaz.
+%%% EMIL: Hááát... a prím szita egy intervallumon dönti el a számokról hogy prímek-e vagy sem, nem random lista prímjeiről... (pontosaban egy a*i + b alakú számok listájára is alkalmazható, ahol i egy intervallum beli).
 A prímsziták számok egy listájáról döntik el, hogy melyik szám prím, és melyik összetett.
 A legtöbb implementált szita Eratoszthenész szitájának variációja.
 Eratoszthenész szitája az egész számok egy adott $[2, n]$ intervallumába
@@ -43,10 +48,11 @@ akkor az prím, és a listában megjelöli annak többszöröseit, de a prímet 
 Az algoritmus futása után a meg nem jelölt számok a prímek.
 
 \begin{algorithmic}[1]
-\State n: \text{a szitálás felső határa}
+\State $n$: \text{a szitálás felső határa}
 \State \text{a számok legyenek nem megjelölve, 2-től $n$-ig}
 \For{$i \gets 2$, $i \le n$, $i \gets i+1$}
 	\If{$i$ nincs megjelölve}
+                %%% EMIL: Ezt a ciklust $i^{2}$-től szokták indítani
 		\For{$j \gets 2i$, $j \le n$, $j \gets j+i$}
 			\State \text{legyen $j$ megjelölve}
 		\EndFor
@@ -54,6 +60,7 @@ Az algoritmus futása után a meg nem jelölt számok a prímek.
 \EndFor
 \end{algorithmic}
 
+%%% EMIL: az egyik hátránya
 Ennek az egyszerű algoritmusnak a legnagyobb hátránya,
 hogy $n$-ig szitálva $n-1$ bit memóriára van szüksége,
 ez a bitvektor a szitatábla.
@@ -61,6 +68,7 @@ Erre megoldás a szegmentált szitálás, ahol egy rövidebb,
 nem feltétlenül 2-től kezdődő intervallumban szitálnak.
 Ehhez szükség van a prímek listájára, legalább az intervallum végének négyzetgyökéig.
 
+%%% EMIL: "minden prímet sorba vesz"??? Ha már meg van neki az összes prím, akkor miért kellene szitálni... pro tip, olvasd újra és újra és újra a dolgozatot.
 A legegyszerűbb szegmentált szita egy szegmens szitáláshoz
 minden prímet sorban vesz, osztással meghatározza, hogy melyik a legkisebb
 többszöröse a szegmensben, ha van ilyen szám,
@@ -84,13 +92,15 @@ amik ténylegesen szitálnak is a szegmensben.
 A prímszámok listájának generátora C nyelven készült el.
 A program csak parancssorból futtatható, és a sztenderd könyvtári függvényekből
 is csak néhányat használ a memóriájában előállított eredmények fájlba írásához.
-A C nyelv választását a hatékony végrehajtás és memóriafelhasználás, és
+A C nyelv választását a hatékony végrehajtás és memóriafelhasználás, és  %%% EMIL: "és" szóismétlés?
 a hordozhatóság indokolja, a generátor elkülönítését az automatizálhatóság indokolja.
 
+%%% EMLI: generator vagy prímgenerátor?
 A prímgenerátor Eratoszthenész szitájának szegmentált változata,
 a szitatábla egy $2^{30}$ hosszú darabját szitálja ki minden iterációban.
 A generátor önmaga is két részből áll.
 Egy egyszerűbb implementáció a prímek listáját $2^{32}$-ig állítja elő.
+%%% EMIL: A következő mondatot nem biztos hogy teljesen érthető.
 Ez az első 4 szegmens nem csak a statisztikákhoz szükséges,
 a generator, és a Java program szitái is használja,
 amikor a szitálás intervalluma 1-nél nagyobb számtól kezdődik.
@@ -106,10 +116,12 @@ Továbbá nagyobb prímeknek csak harminccal relatív prím többszöröseit ves
 
 A program többi része a Java környezethez készült.
 
+%%% EMIL: Serious WTF mondat a következő? Milyen adatbázis???  Továbbá felhívnám a figyelmed arra hogy a következő 4 bekezdésből 3 "A program.." szavakkal kezdődik... az egyeten kivétel az "A gui" és szerintem most váltok át "átfutó" üzemmódba, azaz mostantól próbálok apróságokba nem belekötni, és azt tanácsolom hogy minimum 3x de inkább 5x olvasd majd át dolgot amikor úgy gondolod hogy kezd kész lenni... utána még számíts összvissz 20 újraolvasásra... a kisebb javítások/modosítások miatt.
 A program az adatbázisában hosszabb távon egyedül a prímek szegmensenkénti statisztikáit tárolja,
 amit csak sorban dolgoz fel, és a statisztikák összmérete sem indokolna egy egyszerű bináris fájlnál bonyolultabb megoldást.
 Az adatvesztés elkerüléséhez elég a statisztikafájl csere alapú felülírása.
 
+%%% EMIL: nagyobb pontoságg mit takar egész pontosan?
 A program a mintákat alapfüggvények lineáris kombinációjával közelíti a legkisebb négyzetek módszerével. A minták elemeinek nagy száma, és a mintaértékek
 nagy terjedelme miatt szükséges volt a numerikus algoritmusok nagyobb pontosságú
 implementációja, ami a számítási idő növekedésével jár.
@@ -119,12 +131,14 @@ bonyolultsága különböző, de a futási idejük összehasonlíthatóságához
 implementációt kaptak, és az eltérő részek hasonló szinten optimalizáltak.
 A sziták helyességének ellenőrzéséhez a sziták eredménye egymással összehasonlítható.
 
+%%% EMIL: szerintem ne itt kezd magyarazni a prioritásos soros szitát 2 sorban, mert nem lesz érthető. Vezesd be, mond meg mi a neve, írd le hogy a saját ötleted... de ne bróbálj egy másfél oldalas leírást másfél sorba sűríteni.
 A programhoz elkészült Eratoszthenész szitájának több variációja, mindegyik szegmentáltan működik,
 a különbség a prímek listájának kezelésében van.
 A legegyszerűbb implementált eratoszthenészi szita a prímek listáját minden szegmensben végig bejárja.
 A prioritásos soron alapuló sziták a prímeket részlegesen rendezik az alapján, hogy hány szegmensnyire van az éppen szitált szegmenstől a prím következő többszöröse, a sor elejéről eltávolítják a szegmensben szitáló prímeket, és az új pozíciójukkal a sorba visszahelyezik.
 Ilyen a bináris kupacot, és az edénysort használó szita.
 
+%%% EMIL: Hivatkozás!?!?!
 A Cache Optimalizált Lineáris Szita a prímeket teljesen rendezi az alapján, hogy legközelebb melyik szegmensben fognak szitálni, és a prímek nagyság szerinti csoportosításával a rendezés fenntartásához az elemek memóriabeli mozgatását is kerüli.
 
 Atkin szitája\cite{atkin} az előbbi algoritmusoktól jelentősen eltér, a prímek többszörösei
@@ -188,8 +202,9 @@ szegmens 1 - kezdet 1 073 741 825 - felkészülés   2 353 698 ns - szitálás 1
 szegmens 2 - kezdet 2 147 483 649 - felkészülés   2 344 515 ns - szitálás 1 188 330 478 ns
 szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1 199 900 603 ns
 \end{lstlisting}
-Ennek eredmény 4 bittérképfájl, amit a db mappába ment.
+Ennek eredmény 4 bittérképfájl, amit a db mappába ment.  %%% EMIL: bitvektort tartalmazó bináris fájl!
 
+%%% EMIL: többféleképpen egy szó
 A generator programot több féle képpen is lehet indítani.
 Mindegyik esetben két paramétert kell megadni az indításhoz,
 a számot, ahol szitálást kezdje, és a szegmensek számát, amit
@@ -377,6 +392,7 @@ de az ott tárolt utolsó módosításnál újabb a szegmensfájl.
 
 \subsection{Szegmensek összesítése}
 
+%%% EMIL: Nem ''idézőjel'' hanem ``idézőjel''
 Az adatbázis könyvtárban
 található új szegmensfájlokat a ''DB összesítés'' gomb megnyomásával,
 vagy a ''database reaggregate'' paranccsal lehet összesíteni.
@@ -413,7 +429,9 @@ A generator program teszteléséhez a grafikus program képes a szegmensfájlok 
 Ehhez a program újra előállítja az ellenőrzött szegmensfájlokat, és azokat összeveti.
 Az összevetéshez az egyszerű szegmentált eratoszthenészi szitát, vagy ez erős pszeudoprím tesztet lehet választani.
 A pszeudoprím teszt rendkívül lassú, a célja, hogy a szitákhoz képest egy alapvetően más módszer is rendelkezésre álljon az ellenőrzéshez.
+%%% EMIL: A pszeudoprím tesztről... ez itt jó hogy leírtad hogy "alapvetően más" módszerrel is szeretnél ellenőrizni. Kicsit "out of place"-nek mondanám a pszeudoprím tesztet, mert az prím teszt, ez meg szitálás... szitálással egy csomó számra csinálsz prímtesztet, a prímtesztnél meg csak egy szamról döntöd el... nyilván ha a "csomó szám" az csak egy akkor a szita prímteszt lesz, meg ha sok számot tesztelsz akkor olyan mintha szintálnál... de erőltetettnek tűnhet... illetve nem tom ezt hogy csináltad (és lusta vagyok most kódot nézni), egy kis intervallumon mindent pszeudoprímtesztelsz? vagy véletlenszerűen választasz egy egy számot és megnézed hogy a szita és ppt is ugyan azt mondja-e róluk? Én az utóbbit javasolnám, de bármelyiket csináltad, azt írd le, mert nem teljesen világos egész pontosan hogy ellenőrzöd a dolgokat pptvel. 
 
+%%% EMIL: Azok a franya idezojelek. Javaslom a szoveg szerkesztok search and replace funkciojat.
 A grafikus felületen a "Szegmensfájlok ellenőrzése" gomb megnyomása után lehet kiválasztani a szitálni kívánt szegmenseket, és a referencia előállításának módszerét, majd az "Ellenőrzés" gombbal lehet megkezdeni a tényleges folyamatot.
 
 Az ellenőrzést parancssorból is lehet futtatni a check-segments szkripttel.
@@ -437,7 +455,7 @@ hogy az init program által előállított négy darab szegmensfájlt tartalmazz
 az adatbáziskönyvtár, mert a szita kezdőszámra pozícionálásához a prímszámokat
 innen olvassa fel a program.
 
-\section{Sziták ellenőrzése}
+\section{Sziták ellenőrzése}  %%% EMIL: az előző fejezet szatatáblák ellenőrzése volt... ami nagyon hasonlít ehhez a fejezethez... mi a különbség?
 
 Az sebességek összehasonlításához írt sziták eredményét is lehet ellenőrizni,
 az összehasonlításhoz itt is a szegmensek ellenőrzésénél használt
@@ -458,11 +476,11 @@ Az ellenőrizhető sziták nevei:
 \item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
 \item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
 	az bin-heap-inplace a kupac javítását helyben végzi
-\item buckets, buckets-n, buckets-simple: Eratoszthenész szitája, edénysorral
+\item buckets, buckets-$n$, buckets-simple: Eratoszthenész szitája, edénysorral
 
-	a buckets-simple nem szegmentált, a buckets, és a buckets-n szegmentált.
-	a buckets-n -ben az n helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
-	pl. buckets-3 8as számrendszerben számol
+	a buckets-simple nem szegmentált, a buckets, és a buckets-$n$ szegmentált.
+	a buckets-$n$-ben az $n$ helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
+	pl. buckets-$3$ 8as számrendszerben számol
 \item trial-division: próbaosztás
 \end{itemize}
 
@@ -486,6 +504,7 @@ hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
 \section{Minta megjelenítése}
 
+%%% EMIL: A mintákat definiáltad micsodák, ilyen mintákról beszélünk?  
 A program a grafikus felületén képes mintákat ábrázolni, a mintákat függvényekkel
 közelíteni, és ezeket a függvényeket is ábrázolni, valamint kiszámolja a közelítések
 négyzetes hibáját a mintához képest.
@@ -517,7 +536,7 @@ látszódnak.
 \subsection{Minta hozzáadása} %%% EMIL: Ez itt "hozzáadása" nem inkább beolvasása... betöltése... hmm... nem tom.
 
 A "Minta hozzáadásánál" három adatforrásból lehet választani.
-A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő, az első oszlopot x, a második oszlopot y értékeknek próbálja értelmezni, a fel nem ismert sorokat eldobja.
+A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő, az első oszlopot $x$, a második oszlopot $y$ értékeknek próbálja értelmezni, a fel nem ismert sorokat eldobja.
 Ha az első sor első oszlopa "BARS",
 akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 
@@ -582,10 +601,11 @@ itt megváltoztatható a közelítéshez rendelt szín, és eltávolítható a k
 A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja
 a lineáris kombinációban.
 
+%%% EMIL: a módszerének komponensei? he? (a ... módszer rövid leírása a következő:)
 A legkisebb négyzetek módszerének komponensei
 röviden leírhatóak.
 Ha az $n$ elemű minta
-$(x_1, y_1), (x_2, y_2), ... (x_n, y_n)$
+$(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)$
 ($x_i, y_i \in \mathbb{R}$),
 a közelítéshez kiválasztott $m$ függvény
 $f_1, f_2, ..., f_m$ ($f_i:\mathbb{R} \mapsto \mathbb{R}$),
@@ -650,6 +670,7 @@ A mérések megkönnyítéséhez a measure-sieves szkript az összes szitát meg
 A samples könyvtárban a mérési eredmények 4 külön könyvtárban szegmensenként/összesítve, és idő/művelet szerinti bontásban vannak.
 Ezekben a könyvtárakban 2 fajta mérés eredményei vannak.
 Az atkin könyvtárban Atkin szitájának sebessége van megmérve különböző szegmensméretek esetén.
+%%% EMIL: milyen az hogy speed kezdetű könyvtás? Egy könyvtár nem igazán kezdődik... ugye? a neve esetleg... nyilván értem mire gondolsz, de néha az ilyen fogalmazások összezavarják az embert.
 A speed kezdetű könyvtárakban az összes szita sebességének mérése található, $2^{20}$ szegmensmérettel.
 A könyvtárak nevében a szám a szitálás kezdetét adja meg, a speed$n$ könyvtárban a mérések $2^n+1$-től kezdődnek.
 A lassabb szitákat csak kisebb nagyságrendekre méri meg a szkript, ezek futási ideje hamar túl naggyá válik.
@@ -660,3 +681,8 @@ Az eredményt a samples/measure-generator.csv fájlba menti, ez nem használhat�
 Ennek a mérésnek a célja az, hogy a generator program paramétereit egy konkrét számítógéphez lehessen
 igazítani.
 A script 16 egymás utáni szegmensfájlt szitál, a szitálás kezdetét $2^{33}$-től $2^{63}$-ig változtatja, a kitevőt hármasával növelve, a szegmensek méretét $2^{16}$-tól $2^{24}$-ig, a kitevőt egyesével növelve, és a számrendszert $2^1$-től $2^8$-ig, szintén a kitevőt egyesével növelve.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "szakdolgozat"
+%%% End:
