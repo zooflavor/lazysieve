@@ -14,13 +14,13 @@ A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 \begin{algorithmic}[1]
 \State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
-	\For{$o \gets p \left \lceil{\frac{u}{p}}\right \rceil ; v > o; o \gets o+p$}
-		\State legyen $o$ megjelölve
+	\For{$f \gets p \left \lceil{\frac{u}{p}}\right \rceil ; v > f; f \gets f+p$}
+		\State legyen $f$ megjelölve
 	\EndFor
 \EndFor
-\For{$o \in [u, v[$}
-	\If{$o$ nincs megjelölve}
-		\State $o$ prím
+\For{$f \in [u, v[$}
+	\If{$f$ nincs megjelölve}
+		\State $f$ prím
 	\EndIf
 \EndFor
 \end{algorithmic}
@@ -37,21 +37,21 @@ A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálás�
 \label{alg:eratosthenes-segments}
 \begin{algorithmic}[1]
 \State legyen $t$ egy tömb
-\State $tl \gets 0$ \Comment{a tömb elemeinek száma}
+\State $s \gets 0$ \Comment{a tömb elemeinek száma}
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
-	\State $t[tl] \gets (p: p, o: p \left \lceil{\frac{u}{p}}\right \rceil)$
-	\State $tl \gets tl+1$
+	\State $t[s] \gets (p: p, f: p \left \lceil{\frac{u}{p}}\right \rceil)$
+	\State $s \gets s+1$
 \EndFor
-\For{$l \gets 1, v \gets u+d; k \ge l; l \gets l+1, u \gets u+d, v \gets v+d$}
+\For{$\ell \gets 1, v \gets u+d; k \ge \ell; \ell \gets \ell+1, u \gets u+d, v \gets v+d$}
 	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
-	\For{$i \in [1, tl]$}
-		\For{$; v > t[i].o; t[i].o \gets t[i].o+t[i].p$}
-			\State legyen $t[i].o$ megjelölve
+	\For{$i \in [1, s]$}
+		\For{$; v > t[i].f; t[i].f \gets t[i].f+t[i].p$}
+			\State legyen $t[i].f$ megjelölve
 		\EndFor
 	\EndFor
-	\For{$o \in [u, v[$}
-		\If{$o$ nincs megjelölve}
-			\State $o$ prím
+	\For{$f \in [u, v[$}
+		\If{$f$ nincs megjelölve}
+			\State $f$ prím
 		\EndIf
 	\EndFor
 \EndFor
@@ -81,20 +81,20 @@ A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a h
 \begin{algorithmic}[1]
 \State legyen $q$ egy üres sor
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
-	\State hozzáad$(q, (p: p, o: p \left \lceil{\frac{u}{p}}\right \rceil))$
+	\State hozzáad$(q, (p: p, f: p \left \lceil{\frac{u}{p}}\right \rceil))$
 \EndFor
-\For{$l \gets 1, v \gets u+d; k \ge l; l \gets l+1, u \gets u+d, v \gets v+d$}
+\For{$\ell \gets 1, v \gets u+d; k \ge \ell; \ell \gets \ell+1, u \gets u+d, v \gets v+d$}
 	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
-	\While{$v > \min(q).o$}
-		\State $(p, o) \gets \textrm{eltávolít-min}(q)$
-		\For{$; v > o; o \gets o+p$}
-			\State legyen $o$ megjelölve
+	\While{$v > \min(q).f$}
+		\State $(p, f) \gets \textrm{eltávolít-min}(q)$
+		\For{$; v > f; f \gets f+p$}
+			\State legyen $f$ megjelölve
 		\EndFor
-		\State hozzáad$(q, (p, o))$
+		\State hozzáad$(q, (p, f))$
 	\EndWhile
-	\For{$o \in [u, v[$}
-		\If{$o$ nincs megjelölve}
-			\State $o$ prím
+	\For{$f \in [u, v[$}
+		\If{$f$ nincs megjelölve}
+			\State $f$ prím
 		\EndIf
 	\EndFor
 \EndFor
@@ -117,10 +117,10 @@ $x$ $i$-edik számjegyét $a$ alapú számrendszerben jelölje $x_i$, ahol $x \i
 Legyen $h(x, y)$ a legnagyobb helyiérték, ahol $x$ és $y$ eltér.
 A sor által használt $d(x, y)$ távolságfüggvény az eltérés diszkrét logaritmusát követi.
 \begin{equation}
-x = \sum_{i=0}^{\infty} x_i a^i (i \in \mathbb{N}_0, x_i \in \mathbb{N}_0, x_i < a)
+x = \sum_{i=0}^{\infty} x_i a^i\ (i \in \mathbb{N}_0, x_i \in \mathbb{N}_0, x_i < a)
 \end{equation}
 \begin{equation}
-h(x, y) = \max{\{i \in \mathbb{N}_0 | x_i \not= y_i\}} (x, y \in \mathbb{N}_0, x<y)\\
+h(x, y) = \max{\{i \in \mathbb{N}_0 | x_i \not= y_i\}}\ (x, y \in \mathbb{N}_0, x<y)\\
 \end{equation}
 \begin{equation}
 \label{ddef}
@@ -131,24 +131,25 @@ Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-va
 d(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
 \end{align*}
 
-Legyen
+Legyen $q$ egy edénysor
 \begin{itemize}
-\item $q$ egy edénysor, $a$ alapszámmal
+\item $a$ alapszámmal
 \item $p(q) \in \mathbb{N}_0$ a $q$ sor pozíciója
-\item $e(q, i) (i \in \mathbb{N}_0)$ a $q$ sor $i$. edénye
-\item $p(r) \in \mathbb{N} (r \in q)$ a $q$ sor $r$ elemének pozíciója.
+\item $b(q, i)$ a $q$ sor $i$. edénye\ $(i \in \mathbb{N}_0)$
+\item $p(r) \in \mathbb{N}$ a $q$ sor egy lehetséges $r$ elemének pozíciója.
 \end{itemize}
 Ekkor a $q$ sor invariánsa:
 \begin{align*}
 \forall r \in q &: &\\ 
 	& p(q) < p(r) \\
-	& \forall i \in \mathbb{N}_0: r \in e(q, i) \iff i=d(p(q), p(r)) \\
-\forall r \not\in q &: \forall i \in \mathbb{N}_0: r \not\in e(q, i)
+	& \forall i \in \mathbb{N}_0: r \in b(q, i) \iff i=d(p(q), p(r)) \\
+\forall r \not\in q &: \forall i \in \mathbb{N}_0: r \not\in b(q, i)
 \end{align*}
+%%% P: lehet, hogy p(...) helyett f(...) kéne, ha már az algoritmusokban is az volt, ahol a p foglalt volt a prímekre.
 
 Új sor létrehozásához az edények listáját kell létrehozni, a sor kezdő pozíciója bármi lehet.
-Új elemet a sorhoz a távolságfüggvény kiértékelése után ez elem edénybe szúrásával lehet adni,
-az új $r$ elem az $e(q, d(p(q), p(r)))$ edénybe kell kerüljön.
+Új elemet a sorhoz a távolságfüggvény kiértékelése után az elem edénybe szúrásával lehet adni,
+az új $r$ elem az $b(q, d(p(q), p(r)))$ edénybe kell kerüljön.
 Ez a művelet az invariánst fenntartja.
 
 A sor pozíciójának eggyel megnövelésével a sor invariánsa kétféleképpen válhat hamissá:
@@ -167,12 +168,12 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 	\State $l \gets$ üres lista
 	\State $i \gets d(p(q), p(q)+1)$
 	\State $p(q) \gets p(q)+1$
-	\While{$e(q, i)$ nem üres}
-		\State $r \gets$ eltávolít$(e(q, i))$
+	\While{$b(q, i)$ nem üres}
+		\State $r \gets$ eltávolít$(b(q, i))$
 		\If{$p(r) = p(q)$}
 			\State hozzáad$(l, r)$
 		\Else
-			\State hozzáad$(e(q, d(p(q), p(r)))$
+			\State hozzáad$(b(q, d(p(q), p(r)))$
 		\EndIf
 	\EndWhile
 	\State \Return l
@@ -287,14 +288,14 @@ x_k+1=y_k
 A sor elejének eltávolítása algoritmus helyessége következik abból, hogy a $d'$-nél kisebb indexű edények üresek, a $d'$-nél nagyobb indexű edények elemeinek távolsága nem változik a sor pozíciójának növelésével, és a $d'$ edény elemeit az algoritmus újrarendezi.
 \begin{equation}
 \label{ures}
-\forall i \in \mathbb{N}_0, i<d': e(q, i) = \emptyset
+\forall i \in \mathbb{N}_0, i<d': b(q, i) = \emptyset
 \end{equation}
 \begin{equation}
 \label{marad}
-\forall i \in \mathbb{N}_0, i>d': \forall r \in e(q, i) : i = d(p(q), p(r)) = d(p(q)+1, p(r))
+\forall i \in \mathbb{N}_0, i>d': \forall r \in b(q, i) : i = d(p(q), p(r)) = d(p(q)+1, p(r))
 \end{equation}
 
-\ref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in e(q, i)$.
+\ref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in b(q, i)$.
 Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
 \begin{align*}
 d(p(q), p(r)) = i < d' = d(p(q), p(q)+1)
@@ -309,7 +310,7 @@ p(q)_k < p(r)_k < (p(q)+1)_k = p(q)_k + 1
 \end{align*}
 Tehát az indirekt feltevés ellentmondáshoz vezet, azaz \ref{ures} igaz, a $d'$-nél kisebb indexű edények üresek.
 
-Legyen $i \in \mathbb{N}_0, i>d', r \in e(q, i), k'=h(p(q), p(r))$. Ha $k' = k$, akkor
+Legyen $i \in \mathbb{N}_0, i>d', r \in b(q, i), k'=h(p(q), p(r))$. Ha $k' = k$, akkor
 \begin{align*}
 d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
 \end{align*}
