@@ -6,6 +6,7 @@ import gui.math.Functions;
 import gui.math.LeastSquares;
 import gui.math.LinearCombinationFunction;
 import gui.math.RealFunction;
+import gui.math.Solver;
 import gui.math.Sum;
 import gui.ui.progress.PrintStreamProgress;
 import gui.ui.progress.Progress;
@@ -35,11 +36,14 @@ public class MeasureSums {
 
 	public static void measureSums(List<Object> arguments) throws Throwable {
 		boolean[] hashes=new boolean[]{false, true};
-		boolean[] pivots=new boolean[]{false, true};
+		List<Map.Entry<String, Solver>> solvers=Arrays.asList(
+				new AbstractMap.SimpleEntry<>("1-GE-partial", Solver.gaussianElimination(false)),
+				new AbstractMap.SimpleEntry<>("2-GE-total", Solver.gaussianElimination(true)),
+				new AbstractMap.SimpleEntry<>("3-QR", Solver.qrDecomposition()));
 		List<Map.Entry<String, Supplier<Sum>>> sums=Arrays.asList(
-				new AbstractMap.SimpleEntry<>("array", Sum::array),
-				new AbstractMap.SimpleEntry<>("priority", Sum::priority),
-				new AbstractMap.SimpleEntry<>("simple", Sum::simple));
+				new AbstractMap.SimpleEntry<>("2-array", Sum::array),
+				new AbstractMap.SimpleEntry<>("3-priority", Sum::priority),
+				new AbstractMap.SimpleEntry<>("1-simple", Sum::simple));
 		List<List<RealFunction>> functions=Arrays.asList(
 				Arrays.asList(Functions.ONE, Functions.X, Functions.X_LNLNX, Functions.X_LNX),
 				Arrays.asList(Functions.ONE, Functions.X, Functions.X_LNLNX),
@@ -66,15 +70,16 @@ public class MeasureSums {
 		progress0.progress(0.0);
 		try (CSVWriter writer=CSVWriter.open((Path)arguments.get(3))) {
 			writer.write(Arrays.asList(
-					"ordered", "pivoting", "sum", "error", "time(ns)"));
+					"ordered", "SLE", "sum", "error", "time(ns)"));
 			for (int hi=0; hashes.length>hi; ++hi) {
 				boolean hash=hashes[hi];
 				Progress progress1=progress0.subProgress(
 						1.0*hi/hashes.length, null, (hi+1.0)/hashes.length);
-				for (int pi=0; pivots.length>pi; ++pi) {
-					boolean completePivoting=pivots[pi];
+				for (int pi=0; solvers.size()>pi; ++pi) {
+					String solverName=solvers.get(pi).getKey();
+					Solver solver=solvers.get(pi).getValue();
 					Progress progress2=progress1.subProgress(
-							1.0*pi/pivots.length, null, (pi+1.0)/pivots.length);
+							1.0*pi/solvers.size(), null, (pi+1.0)/solvers.size());
 					for (int si=0; sums.size()>si; ++si) {
 						String sumName=sums.get(si).getKey();
 						Supplier<Sum> sumFactory=sums.get(si).getValue();
@@ -98,13 +103,13 @@ public class MeasureSums {
 							long start=System.nanoTime();
 							LinearCombinationFunction function
 									=LeastSquares.regression(
-											completePivoting,
 											functions2,
 											Function.identity(),
 											sumFactory,
 											progress4.subProgress(0.05, null, 0.75),
 											sumFactory,
-											sample.entrySet());
+											sample.entrySet(),
+											solver);
 							long end=System.nanoTime();
 							double distance=LeastSquares.distanceSquared(
 									function,
@@ -117,8 +122,8 @@ public class MeasureSums {
 							progress4.finished();
 						}
 						writer.write(Arrays.asList(
-								hash?"hash":"tree",
-								completePivoting?"complete":"partial",
+								hash?"2-hash":"1-tree",
+								solverName,
 								sumName,
 								Double.toString(distanceSum.sum()),
 								Long.toUnsignedString(timeSum)));

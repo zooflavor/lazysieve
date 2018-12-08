@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 @SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class Matrix {
-	public static final boolean PREFERRED_PIVOTING=true;
-	
 	static {
 		new Matrix();
 	}
@@ -120,6 +118,74 @@ public class Matrix {
 		}
 		progress.finished();
 		return bb;
+	}
+	
+	public static QRDecomposition householderDecomposition(double[][] matrix,
+			Progress progress, Sum sum) throws Throwable {
+		int size=matrix.length;
+		if (0>=size) {
+			throw new IllegalArgumentException("0>="+size);
+		}
+		if (size!=matrix[0].length) {
+			throw new IllegalArgumentException(size+"!="+matrix[0].length);
+		}
+		double[][] wr=copy(matrix);
+		double[][] rr=create(size, size);
+		double[][] qq=create(size, size);
+		for (int ii=0; size>ii; ++ii) {
+			qq[ii][ii]=1.0;
+		}
+		for (int kk=0; size-1>kk; ++kk) {
+			Progress progress2=progress.subProgress(
+					1.0*kk/size, null, 1.0*(kk+1)/size);
+			progress2.progress(0.0);
+			sum.clear();
+			for (int ii=kk; size>ii; ++ii) {
+				double dd=wr[ii][kk];
+				sum.add(dd*dd);
+			}
+			double alpha=Math.sqrt(sum.sum());
+			if (0.0<wr[kk][kk]) {
+				alpha*=-1.0;
+			}
+			double[][] vv=create(size-kk, 1);
+			for (int ii=kk; size>ii; ++ii) {
+				vv[ii-kk][0]=wr[ii][kk];
+			}
+			vv[0][0]-=alpha;
+			sum.clear();
+			for (int ii=0; vv.length>ii; ++ii) {
+				double dd=vv[ii][0];
+				sum.add(dd*dd);
+			}
+			double vn2=sum.sum();
+			if (0.0==vn2) {
+				throw new ArithmeticException("0.0==||v||");
+			}
+			double[][] q2=create(size, size);
+			for (int ii=0; size>ii; ++ii) {
+				q2[ii][ii]=1.0;
+			}
+			double [][]vvt=multiply(vv, transpose(vv),
+					progress2.subProgress(0.0, null, 0.4), sum);
+			for (int col=kk; size>col; ++col) {
+				for (int row=kk; size>row; ++row) {
+					q2[row][col]-=2.0*vvt[row-kk][col-kk]/vn2;
+				}
+			}
+			qq=multiply(qq, transpose(q2),
+					progress2.subProgress(0.4, null, 0.7), sum);
+			wr=multiply(q2, wr, progress2.subProgress(0.7, null, 1.0), sum);
+			rr[kk][kk]=alpha;
+			for (int ii=0; kk>ii; ++ii) {
+				rr[ii][kk]=wr[ii][kk];
+			}
+		}
+		for (int ii=0; size>ii; ++ii) {
+			rr[ii][size-1]=wr[ii][size-1];
+		}
+		progress.finished();
+		return new QRDecomposition(qq, rr);
 	}
 	
 	public static double[][] multiply(double[][] matrix0, double[][] matrix1,

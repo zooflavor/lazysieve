@@ -35,11 +35,12 @@ public class LeastSquares {
 	}
 	
 	public static LinearCombinationFunction regression(
-			boolean completePivoting, List<RealFunction> functions,
+			List<RealFunction> functions,
 			Function<RealFunction, RealFunction> functionTransform,
 			Supplier<Sum> functionSumFactory, Progress progress,
 			Supplier<Sum> regressionSumFactory,
-			Collection<Map.Entry<Double, Double>> sample) throws Throwable {
+			Collection<Map.Entry<Double, Double>> sample,
+			Solver solver) throws Throwable {
 		List<RealFunction> transformedFunctions
 				=new ArrayList<>(functions.size());
 		for (int ii=0; functions.size()>ii; ++ii) {
@@ -70,11 +71,11 @@ public class LeastSquares {
 		double[][] xxtyy=Matrix.multiply(xxt, yy,
 				progress.subProgress(0.95-0.45/functions.size(), null, 0.95),
 				sum);
-		double[][] coefficients=Matrix.gaussianElimination(
+		double[][] coefficients=solver.solve(
 				xxtxx,
 				xxtyy,
-				completePivoting,
-				progress.subProgress(0.95, null, 1.0));
+				progress.subProgress(0.95, null, 1.0),
+				sum);
 		List<Double> coefficients2=new ArrayList<>(coefficients.length);
 		for (int ii=0; coefficients.length>ii; ++ii) {
 			coefficients2.add(coefficients[ii][0]);

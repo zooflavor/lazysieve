@@ -3,8 +3,8 @@ package gui.graph.plotter;
 import gui.math.CheckedFunction;
 import gui.math.LeastSquares;
 import gui.math.LinearCombinationFunction;
-import gui.math.Matrix;
 import gui.math.RealFunction;
+import gui.math.Solver;
 import gui.math.Sum;
 import gui.ui.GuiProcess;
 import gui.ui.MessageException;
@@ -27,14 +27,14 @@ class ApproximationProcess extends GuiProcess<Plotter, JFrame> {
 	@Override
 	protected void background() throws Throwable {
 		function=LeastSquares.regression(
-				Matrix.PREFERRED_PIVOTING,
 				functions,
 				(realFunction)->new CheckedFunction<>(
 						MessageException::new, realFunction),
 				Sum::preferred,
 				progress.subProgress(0.0, null, 0.9),
 				Sum::preferred,
-				samplePanel.sample().asDoubles());
+				samplePanel.sample().asDoubles(),
+				Solver.preferred());
 		error=LeastSquares.distanceSquared(
 				function,
 				progress.subProgress(0.9, null, 1.0),

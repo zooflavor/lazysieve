@@ -14,19 +14,26 @@ import org.junit.Test;
 public class LeastSquaresTest {
 	@Test
 	public void test() throws Throwable {
-		test(Functions.ONE);
-		List<RealFunction> functions=new ArrayList<>(Functions.FUNCTIONS);
-		functions.remove(Functions.ONE);
-		for (int ii=0; functions.size()>ii; ++ii) {
-			RealFunction function0=functions.get(ii);
-			test(Functions.ONE, function0);
-			for (int jj=ii+1; functions.size()>jj; ++jj) {
-				test(Functions.ONE, function0, functions.get(jj));
+		for (Solver solver: new Solver[]{
+					Solver.gaussianElimination(false),
+					Solver.gaussianElimination(true),
+					Solver.preferred(),
+					Solver.qrDecomposition()}) {
+			test(solver, Functions.ONE);
+			List<RealFunction> functions=new ArrayList<>(Functions.FUNCTIONS);
+			functions.remove(Functions.ONE);
+			for (int ii=0; functions.size()>ii; ++ii) {
+				RealFunction function0=functions.get(ii);
+				test(solver, Functions.ONE, function0);
+				for (int jj=ii+1; functions.size()>jj; ++jj) {
+					test(solver, Functions.ONE, function0, functions.get(jj));
+				}
 			}
 		}
 	}
 	
-	private void test(RealFunction... functions) throws Throwable {
+	private void test(Solver solver, RealFunction... functions)
+			throws Throwable {
 		List<Double> coefficients=new ArrayList<>(functions.length);
 		for (int ii=0; functions.length>ii; ++ii) {
 			coefficients.add(ii+4.0);
@@ -52,13 +59,13 @@ public class LeastSquaresTest {
 		}
 		LinearCombinationFunction regression
 				=LeastSquares.regression(
-						true,
 						Arrays.asList(functions),
 						Function.identity(),
 						Sum::preferred,
 						Progress.NULL,
 						Sum::preferred,
-						sample.entrySet());
+						sample.entrySet(),
+						solver);
 		assertTrue(
 				LeastSquares.distanceSquared(regression, Progress.NULL,
 						sample.entrySet(), Sum::preferred)
