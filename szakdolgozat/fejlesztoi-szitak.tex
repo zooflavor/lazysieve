@@ -74,6 +74,7 @@ Az elemek sorrendjénél a szegmensen belüli sorrend vizsgálata felesleges.
 A prioritásos soron alapuló szitálás algoritmusát a \ref{alg:eratosthenes-queue} adja meg, a sor adatszerkezet meghatározása nélkül.
 A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a helyben módosítást és a struktúra invariánsának visszaállítását is választhatja.
 
+%%% EMIL: Mintha keveredne a ciklus változó neve. tl vagy l? és pro-tip, az elvileg 1 betü legyen a matekos jelölésben (nehogy valaki a t*l-re gondoljon), illetve az 'o' és az 'l' nagyon hasonlít a '0' és '1'-re, ezért nem javasolt változó nevek, deeee latex-ben van \ell. Próbád ki, én azt szoktam használni mint 'l' változó :)
 \begin{algorithm}
 \floatname{algorithm}{Algoritmus}
 \caption{Az $[u, v=u+kd[$ intervallum szitálása, prioritásos sorral}
@@ -116,12 +117,14 @@ d(x, y) := \lfloor log_{2}{}(x \oplus y) \rfloor & & (x, y \in \mathbb{N}, y > x
 \end{align*}
 ahol $\oplus$ a bitenkénti kizáró-vagy művelet. $d(x, y)$ a legnagyobb bit helyiértéke, ahol $x$ és $y$ eltér.
 
-Legyen
+Legyen  %%% EMIL: nem lenne talán szebb ha az első pont (legyen q egy edénysor) még ebben a sorban lenne? nem mint egy külön pont?
 \begin{itemize}
 \item $q$ egy edénysor
 \item $p(q) \in \mathbb{N}_0$ a $q$ sor pozíciója
 \item $e(q, i) (i \in \mathbb{N}_0)$ a $q$ sor $i$. edénye
-\item $p(e) \in \mathbb{N} (e \in q)$ a $q$ sor $e$ elemének pozíciója.
+\item $p(e) \in \mathbb{N} (e \in q)$ a $q$ sor $e$ elemének pozíciója.  %%% EMIL: Ez a p(e) ugyan az mint a p(q) és ha nem tévedek a $..\mathbb{N}$ (ahol $e \in q$) vagy valami hasonló kéne. ha matekos környezetben zárojelezel, akkor úgy viselkedik mint egy függvényhívás zárójele, nem mint egy záróje.  és a latex furán kezeli a '. ' (pont szünet-et... mondat végének gondolja) ezért szokás '.\ ' írni (ld előző sor)
+
+  %%% EMIL: kicst átgondolva a jelölést, p(e) nem a p(q,e) kellene hogy legyen?  Illetve lehet hogy az e(q, i) helyett meg b(q, i)-t javasolnék (b mint bucket).
 \end{itemize}
 Ekkor a $q$ sor invariánsa:
 \begin{align*}
