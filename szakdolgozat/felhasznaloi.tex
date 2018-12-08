@@ -392,6 +392,7 @@ de az ott tárolt utolsó módosításnál újabb a szegmensfájl.
 
 \subsection{Szegmensek összesítése}
 
+%%% EMIL: Nem ''idézőjel'' hanem ``idézőjel''
 Az adatbázis könyvtárban
 található új szegmensfájlokat a ''DB összesítés'' gomb megnyomásával,
 vagy a ''database reaggregate'' paranccsal lehet összesíteni.
@@ -428,7 +429,9 @@ A generator program teszteléséhez a grafikus program képes a szegmensfájlok 
 Ehhez a program újra előállítja az ellenőrzött szegmensfájlokat, és azokat összeveti.
 Az összevetéshez az egyszerű szegmentált eratoszthenészi szitát, vagy ez erős pszeudoprím tesztet lehet választani.
 A pszeudoprím teszt rendkívül lassú, a célja, hogy a szitákhoz képest egy alapvetően más módszer is rendelkezésre álljon az ellenőrzéshez.
+%%% EMIL: A pszeudoprím tesztről... ez itt jó hogy leírtad hogy "alapvetően más" módszerrel is szeretnél ellenőrizni. Kicsit "out of place"-nek mondanám a pszeudoprím tesztet, mert az prím teszt, ez meg szitálás... szitálással egy csomó számra csinálsz prímtesztet, a prímtesztnél meg csak egy szamról döntöd el... nyilván ha a "csomó szám" az csak egy akkor a szita prímteszt lesz, meg ha sok számot tesztelsz akkor olyan mintha szintálnál... de erőltetettnek tűnhet... illetve nem tom ezt hogy csináltad (és lusta vagyok most kódot nézni), egy kis intervallumon mindent pszeudoprímtesztelsz? vagy véletlenszerűen választasz egy egy számot és megnézed hogy a szita és ppt is ugyan azt mondja-e róluk? Én az utóbbit javasolnám, de bármelyiket csináltad, azt írd le, mert nem teljesen világos egész pontosan hogy ellenőrzöd a dolgokat pptvel. 
 
+%%% EMIL: Azok a franya idezojelek. Javaslom a szoveg szerkesztok search and replace funkciojat.
 A grafikus felületen a "Szegmensfájlok ellenőrzése" gomb megnyomása után lehet kiválasztani a szitálni kívánt szegmenseket, és a referencia előállításának módszerét, majd az "Ellenőrzés" gombbal lehet megkezdeni a tényleges folyamatot.
 
 Az ellenőrzést parancssorból is lehet futtatni a check-segments szkripttel.
@@ -452,7 +455,7 @@ hogy az init program által előállított négy darab szegmensfájlt tartalmazz
 az adatbáziskönyvtár, mert a szita kezdőszámra pozícionálásához a prímszámokat
 innen olvassa fel a program.
 
-\section{Sziták ellenőrzése}
+\section{Sziták ellenőrzése}  %%% EMIL: az előző fejezet szatatáblák ellenőrzése volt... ami nagyon hasonlít ehhez a fejezethez... mi a különbség?
 
 Az sebességek összehasonlításához írt sziták eredményét is lehet ellenőrizni,
 az összehasonlításhoz itt is a szegmensek ellenőrzésénél használt
@@ -473,11 +476,11 @@ Az ellenőrizhető sziták nevei:
 \item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
 \item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
 	az bin-heap-inplace a kupac javítását helyben végzi
-\item buckets, buckets-n, buckets-simple: Eratoszthenész szitája, edénysorral
+\item buckets, buckets-$n$, buckets-simple: Eratoszthenész szitája, edénysorral
 
-	a buckets-simple nem szegmentált, a buckets, és a buckets-n szegmentált.
-	a buckets-n -ben az n helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
-	pl. buckets-3 8as számrendszerben számol
+	a buckets-simple nem szegmentált, a buckets, és a buckets-$n$ szegmentált.
+	a buckets-$n$-ben az $n$ helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
+	pl. buckets-$3$ 8as számrendszerben számol
 \item trial-division: próbaosztás
 \end{itemize}
 
@@ -501,6 +504,7 @@ hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
 \section{Minta megjelenítése}
 
+%%% EMIL: A mintákat definiáltad micsodák, ilyen mintákról beszélünk?  
 A program a grafikus felületén képes mintákat ábrázolni, a mintákat függvényekkel
 közelíteni, és ezeket a függvényeket is ábrázolni, valamint kiszámolja a közelítések
 négyzetes hibáját a mintához képest.
@@ -532,7 +536,7 @@ látszódnak.
 \subsection{Minta hozzáadása} %%% EMIL: Ez itt "hozzáadása" nem inkább beolvasása... betöltése... hmm... nem tom.
 
 A "Minta hozzáadásánál" három adatforrásból lehet választani.
-A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő, az első oszlopot x, a második oszlopot y értékeknek próbálja értelmezni, a fel nem ismert sorokat eldobja.
+A "Fájl betöltésével" CSV fájl olvasható be. A fájl formátuma megengedő, az első oszlopot $x$, a második oszlopot $y$ értékeknek próbálja értelmezni, a fel nem ismert sorokat eldobja.
 Ha az első sor első oszlopa "BARS",
 akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 
@@ -597,10 +601,11 @@ itt megváltoztatható a közelítéshez rendelt szín, és eltávolítható a k
 A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja
 a lineáris kombinációban.
 
+%%% EMIL: a módszerének komponensei? he? (a ... módszer rövid leírása a következő:)
 A legkisebb négyzetek módszerének komponensei
 röviden leírhatóak.
 Ha az $n$ elemű minta
-$(x_1, y_1), (x_2, y_2), ... (x_n, y_n)$
+$(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)$
 ($x_i, y_i \in \mathbb{R}$),
 a közelítéshez kiválasztott $m$ függvény
 $f_1, f_2, ..., f_m$ ($f_i:\mathbb{R} \mapsto \mathbb{R}$),
@@ -665,6 +670,7 @@ A mérések megkönnyítéséhez a measure-sieves szkript az összes szitát meg
 A samples könyvtárban a mérési eredmények 4 külön könyvtárban szegmensenként/összesítve, és idő/művelet szerinti bontásban vannak.
 Ezekben a könyvtárakban 2 fajta mérés eredményei vannak.
 Az atkin könyvtárban Atkin szitájának sebessége van megmérve különböző szegmensméretek esetén.
+%%% EMIL: milyen az hogy speed kezdetű könyvtás? Egy könyvtár nem igazán kezdődik... ugye? a neve esetleg... nyilván értem mire gondolsz, de néha az ilyen fogalmazások összezavarják az embert.
 A speed kezdetű könyvtárakban az összes szita sebességének mérése található, $2^{20}$ szegmensmérettel.
 A könyvtárak nevében a szám a szitálás kezdetét adja meg, a speed$n$ könyvtárban a mérések $2^n+1$-től kezdődnek.
 A lassabb szitákat csak kisebb nagyságrendekre méri meg a szkript, ezek futási ideje hamar túl naggyá válik.
