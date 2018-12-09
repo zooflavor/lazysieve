@@ -87,20 +87,22 @@ Budapest, 2018
 
 \chapter{Bevezetés}
 
-%%% EMIL: Tipp, itt kicsit szabadabban lehet rizsázni, történelem,
-%%% prímek, rekordok (pl az összes Járai-fele rekordban használtak
-%%% valamilyen szitát... nyilván nem csak azt, de azt is)... Es amit
-%%% talán FONTOS lenne itt megemlíteni, az az hogy a memóriával nem
-%%% jól van összehangolva a dolog, és ezert érdekes az egész.
+A prímszámok léte, és több velük kapcsolatos eredmény régóta közismert a matematikában.
+Eratoszthenész szitája, az egyik legősibb ismert algoritmus, máig hatékonynak számító módszert ad a prímek megkeresésére.
+A nagy teljesítményű számítógépek megjelenésével lehetővé vált a prímszámokkal kapcsolatos tételek és sejtések szisztematikus vizsgálata addig elérhetetlenül nagynak tűnő számokon.
+A számítógépes kommunikáció elterjedésével a bizonyíthatóan helyes titkosító algoritmusokra is megnőtt az igény, a modern kriptográfiai algoritmusok közül több is a prímszámok tulajdonságait használja ki.
 
+A prímekkel kapcsolatos gyakori számítógépes feladat egy becslés pontosságának felmérése, vagy adott tulajdonságú számra példa keresése.
+Ilyen feladat például a prímszámtétel által adott becslés összevetése a prímek tényleges számával, nagy ikerprímek keresése\cite{twinprimes}, vagy a Goldbach-sejtés ellenőrzése\cite{gaps}.
+Ezeknél a feladatoknál az első lépés sokszor a prímek megkeresése egy intervallumon, ez a prímsziták feladata.
 
-{\color{red}
-Sziták összehasonlítása azonos környezetben.
-Hatékonyság összehasonlítása az elmélet szerint várható értékekkel.
-Ellenőrzésként a prímek néhány statisztikájának összevetése az elméleti értékekkel,
-és az ismert eredményekkel.
-Hatékonyság és implementálhatóság.
-}
+Eratoszthenész szitája máig a leggyakrabban használt szita, egyszerűségének köszönhetően számítógépen futtatva sokszor gyorsabb, mint más, elméletileg gyorsabb algoritmusok.
+Eratoszthenész eredeti algoritmusa a prímeket egy nagy intervallumon állítja elő, ami modern számítógépek memóriájában sem férne el, így általában az intervallumot felosztják több rövidebb intervallumra, és ezeket külön szitálják.
+A gyors megvalósítások a rövid intervallumokat és a segédstruktúrákat a számítógép gyorsítótárának méretéhez igazítják, amivel a futási időt töredékére lehet csökkenteni egy egyszerű, szó szerinti megvalósításhoz képest.
+
+A szakdolgozat célja, hogy keretet adjon prímszita algoritmusok sebességének összehasonlítására.
+Megvalósítja Eratoszthenész szitájának több változatát, és Atkin szitáját\cite{atkin}.
+Atkin szitája új algoritmus Eratoszthenész szitájához képest, a számelmélet modern eredményeit felhasználva jobb elméleti futási idővel rendelkezik, mint Eratoszthenész szitája.
 
 \input{felhasznaloi.tex}
 
@@ -129,6 +131,10 @@ David M. Bressoud: Factorization and Primality Testing, Springer Verlag, 1989, 0
 
 \bibitem{pseudoprimebase}
 Wojciech Izykowski, Jim Sinclair: Deterministic variants of the Miller-Rabin primality test, \url{https://miller-rabin.appspot.com/}, 2018.11.30.
+
+\bibitem{twinprimes}
+Csajbók Tímea, Farkas Gábor, Járai Antal, Járai Zoltán, Kasza János: Report on the largest known Sophie Germain and twin primes, Annales Universitatis Scientiarium Budapestinensis de Rolando Eötvös Nominatae Sectio Computatorica 26: pp. 181-183. (2006)
+
 
 \end{thebibliography}
 
