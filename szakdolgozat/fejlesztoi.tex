@@ -91,7 +91,7 @@ A statisztikák előállításának folyamata bármikor adatvesztés nélkül le
 \end{figure}
 
 A program az adatbáziskönyvtárban tárolja az átszitált szegmensek tábláit, és az ezekből készült statisztikákat.
-A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az az szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 \pmod{2^{30}}$.
+A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az a szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 \pmod{2^{30}}$.
 
 Az első négy szegmenst az \texttt{init} program készíti el, így ezek $2^{32}$-ig tartalmazzák a prímszámokat.
 A program többi szitája ezek alapján inicializálja magát, ha $3$-nál nagyobb számtól kell a szitálást elkezdeni.
@@ -109,7 +109,7 @@ Az időigényessége miatt a futási idő összehasonlításához implementált 
 Az adatbázis információ kilistázza a szegmensfájlok számát, az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét és végét, a még nem összesített szegmensfájlok számát.
 Ezek alapján eldönthető, szitálást vagy az összesítést hogyan kell folytatni, hogy a teljes $[1, 2^{64}-2^{34}[$ intervallum statisztikái elkészüljenek.
 
-A szegmensfájlok ellenőrizhetőek, ehhez egy, a generator-tól különböző eratoszthenészi szita, vagy az erős pszeudo-prímteszt\cite{pseudoprime}\cite{pseudoprimebase} előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
+A szegmensfájlok ellenőrizhetőek, ehhez egy, a \texttt{generator}-tól különböző eratoszthenészi szita, vagy az erős pszeudo-prímteszt\cite{pseudoprime}\cite{pseudoprimebase} előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
 A szita lényegesen lassabb, mint a \texttt{generator}, és a pszeudoprímteszt időigényessége miatt intervallumok szitálásra nem alkalmas.
 A szegmensfájlok ellenőrzése alapvetően a \texttt{generator} helyességének tesztelésére való, minden összesített szegmens ellenőrzése megtöbbszörözné a szitáláshoz szükséges időt.
 
@@ -207,7 +207,7 @@ A megoldás 3 programból áll, az \texttt{init} és a \texttt{generator} C nyel
 
 \subsection{Init és generator}
 
-Az \texttt{init} és a \texttt{generator} forráskódja a tarball generator könyvtárában van.
+Az \texttt{init} és a \texttt{generator} forráskódja a tarball \texttt{generator} könyvtárában van.
 A két program egymáshoz nagyon hasonló feladatot lát el, hasonló megoldásokkal.
 Mindkettő $2^{30}$ hosszú intervallumokat szitál, és az eredményt szegmensfájlokba írja.
 Ehhez mindkettő Eratoszthenész szitáját használja.
@@ -215,7 +215,7 @@ Mindkét program ezt az egyetlen feladatot oldja meg, és szkriptekkel automatiz
 
 \subsubsection{Közös rész}
 
-A két program közös kódja a common.h fájl.
+A két program közös kódja a \texttt{common.h} fájl.
 Ez a fájl tartalmazza a konstansokat, és az eljárásokat, amik megkönnyítik a POSIX hívások használatát.
 A legtöbb ilyen könnyítés a hibák kezelésének elfedése, ami a kötegelt futtatáshoz illeszkedően
 a hiba kijelzése utáni azonnali programleállás.
@@ -252,8 +252,7 @@ A prímek listáját elég $2^{16}$-ig előállítani, ezt a program próbaoszt�
 \subsubsection{Generator}
 
 A \texttt{generator} fő részei hasonlóak az \texttt{init}-hez.
-Indulása után felolvassa az összes prímet az első 4 szegmensfájlból, és mindegyik prímhez osztással meghatározza, hogy melyik a legkisebb szám, amit oszt, és legalább akkora, mint legelső
-szitálandó szegmens kezdete.
+Indulása után felolvassa az összes prímet az első 4 szegmensfájlból, és mindegyik prímhez osztással meghatározza, hogy melyik a legkisebb szám, amit oszt, és legalább akkora, mint a szitálandó szegmens kezdete.
 A prímek, és a hozzájuk tartozó következő szitálandó pozíciót tároló adatstruktúra szitálás közben nem érzékeny azokra az elemekre, amik az éppen szitált szegmensnél nagyobb helyeken szitálnak, így a \texttt{generator} az összes prímet eltárolja $2^{32}$-ig, nem csak a szitálandó tartomány végének négyzetgyökéig, és a prímek első többszörösét is a prím négyzetétől szitálja.
 
 A prímek listájának inicializálása után a nagy szegmenseket az \texttt{init}-hez hasonlóan kisebbekre osztja, és ezeket sorban szitálja a prímek listája alapján.
@@ -272,7 +271,7 @@ A szegmensen belüli sorrendet a sor nem veszi figyelembe.
 A kis szegmensekben legfeljebb egyszer szitáló prímeknek nem csak a páros többszöröseit ugorja át a szita, hanem a 3-mal és 5-tel osztható többszöröseit is kihagyja.
 Ezeket a többszörösöket a bitmintával szitáló kis prímek jelölik meg.
 
-Az edénysor algoritmusának részletes leírására egy későbbi fejezetben kerül sor.
+Az edénysor algoritmusának részletes leírására ''Sziták'' fejezetben kerül sor.
 Az ott leírt távolság függvényt implementálja a \texttt{bucketIndex()} függvény a forráskódban.
 A számrendszert a \texttt{BUCKET\_BITS} konstans szabályozza.
 A sorhoz tartozó edények listája a \texttt{buckets} tömb, ennek minden eleme egy láncolt lista, ahol a listaelemek fix méretű edények.

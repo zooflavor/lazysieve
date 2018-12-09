@@ -21,7 +21,7 @@ előállításához először szükséges a prímek listájának előállítása
 Ehhez egy optimalizált, gyors szita C nyelven készült el.
 A könnyebb implementálhatóság miatt ez is két külön program, a kis
 számokat szitáló \texttt{init}, és a nagyobb számokkal dolgozó \texttt{generator}.
-A két program a működési elvében hasonló.
+Az \texttt{init} és a \texttt{generator} program a működési elvében hasonló.
 
 A program többi része Java nyelven van megírva, ez a \texttt{gui} nevű program.
 Ez összesíti a prímek listáját, tartalmazza a futási idők összehasonlításához
@@ -96,7 +96,7 @@ Ennek az egyszerű algoritmusnak a egyik hátránya, hogy $n$-ig szitálva $n-1$
 Erre megoldás a szegmentált szitálás, ahol egy rövidebb, nem feltétlenül 2-től kezdődő intervallumban szitálnak.
 Ehhez szükség van a prímek listájára, legalább az intervallum végének négyzetgyökéig.
 
-A legegyszerűbb szegmentált szita egy szegmens szitáláshoz minden prímet sorban vesz az intervallum végének négyzetgyökéig, osztással meghatározza, hogy melyik a legkisebb többszöröse a szegmensben, ha van ilyen szám, majd onnantól összeadással szitál a szegmens végéig, ahogy Eratoszthenész szitája is teszi.
+A legegyszerűbb szegmentált szita egy szegmens szitáláshoz minden prímet sorban vesz az intervallum végének négyzetgyökéig, osztással meghatározza, hogy melyik a legkisebb többszöröse a szegmensben, és ha van ilyen szám, akkor onnantól összeadással szitál a prímmel a szegmens végéig, ahogy Eratoszthenész szitája is teszi.
 
 Több, egymás utáni szegmens szitálásával az osztás költsége több szegmensre szétosztható, ha a szita a minden prímről minden szegmens szitálása után megjegyzi, hogy melyik számot szitálna, ami már nagyobb, mint a szegmens vége.
 A következő szegmens feldolgozásakor a prímmel innen lehet folytatni a szitálást.
@@ -138,13 +138,11 @@ A minták értékkészlete a természetes számok, az értelmezési tartomány a
 Ezek a minták a szitálással gyűjtött statisztikákból származhatnak, vagy külső forrásból is betölthető minta az x-y párok felsorolásával.
 
 Lehetséges a mintákat alapfüggvények lineáris kombinációjával közelíteni a legkisebb négyzetek módszerével.
-A prímstatisztikák elemeinek nagy száma, és a mintaértékek nagy terjedelme miatt szükséges volt nagyobb pontosságú numerikus algoritmusokat választani a közelítéshez, ami a számítási idő növekedésével jár.
-A Gauss-elimináció és az összegzés algoritmusának kiválasztása a program tesztelésével történt, ismert függvényekből származó minták közelítésével.
+A prímstatisztikák elemeinek nagy száma, és a mintaértékek nagy terjedelme miatt szükséges volt a részfeladatokat megoldó numerikus algoritmusok közül a nagyobb pontosságú algoritmusokat választani a közelítéshez, ami a számítási idő növekedésével jár.
+A lineáris egyenletrendszereket megoldó algoritmus, és az összegzés algoritmusának kiválasztása a program tesztelésével történt, ismert függvényekből származó minták közelítésével.
 A választás a tesztközelítések kontrollfüggvényéhez képesti négyzetes eltérést minimalizálja.
 
-A \texttt{gui} program tartalmaz több prímszita implementációt is, ezeknek az algoritmikus
-bonyolultsága különböző, de a futási idejük összehasonlíthatóságához a közös részek közös
-implementációt kaptak, és az eltérő részek hasonló szinten optimalizáltak.
+A \texttt{gui} program tartalmaz több prímszita implementációt is. Ezeknek az algoritmikus bonyolultsága különböző, de a futási idejük összehasonlíthatóságához a közös részek közös implementációt kaptak, és az eltérő részek hasonló szinten optimalizáltak.
 A sziták helyességének ellenőrzéséhez a sziták eredménye egymással összehasonlítható.
 
 Elkészült Eratoszthenész szitájának több variációja, mindegyik szegmentáltan működik, a különbség a prímek listájának kezelésében van.
@@ -173,7 +171,7 @@ A program fejlesztése és tesztelése OpenJDK8-cal és GCC 7.3-mal történt Li
 %%% EMIL: A másik dolog amit támogatok hogy beírod a github repo url-jét is.
 A CD mellékleten található tarball a Java programot lefordítva is tartalmazza,
 kicsomagolás után azonnal futtatható.
-A C programot a ''generator'' könyvtárban található Makefile segítségével lehet lefordítani:
+A C programot a \texttt{generator} könyvtárban található \texttt{Makefile} segítségével lehet lefordítani:
 \begin{lstlisting}[language=bash]
 generator$ make clean build
 \end{lstlisting}
@@ -185,8 +183,8 @@ parancssorból a project ant fájlának segítségével lehet
 gui$ ant clean jar
 \end{lstlisting}
 
-A program futtatásához több előkészített szkript is rendelkezésre áll, ezeket mind a ''scripts'' könyvtárból lehet indítani.
-Az előző két fordítást egyben is el lehet végezni a ''recompile'' szkripttel:
+A program futtatásához több előkészített szkript is rendelkezésre áll, ezeket mind a \texttt{scripts} könyvtárból lehet indítani.
+Az előző két fordítást egyben is el lehet végezni a \texttt{recompile} szkripttel:
 \begin{lstlisting}[language=bash]
 scripts$ ./recompile
 \end{lstlisting}
@@ -213,7 +211,7 @@ Ennek eredmény 4 bitvektort tartalmazó bináris fájl, amit a db mappába ment
 
 A \texttt{generator} programot többféleképpen is lehet indítani.
 Mindegyik esetben két paramétert kell megadni az indításhoz, a számot, ahol szitálást kezdje, és a szegmensek számát, amit ebben a futásban végig kell szitálni.
-A kezdő számot meg lehet adni decimálisan is, vagy hexadecimálisan is, ''0x'' prefixszel.
+A kezdő számot meg lehet adni decimálisan is, vagy hexadecimálisan is, \texttt{0x} prefixszel.
 A szegmensek számát is kétféleképpen lehet szabályozni.
 Az egyik lehetőség fix számú szegmens megadása, decimálisan, vagy hexadecimálisan.
 
@@ -234,7 +232,7 @@ szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás
 összes szitálás 2 216 348 896 ns
 \end{lstlisting}
 
-A másik mód a háttértáron fenntartandó szabad hely átadása, decimálisan, vagy ''0x'' prefixszel hexadecimálisan.
+A másik mód a háttértáron fenntartandó szabad hely átadása, decimálisan, vagy \texttt{0x} prefixszel hexadecimálisan.
 A szabad helyet bájtokban kell megadni.
 Ekkor következő szegmens szitálása előtt megvizsgálja, hogy van-e még annyi szabad hely az adatbáziskönyvtárban, mint amennyi meg van adva, ha igen, akkor szitálja a szegmenst,
 és lép a következőre, és ha nincs már elég szabad hely, akkor a program megáll.
@@ -265,7 +263,7 @@ Ezek az információk az elmentett szegmensfájlokból is kiolvashatóak.
 
 A mintaadatbázis a szitatáblák összesített statisztikáit tárolja.
 A programok az adatbázis könyvtárában kétfajta fájlt vesznek figyelembe.
-A szegmensek szitatáblái a ''\texttt{primes\textbackslash.[0-9a-f]\{16\}}'' reguláris kifejezésnek megfelelő nevű fájlok.
+A szegmensek szitatáblái a \texttt{primes\textbackslash.[0-9a-f]\{16\}} reguláris kifejezésnek megfelelő nevű fájlok.
 A fájlnév második fele a szegmens kezdőszáma hexadecimálisan.
 A fájl a páratlan számok bitvektora mellett tartalmazza a szegmens szitálásának megkezdésére, és a szitálására fordított időt, valamint ellenőrzésképpen a szegmens kezdőszámát is.
 
@@ -327,8 +325,7 @@ Az adatbázison három művelet végezhető:
 \end{itemize}
 
 Mindhárom művelet elvégezhető a grafikus felületen, és automatizáláshoz parancssorból is.
-A grafikus felületet a \texttt{gui} szkripttel lehet indítani, a parancssorból
-a \texttt{database} szkript segítségével lehet elérni a műveleteket.
+A grafikus felületet a \texttt{gui} szkripttel lehet indítani, a parancssorból a \texttt{database} szkript segítségével lehet elérni a műveleteket.
 
 Ezek a szkriptek meghatározzák, hogy a program melyik könyvtárat használja adatbázisként, ezt nem kell külön megadni.
 Szükség esetén ez a könyvtár a szkriptek egyszerű módosításával megváltoztatható.
@@ -416,13 +413,13 @@ Ehhez a \texttt{gui} újra előállítja az ellenőrzött szegmensfájlokat, és
 Az ellenőrzőszegmensek előállításához az egyszerű szegmentált eratoszthenészi szitát, vagy ez erős pszeudoprím tesztet lehet választani.
 
 A pszeudoprím teszt a szegmens minden számáról egyesével dönti el, hogy az prím-e.
-A pszeudoprím teszt rendkívül lassú, a célja, hogy a szitákhoz képest egy alapvetően más módszer is rendelkezésre álljon az ellenőrzéshez.
+A pszeudoprím teszt rendkívül lassú, a célja, hogy Eratoszthenész szitájához képest egy alapvetően más módszer is rendelkezésre álljon az ellenőrzéshez.
 
 A grafikus felületen a ''Szegmensfájlok ellenőrzése'' gomb megnyomása után lehet kiválasztani a szitálni kívánt szegmenseket, és a referencia előállításának módszerét, majd az ''Ellenőrzés'' gombbal lehet megkezdeni a tényleges folyamatot.
 
 Az ellenőrzést parancssorból is lehet futtatni a \texttt{check-segments} szkripttel.
 A szkript első paraméterében a referencia módszerét várja, ami lehet \texttt{sieve}, vagy \texttt{test}, a paraméterek maradéka az ellenőrizendő szegmensek kezdőszáma kell legyen.
-Ha egy kezdet sincs megadva, akkor a program az adatbázis könyvtárban található összes szegmensfájlt ellenőrzi.
+Ha egy kezdőszám sincs megadva, akkor a program az adatbázis könyvtárban található összes szegmensfájlt ellenőrzi.
 
 \begin{lstlisting}[language=bash]
 scripts$ ./check-segments sieve
@@ -442,7 +439,7 @@ Az $1$-től kezdődő szegmens kivételével az ellenőrző szegmens előállít
 \section{Sziták ellenőrzése}  %%% EMIL: az előző fejezet szatatáblák ellenőrzése volt... ami nagyon hasonlít ehhez a fejezethez... mi a különbség?
 %%% P: 1-2 olvasáskörig megfontolom, hogy a "sziták"-at át lehetne nevezve, "a versenyló sziták"- szerű kifejezésre
 
-Az sebességek összehasonlításához írt sziták eredményét is lehet ellenőrizni.
+A sziták futási idejének összehasonlításához írt sziták eredményét is lehet ellenőrizni.
 Az összehasonlításhoz a szegmensek ellenőrzésénél használt egyszerű szegmentált szita a referencia.
 
 A program grafikus felületén a ''Sziták ellenőrzése'' lehetőséget választva ki kell választani az ellenőrizendő szitát, és az ellenőrizni kívánt intervallum kezdő és végző számát.
@@ -513,7 +510,7 @@ A ''Fájl betöltésével'' CSV fájl olvasható be. A fájl formátuma megenged
 Ha az első sor első oszlopa ''BARS'',
 akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 
-A ''Prímstatisztikák'' a \texttt{generator} kimeneteléből összesített statisztikák, amiket az adatbáziskönyvtárban keres.
+A ''Prímstatisztikák'' a \texttt{generator} kimeneteléből összesített statisztikák. Ezeket a \texttt{gui} program az adatbáziskönyvtárban keres.
 A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
 A statisztikáknak három csoportja van.
 A prímek száma, és néhány kiemelt alakú prím száma a szegmensek végén.
@@ -574,7 +571,7 @@ Az így megadott függvények visszatérési értéke mindig \texttt{double} tí
 Egy kiválasztott közelítés részletei az ablak jobb alsó sarkában látszódnak, itt megváltoztatható a közelítéshez rendelt szín, és eltávolítható a közelítés.
 A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja a lineáris kombinációban.
 
-A legkisebb négyzetek módszere röviden leírható.
+A legkisebb négyzetek módszerének feladata röviden leírható.
 Ha az $n$ elemű minta
 \begin{align*}
 (x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n) (x_i \in \mathbb{N}, y_i \in \mathbb{R})
@@ -598,8 +595,7 @@ legyen a
 \end{align*}
 négyzetes eltérés összeg szerint.
 
-A program ezt az eltérés összeget jeleníti meg a közelítés hibájaként, valamint a $c_i$ skalárok
-a közelítés elemi függvényeinek együtthatói.
+A program ezt az eltérés összeget jeleníti meg a közelítés hibájaként, valamint a $c_i$ skalárok a közelítés elemi függvényeinek együtthatói.
 
 \section{Sziták mérése szkriptekkel}
 
@@ -618,8 +614,8 @@ A méréseket a \texttt{measure-sieve} szkripttel lehet elvégezni, paraméterk�
 \item a fájlt, ahova az eredményt mentse CSV-ben
 \end{itemize}
 
-A számokat meg lehet adni decimálisan, és hexadecimálisan is ''0x'' előtaggal.
-Ha a kezdőszám nagyobb, mint 1, akkor az adatbáziskönyvtárnak tartalmaznia kell az init program generálta első négy szegmenst.
+A számokat meg lehet adni decimálisan, és hexadecimálisan is \texttt{0x} előtaggal.
+Ha a kezdőszám nagyobb, mint 1, akkor az adatbáziskönyvtárnak tartalmaznia kell az \texttt{init} program generálta első négy szegmenst.
 
 Lehetőség van a mérték és az összesítés mind a négy kombinációját egy méréssel előállítani, ehhez mind a négy kimeneti fájl meg kell adni külön.
 
