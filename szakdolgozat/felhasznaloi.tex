@@ -29,8 +29,9 @@ Ez összesíti a prímek listáját, tartalmazza a futási idők összehasonlít
 írt szitákat, és jeleníti meg a prímek statisztikáit, és a futási idők
 mintáit.
 
-Ez a három program az ''adatbázis könyvtárba'' mentett bináris fájlokon keresztül cserél adatokat.
+Ez a három program az ``adatbázis könyvtárba'' mentett bináris fájlokon keresztül cserél adatokat.   %%% EMIL: kommunikál?
 Ide kerülnek az elkészült szitatáblák, és a prímek statisztikái.
+%%% EMIL: következő mondat szerintem felesleges. Megbízható adattárolás inkább ilyen komolyabb adabázisos kifejezének mondanám, és nem hadonásznák vele. A könyvtár bináris fájlokkal ahogy korábban szerepelt talan elég is.
 Az adatbázis könyvtár nem adatbázis a szokásos értelemben, a klasszikus adatbázis funkciókból csak a megbízható adattárolást végzi el.
 
 \begin{figure}[H]
@@ -74,7 +75,7 @@ Az adatbázis könyvtár nem adatbázis a szokásos értelemben, a klasszikus ad
 
 A programok több prímszitát tartalmaznak.
 A prímsziták számok egy intervallumáról döntik el, hogy melyik szám prím, és melyik összetett.
-A legtöbb implementált szita Eratoszthenész szitájának variációja.
+A legtöbb implementált szita Eratoszthenész szitájának variációja.   %%% EMIL: ismétléses vagy ismétlés nélküli variáció? vagy inkább a szita "változata"?
 Eratoszthenész szitája az egész számok egy adott $[2, n]$ intervallumába eső számokról dönti el, hogy melyik prím.
 Ezt a $pq$ szorzatra bontható számok megjelölésével teszi, ahol a $p<n$ prím, és $1<q\in\mathbb{N}$.
 Az algoritmus sorban veszi a számokat a listában kettőtől.
@@ -132,12 +133,13 @@ A \texttt{generator} és a \texttt{gui} a szegmensfájlokat az adatbázis könyv
 A szegmensfájlokra az ellenőrzés és összesítés után már nincs szükség, ezek eltávolíthatóak.
 Az adatbázisában hosszabb távon egyedül a prímek szegmensenkénti statisztikáit kell tárolni.
 A \texttt{gui} program a statisztikákat csak sorban dolgozza fel, és a statisztikák összmérete sem indokol egy egyszerű bináris fájlnál bonyolultabb megoldást.
-Az adatvesztés elkerüléséhez elég a statisztikafájl csere alapú felülírása.
+Az adatvesztés elkerüléséhez elég a statisztikafájl csere alapú felülírása.  %%% EMIL: Ez valami amit a fejlesztői doksiba kéne írni, nem?
 
 A \texttt{gui} képes egyváltozós mintákat megjeleníteni Descartes-féle koordináta rendszerben.
 A minták értékkészlete a természetes számok, az értelmezési tartomány a valós számok.
-Ezek a minták a szitálással gyűjtött statisztikákból származhatnak, vagy külső forrásból is betölthető minta az x-y párok felsorolásával.
+Ezek a minták a szitálással gyűjtött statisztikákból származhatnak, vagy külső forrásból is betölthető minta az $(x, y)$ párok felsorolásával.
 
+%%% EMIL: A következő paragrafus 90% tervezési döntésekről szól, és 10% felhasználásról. Lehegy hogy még a legkisebb négyzetek módszerét sem nagyon kellene itt emlegetni... inkább valami olyasmit hogy beépített vagy JS függvények lineáris kombinácójából kapott görbéket tud a mintákra illeszteni hogy szemléltessen ilyen olyan sejtéseket. 
 Lehetséges a mintákat alapfüggvények lineáris kombinációjával közelíteni a legkisebb négyzetek módszerével.
 A prímstatisztikák elemeinek nagy száma, és a mintaértékek nagy terjedelme miatt szükséges volt a részfeladatokat megoldó numerikus algoritmusok közül a nagyobb pontosságú algoritmusokat választani a közelítéshez, ami a számítási idő növekedésével jár.
 A lineáris egyenletrendszereket megoldó algoritmus, és az összegzés algoritmusának kiválasztása a program tesztelésével történt, ismert függvényekből származó minták közelítésével.
@@ -147,6 +149,7 @@ A \texttt{gui} program tartalmaz több prímszita implementációt is. Ezeknek a
 A sziták helyességének ellenőrzéséhez a sziták eredménye egymással összehasonlítható.
 
 Elkészült Eratoszthenész szitájának több variációja, mindegyik szegmentáltan működik, a különbség a prímek listájának kezelésében van.
+%%% EMLI: a legegyszerűbbEN?? furán hangzik a kövi mondat.
 A legegyszerűbb implementált eratoszthenészi szita a prímek listáját minden szegmensben végig bejárja.
 A prioritásos soron alapuló sziták a prímeket részlegesen rendezik az alapján, hogy hány szegmensnyire van az éppen szitált szegmenstől a prím következő többszöröse.
 Ilyen a bináris kupacot, és az edénysort használó szita.
@@ -159,8 +162,11 @@ A pontos kvadratikus formát, és $x$ és $y$ lehetséges értékeit Atkin az eg
 
 A sziták között kapott helyet a próbaosztás, és az erős pszeudoprím teszt\cite{pseudoprime} is, de ezek a lassúságuk miatt csak igen rövid tartományokon használhatóak.
 A próbaosztás egy faktorizációs eljárás, ami egyetlen számot nem-triviális szorzatra próbál bontani.
+%%% EMIL: az erős pszeudoprím teszted a Miller-Rabin, nem? Hivatkozz rá!
 Az (erős) pszeudoprím teszt egy prímteszt, egyetlen számról próbálja eldönteni, hogy az prím-e.
 A prímteszteket általában több nagyságrenddel nagyobb számokra alkalmazzák, mint a szitákat, és teljes módszer helyett sokszor megelégednek egy valószínűségi válasszal.
+
+%%% EMIL: Ezt az előző részt lehet felosztanám \subsubsection-okra.  a gui-nak van csomó része. Használhatod az ábrából az elnevezéseket.
 
 \section{A program telepítése és futtatása}
 
@@ -195,7 +201,7 @@ scripts$ ./recompile
 A prímek keresését két program végzi, az \texttt{init} program $2^{32}$-ig keresi meg és tárolja el a prímeket, a \texttt{generator} $2^{32}$-től $2^{64}-2^{43}$-ig.
 Az \texttt{init} készítette szitattáblák a \texttt{generator} futásához szükségesek.
 
-Mindkét program a számokat $2^{30}$ hosszú táblánkként szitálja, minden tábla első száma $2^{30}k+1$ alakú.
+Mindkét program a számokat $2^{30}$ hosszú táblánkként szitálja, minden tábla első száma $k2^{30}+1$ alakú.
 A szitatáblában csak a páratlan számok vannak nyilvántartva.
 A szitatáblákat a programok a fájlrendszerben bitvektorként tárolják, egy tábla kb. $64$Mb.
 
@@ -208,7 +214,7 @@ szegmens 1 - kezdet 1 073 741 825 - felkészülés   2 353 698 ns - szitálás 1
 szegmens 2 - kezdet 2 147 483 649 - felkészülés   2 344 515 ns - szitálás 1 188 330 478 ns
 szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1 199 900 603 ns
 \end{lstlisting}
-Ennek eredmény 4 bitvektort tartalmazó bináris fájl, amit a db mappába ment.
+Ennek eredmény 4 bitvektort tartalmazó bináris fájl, amit a \texttt{db} mappába ment.
 
 A \texttt{generator} programot többféleképpen is lehet indítani.
 Mindegyik esetben két paramétert kell megadni az indításhoz, a számot, ahol szitálást kezdje, és a szegmensek számát, amit ebben a futásban végig kell szitálni.
@@ -268,6 +274,7 @@ A szegmensek szitatáblái a \texttt{primes\textbackslash.[0-9a-f]\{16\}} regul�
 A fájlnév második fele a szegmens kezdőszáma hexadecimálisan.
 A fájl a páratlan számok bitvektora mellett tartalmazza a szegmens szitálásának megkezdésére, és a szitálására fordított időt, valamint ellenőrzésképpen a szegmens kezdőszámát is.
 
+%%% EMIL: az aggregates az amiről az előző bekezdés első mondatában írsz?  mert valahgy nem teljesen világos hogy mi is az a mintaadatbázis? az aggregates?
 A szitatáblák mellett az adatbázis tartalmazhatja szegmensek összesített statisztikáit is, \texttt{aggregates} néven.
 Ez a fájl az eddig összesített szegmensekről a következő információkat tartja nyilván, minden szegmensről külön-külön:
 \begin{itemize}
@@ -278,7 +285,7 @@ Ez a fájl az eddig összesített szegmensekről a következő információkat t
 \item a szegmensfájl utolsó módosítási idejét
 \item a szegmensbe eső legkisebb, és legnagyobb prímet
 \item a szegmensbe eső prímek számát,
-$12\mathbb{Z}+11$, $4\mathbb{Z}+1$, $4\mathbb{Z}+3$, $6\mathbb{Z}+1$ alakok szerinti bontásban
+$12\mathbb{Z}+11$, $4\mathbb{Z}+1$, $4\mathbb{Z}+3$, $6\mathbb{Z}+1$ alakok szerinti bontásban  %%% EMIL: ide azt akartad írni hogy a prímek, a 12Z+11, 4Z+1, 4Z+3, 6Z+1 alakú és tetszőleges alakú prímek számát tartalmazza? Nekem kicsit kusza a mondat... hogy érted hogy bontása? Ezek diszjunkt halmazok lennének? Hálistennek a példa segít
 \item a szegmensben előforduló prímhézagok első előfordulásának helyét,
 és az előfordulások számát.
 \end{itemize}
@@ -328,6 +335,7 @@ Az adatbázison három művelet végezhető:
 Mindhárom művelet elvégezhető a grafikus felületen, és automatizáláshoz parancssorból is.
 A grafikus felületet a \texttt{gui} szkripttel lehet indítani, a parancssorból a \texttt{database} szkript segítségével lehet elérni a műveleteket.
 
+%%% EMIL: jó láttam hogy az init és a generator progiknál meg kell adni a db könyvtárat?
 Ezek a szkriptek meghatározzák, hogy a program melyik könyvtárat használja adatbázisként, ezt nem kell külön megadni.
 Szükség esetén ez a könyvtár a szkriptek egyszerű módosításával megváltoztatható.
 
@@ -450,19 +458,21 @@ Parancssorból is ellenőrizhetőek a sziták a \texttt{check-sieve} szkripttel.
 A szkript 3 paramétere a szita neve, és az intervallum kezdő-, és végszáma.
 Az ellenőrizhető sziták nevei:
 \begin{itemize}
+  %%% EMIL: a parancsban megadandó kulcsszavakat bin-heap és hasonló, nem lenne szebb \texttt{}-ben
 \item atkin: Atkin szitája\cite{atkin}
 \item cols: Cache Optimalizált Lineáris Szita\cite{cols}
 \item eratosthenes-segmented: Eratoszthenész szitájának szegmentált változata
 \item bin-heap és bin-heap-inplace: Eratoszthenész szitája bináris kupaccal,
 	az bin-heap-inplace a kupac javítását helyben végzi
 \item buckets, buckets-$n$, buckets-simple: Eratoszthenész szitája, edénysorral
-
-	a buckets-simple nem szegmentált, a buckets, és a buckets-$n$ szegmentált.
-	a buckets-$n$-ben az $n$ helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
+	A buck\-ets-simple nem szegmentált, a buckets, és a buckets-$n$ szegmentált.
+        %%% EMIL: itt kicsit fura sor törés? 
+	A buckets-$n$-ben az $n$ helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
 	pl. buckets-$3$ 8as számrendszerben számol
 \item trial-division: próbaosztás
 \end{itemize}
 
+%%% EMIL: nem fejezet, hanem section (amit nem tuom pontosan hogy hívnak magyarul) és a section után tehetsz egy \lable{sec:sztak} itt meg tehetsz egy "a \pageref{sec:szitak} oldalon található ``Sziták'' sectionban"
 A ''Sziták'' fejezetben található ezeknek a szitáknak a részletesebb leírása.
 
 A sziták nevei listázhatóak a \texttt{list-sieves} szkripttel, a \texttt{describe-sieves} szkript rövid leírást is ad.
@@ -487,7 +497,7 @@ A program a közelítések négyzetes hibáját is kiszámítja a mintához kép
 A program egyváltozós, egyértékű mintákat kezel, azok között is a természetes számokhoz valós számokat rendelőket.
 A minta akár külső forrásból is származhat.
 
-A grafikonábrázoló részt a \texttt{gui-graph} szkripttel lehet indítani. A\texttt{gui} szkripttel indítva, majd a ''Grafikon'' gomb megnyomásával is meg lehet nyitni ezt az ablakot.
+A grafikonábrázoló részt a \texttt{gui-graph} szkripttel lehet indítani. A \texttt{gui} szkripttel indítva, majd a ''Grafikon'' gomb megnyomásával is meg lehet nyitni ezt az ablakot.
 
 Az ablak bal oldalán jelennek meg a betöltött minták és közelítő függvények grafikonjai.
 Minta és függvény hozzáadása után a grafikon megjelenített részét a program úgy választja meg, hogy minden minta összes pontja ebbe a nézetbe essen.
