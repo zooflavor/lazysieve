@@ -1,4 +1,5 @@
 \section{Sziták}
+\label{sec:szitak}
 
 A \texttt{gui} program tartalmazza Eratoszthenész szitájának több megvalósítását.
 Ezek az implementációk mind szegmentáltak, azaz csak egy rövidebb intervallumon szitálnak,
@@ -110,7 +111,7 @@ Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél 
 A sor pozíciójának megnövelése a sor elejének eltávolításával is együtt jár.
 A sor edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
 Egy eltárolt elem helyét az edények között az elem pozíciójának és a sor aktuális pozíciójának távolsága határozza meg.
-Két szám távolságát egy számrendszerben két érték határozza meg, a legnagyobb helyiérték, amiben eltérnek a számjegyeik, és  a nagyobbik szám számjegye ezen a helyiértéken.
+Két szám távolságát egy számrendszerben két érték határozza meg, a legnagyobb helyiérték, amiben eltérnek a számjegyeik, és a nagyobbik szám számjegye ezen a helyiértéken.
 
 Legyen $a \in \mathbb{N}, a > 1$ a sor számrendszerének alapszáma.
 $x$ $i$-edik számjegyét $a$ alapú számrendszerben jelölje $x_i$, ahol $x \in \mathbb{N}_0$.
@@ -186,9 +187,14 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 Az edénysoron alapuló szitára tisztán funkcionális megoldás adható.
 Az edénysor műveleteit láncolt listákkal ábrázolt számok összeadására lehet visszavezetni,
 ezzel a műveletigény akkor is a számjegyenkénti összeadást követi, ha a számítási modellben az összeadás konstans idejű.
-Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 
-Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy gyors modellben is. Egy elem a sorból kikerüléséig $h(x, x+y)$ edényt bejárhat, és ez az érték legalább annyi, mint y számjegyeinek száma, $\log_{a}{y}$.
+Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
+A számok láncolt listával ábrázolásával az $x+y$ kiszámítása $\theta(h(x, x+y))$ műveletet igényel.
+
+Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy gyors modellben is.
+Ha $r$ a $q$ sor eleme, akkor az elem a sorból kikerüléséig még $h(p(q), p(r))$ edényt bejárhat.
+Az edénysort szitálásra használva az új elemek pozíciója mindig $p(q)+b$, ahol $b$ prím.
+Ekkor a számjegyenkénti összeadás miatt $h(p(q), p(q)+b)$ legalább akkora, mint $b$ számjegyeinek száma, $\log_{a}{b}$.
 
 A CD mellékleten megtalálható az edénysor szita egy Haskell megvalósítása a \texttt{hs} könyvtárban.
 A program kettes számrendszerű edénysort használ, és a szitálás minden műveletét bit-listák feldolgozására vezeti vissza.
@@ -196,7 +202,7 @@ A program kettes számrendszerű edénysort használ, és a szitálás minden m�
 \subsubsection{Sebesség}
 
 A \texttt{generator} program az edénysoron alapuló szita optimalizált változata.
-Az optimalizálások közül a szegmensméret, a sor számrendszerének alapja tág határok között megválasztható. A szegmens hosszánál kisebb prímek függnek a szegmens méretétől, és a 64-nél kisebb prímek a felhasznált 64bites C típustól függnek, ezek szabadon nem választhatók meg.
+Az optimalizálások közül a szegmensméret, és a sor számrendszerének alapja tág határok között megválasztható.
 A \texttt{measure-generator} szkript a szegmensméret és számrendszer választások sebességét méri meg.
 Mindkét paramétert 2 hatványainak választja, a szegmensméretet $2^{16}$-tól $2^{24}$-ig, a számrendszert $2^1$-től $2^8$-ig.
 
