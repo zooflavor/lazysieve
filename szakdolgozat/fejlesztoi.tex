@@ -46,6 +46,7 @@ A prímek számát, és a szitálás idejét az intervallum belsejében több po
 
 A sziták sebességének mérését, és a statisztikák előállítását parancssorból is el tudja végezni, hogy szkriptekkel ez automatizálható legyen.
 A statisztikák előállításának folyamata bármikor adatvesztés nélkül leállítható, és később folytatható.
+%%% EMIL: Csak nekem van itt dejavu-m vagy tenyleg ujra olvastam a dolgozat elejet, pepitaban, kicsit hatarozatlanabbul?  Az elv pofon egyszeru: ha a program hasznalatarol/feladatarol/mukodeserol van szo, akkor felhasznaloi dokumentacio; ha a program implementalasarol/belso mukodeserol/tervezoi donteseirol van szo, akkor fejlesztoi dokumentacio.
 
 \pagebreak
 \section{A program komponensei}
@@ -88,6 +89,8 @@ A statisztikák előállításának folyamata bármikor adatvesztés nélkül le
 \draw[dashed, rounded corners] (-6.2, -1.8) -- (-5.1, -1.8) -- (-5.1, -2.5);
 \end{tikzpicture}
 \end{figure}
+%%% EMIL: Az abra ne szerepeljen 2x, hivatkozz ra.
+%%% EMIL: Szoval nem baj ha a fejlesztoi dokumnetacio strukturaja ugyan az mint a felhasznaloie (sot nagyon is szimpatikus az otlet), de a tartalom az ne legyen az..
 
 A program az adatbáziskönyvtárban tárolja a szitált szegmensek tábláit, és az ezekből készült statisztikákat.
 A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az a szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 \pmod{2^{30}}$.
@@ -101,6 +104,7 @@ Ezekre a szegmensfájlokra összesítés és ellenőrzés után többet nincs m�
 A szitálást tetszőleges szegmenstől lehet kezdeni a megengedett tartományon belül, nem szükséges sorban végigmenni a számokon.
 Az utolsó $2^{34}$ szám kihagyása egyszerű optimalizáció, így a programban az éppen szitált szám változója sosem csordul túl.
 
+%%% EMIL: Ezt (kovi bekezdes) olvasd at, szerintem kicsit kusza.
 Az \texttt{init} és a \texttt{generator} csak konzol módban futtatható.
 A program többi része a \texttt{gui} nevű Java program része, de az automatizáláshoz az adatbázissal kapcsolatos műveletei parancssorból is elérhetőek, ezek az adatbázis információ lekérése, az új szegmensfájlok ellenőrzése, és összesítése, és az összesítőfájlok összefésülése.
 Az időigényessége miatt a futási idő összehasonlításához implementált sziták ellenőrzése is futtatható grafikus felületen, és parancssorból is.
@@ -126,6 +130,8 @@ A sziták bármelyik szegmenstől képesek kezdeni a szitálást, és egy szegme
 A minták közelítése alapfüggvények lineáris kombinációjával történik, a legkisebb négyzetek módszerét használva.
 
 A program a mintákat és közelítő függvényeket Descartes-féle koordináta rendszerben jeleníti meg, ehhez a mintákat és a függvényeket mintavételezi az $x$ tengely kiválasztott szakaszának pixelenkénti felosztása szerint.
+%%% EMIL: vegig olvastam ezt a reszt... kicsit kondba vagyok mirol szol... marmint kicsit mindenrol, de valahogy ugy erzem szukebb kellene hogy legyen... mintha jobban a felhasznaloi reszhez tartozna (de nem teljesen)... nem katasztrofa, maradhat... ki is vaghatod
+%%% EMIL: +2 megjegyzes ami hirtelen eszembe jutott es el fogom felejteni: 1. nem artana tobb kod is a dolgozatba. 2. a mintak itt megint kicsit megleptek. "A" mintakrol beszelsz, de a "kozelmultban" nem nagyon emlegetted oket... nem kellene az "A" hatarozot elhagyni... es esetleg zarojelbe odairni hogy "mitakat (meresi adatokat) kirajzolni bla bla"
 
 \section{Az adatbázis}
 
