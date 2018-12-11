@@ -154,7 +154,7 @@ Atkin szitája\cite{atkin} az előbbi algoritmusoktól jelentősen eltér, a pr�
 helyett $n=ax^2+by^2$ egyenlet megoldásait keresi egy $n$ szám vizsgálatához, $x$ és $y$ pozitív egészek befutásával, $a$ és $b$ egész konstansok.
 A pontos kvadratikus formát, és $x$ és $y$ lehetséges értékeit Atkin az egészek algebrai bővítésével határozza meg, $n \in 4\mathbb{Z}+1$ esetén a Gauss-egészek, $n \in 6\mathbb{Z}+1$ esetén az Eisenstein-egészek, és $n \in 12\mathbb{Z}+11$ esetén a $\mathbb{Z}[\sqrt{3}]$ segítségével.
 
-A sziták között kapott helyet a próbaosztás, és a Miller–Rabin pszeudoprím teszt\cite{miller} is, de ezek a lassúságuk miatt csak igen rövid tartományokon használhatóak.
+A sziták között kapott helyet a próbaosztás, és a Miller–Rabin pszeudoprím teszt \cite{miller} is, de ezek a lassúságuk miatt csak igen rövid tartományokon használhatóak.
 A próbaosztás egy faktorizációs eljárás, ami egyetlen számot nem-triviális szorzatra próbál bontani.
 Az (erős) pszeudoprím teszt egy prímteszt, egyetlen számról próbálja eldönteni, hogy az prím-e.
 A prímteszteket általában több nagyságrenddel nagyobb számokra alkalmazzák, mint a szitákat, és teljes módszer helyett sokszor megelégednek egy valószínűségi válasszal.
@@ -174,7 +174,7 @@ generator$ make clean build
 \end{lstlisting}
 
 A Java program a NetBeans 8-as verziójával készült,
-parancssorból a project ant fájlának segítségével lehet újrafordítani:
+parancssorból a project \texttt{ant} fájlának segítségével lehet újrafordítani:
 \begin{lstlisting}[language=bash]
 gui$ ant clean jar
 \end{lstlisting}
@@ -284,6 +284,7 @@ A szegmens összesítése azt tartalmazná, hogy
 \item a legkisebb prím 17, a legnagyobb 31
 \item a szegmensben
 \begin{itemize}
+  %%% EMIL: pelda elozo verzioja szerintem jobb volt. az hogy 5 (tetszoleges alaku) prim van, azt is tarolod ugye? de ide nem irtad le. Az elozo verzio ugy ment hogy 5 prim van ezekbol...
 \item 2db $4\mathbb{Z}+1$
 \item 3db $4\mathbb{Z}+3$
 \item 2db $6\mathbb{Z}+1$
@@ -436,6 +437,8 @@ Az $1$-től kezdődő szegmens kivételével az ellenőrző szegmens előállít
 \label{sec:szitak-ellenorzese}
 %%% EMIL: az előző fejezet szatatáblák ellenőrzése volt... ami nagyon hasonlít ehhez a fejezethez... mi a különbség?
 %%% P: 1-2 olvasáskörig megfontolom, hogy a "sziták"-at át lehetne nevezve, "a versenyló sziták"- szerű kifejezésre
+%%% EMIL: lehet hogy nem nem kell. Ha eszunkbe jut valami akkor majd jelezzuk egymasnak... de igy is maradhat. nem olyan veszes.
+%%% EMIL: mar van is otletem! Az init es generator eredmenyeinek ellenorzese, es a gui szita megvalositasainak ellenorzese.  Mit szolsz?
 
 
 A sziták futási idejének összehasonlításához írt szitákat is lehet ellenőrizni, az általuk előállított szitatáblák ellenőrzésével.
@@ -558,12 +561,13 @@ JavaScript függvényhez meg kell adni a függvény nevét és forráskódját.
 A forráskódban a függvény argumentumára az $x$ változóval lehet hivatkozni, és a szkript utolsó kifejezésének értéke lesz a függvény értéke $x$-ben.
 Pl. az $x \mapsto \frac{\ln{x}}{x}$ hozzárendelés forráskódja:
 
+%%% EMIL: A JS kod nem nezne ki jobban courier betukkel mint a bash kod?
 \begin{lstlisting}[basicstyle=\small, language=Java]
 Math.log(x)/x
 \end{lstlisting}
 
 A szkriptben használható változó, és a szokásos vezérlőutasítások.
-Pl. az iterált logaritmus egy megadása:
+Pl. az iterált logaritmus egy megadása:  %%% EMIL: ne hasznalj Pl. es hasonlo roviditeseket ha nem muszaj
 \begin{lstlisting}[basicstyle=\small, language=Java,morekeywords=var]
 var y=0;
 while (1<x) {
