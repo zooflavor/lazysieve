@@ -521,7 +521,7 @@ A ''Fájl betöltésével'' CSV fájl olvasható be. A fájl formátuma megenged
 Ha az első sor első oszlopa ''BARS'',
 akkor vonaldiagram helyett a mintát oszlopdiagramként fogja ábrázolni.
 
-A ''Prímstatisztikák'' a \texttt{generator} kimeneteléből összesített statisztikák. Ezeket a \texttt{gui} program az adatbáziskönyvtárban keres.
+A ''Prímstatisztikák'' a \texttt{generator} kimeneteléből összesített statisztikák. Ezeket a \texttt{gui} program az adatbáziskönyvtárban keresi.
 A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
 A statisztikáknak három csoportja van.
 A prímek száma, és néhány kiemelt alakú prím száma a szegmensek végén.
@@ -584,6 +584,8 @@ A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja
 
 A legkisebb négyzetek módszerének feladata röviden leírható.
 Ha az $n$ elemű minta
+%%% EMIL: megint egy kis apróság. Én csak az utolsó két képletet tenném equation* (és nem align*) környezetbe, az első háromat meg sima inline math-be tenném ($(x_1, y_1), stb$... és a végén nem jól néz ki az $(x_i \in \mathbb{N}$ mert nem hagy helyet a zárójel előtt. Én talán így csinálnám: $(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)$ (ahol $x_i \in \mathbb{N}, y_i \in \mathbb{R}$)... és a második és harmadik felsorolást hasonlóan...
+
 \begin{align*}
 (x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n) (x_i \in \mathbb{N}, y_i \in \mathbb{R})
 \end{align*}
