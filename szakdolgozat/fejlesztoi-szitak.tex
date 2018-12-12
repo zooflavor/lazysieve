@@ -15,7 +15,7 @@ A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 \begin{algorithmic}[1]
 \State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
-	\For{$f \gets p \left \lceil{\frac{u}{p}}\right \rceil ; v > f; f \gets f+p$}
+	\For{$f \gets \max \lbrace p^2, p \left \lceil{\frac{u}{p}}\right \rceil \rbrace ; v > f; f \gets f+p$}
 		\State legyen $f$ megjelölve
 	\EndFor
 \EndFor
@@ -40,7 +40,7 @@ A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálás�
 \State legyen $t$ egy tömb
 \State $s \gets 0$ \Comment{a tömb elemeinek száma}
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
-	\State $t[s] \gets (p: p, f: p \left \lceil{\frac{u}{p}}\right \rceil)$
+	\State $t[s] \gets (p: p, f: \max \lbrace p^2, p \left \lceil{\frac{u}{p}}\right \rceil \rbrace )$
 	\State $s \gets s+1$
 \EndFor
 \For{$\ell \gets 1, v \gets u+d; k \ge \ell; \ell \gets \ell+1, u \gets u+d, v \gets v+d$}
@@ -82,7 +82,7 @@ A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a h
 \begin{algorithmic}[1]
 \State legyen $q$ egy üres sor
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
-	\State hozzáad$(q, (p: p, f: p \left \lceil{\frac{u}{p}}\right \rceil))$
+	\State hozzáad$(q, (p: p, f: \max \lbrace p^2, p \left \lceil{\frac{u}{p}}\right \rceil \rbrace ))$
 \EndFor
 \For{$\ell \gets 1, v \gets u+d; k \ge \ell; \ell \gets \ell+1, u \gets u+d, v \gets v+d$}
 	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
@@ -114,20 +114,20 @@ Egy eltárolt elem helyét az edények között az elem pozíciójának és a so
 Két szám távolságát egy számrendszerben két érték határozza meg, a legnagyobb helyiérték, amiben eltérnek a számjegyeik, és a nagyobbik szám számjegye ezen a helyiértéken.
 
 Legyen $a \in \mathbb{N}, a > 1$ a sor számrendszerének alapszáma.
-$x$ $i$-edik számjegyét $a$ alapú számrendszerben jelölje $x_i$, ahol $x \in \mathbb{N}_0$.
+Az $x$ szám $i$-edik számjegyét $a$ alapú számrendszerben jelölje $x_i$.
 Legyen $h(x, y)$ a legnagyobb helyiérték, ahol $x$ és $y$ eltér.
-A sor által használt $d(x, y)$ távolságfüggvény az $y-x$ eltérés nagyságrendjének közelítése.
+A sor által használt $d(x, y)$ távolságfüggvény az $y-x$ eltérés nagyságrendjének finomítása a jobb argumentum releváns számjegyével.
 \begin{equation}
 x = \sum_{i=0}^{\infty} x_i a^i\ (i \in \mathbb{N}_0, x_i \in \mathbb{N}_0, x_i < a)
 \end{equation}
 \begin{equation}
-h(x, y) = \max{\{i \in \mathbb{N}_0 | x_i \not= y_i\}}\ (x, y \in \mathbb{N}_0, x<y)\\
+h(x, y) = \max \lbrace i \in \mathbb{N}_0 | x_i \not= y_i\rbrace \ (x, y \in \mathbb{N}_0, x<y)\\
 \end{equation}
 \begin{equation}
 \label{ddef}
 d(x, y) = (a-1) h(x, y) + y_{h(x, y)} - 1
 \end{equation}
-Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-vagy művelettel is megadható,
+Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-vagy művelettel is megadható.
 \begin{align*}
 d(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
 \end{align*}
@@ -146,7 +146,6 @@ Ekkor a $q$ sor invariánsa:
 	& \forall i \in \mathbb{N}_0: r \in b(q, i) \iff i=d(p(q), p(r)) \\
 \forall r \not\in q &: \forall i \in \mathbb{N}_0: r \not\in b(q, i)
 \end{align*}
-%%% P: lehet, hogy p(...) helyett f(...) kéne, ha már az algoritmusokban is az volt, ahol a p foglalt volt a prímekre.
 
 Új sor létrehozásához az edények listáját kell létrehozni, a sor kezdő pozíciója bármi lehet.
 Új elemet a sorhoz a távolságfüggvény kiértékelése után az elem edénybe szúrásával lehet adni,
@@ -166,38 +165,40 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 \label{alg:buckets-remove-min}
 \begin{algorithmic}[1]
 \Function{eltávolít-min}{$q$}
-	\State $l \gets$ üres lista
+	\State $\ell \gets$ üres lista
 	\State $i \gets d(p(q), p(q)+1)$
 	\State $p(q) \gets p(q)+1$
 	\While{$b(q, i)$ nem üres}
 		\State $r \gets$ eltávolít$(b(q, i))$
 		\If{$p(r) = p(q)$}
-			\State hozzáad$(l, r)$
+			\State hozzáad$(\ell, r)$
 		\Else
 			\State hozzáad$(b(q, d(p(q), p(r)))$
 		\EndIf
 	\EndWhile
-	\State \Return l
+	\State \Return $\ell$
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
 Az edénysor elejét ezzel az adatstruktúrával nem lehet hatékonyan lekérni az elemek eltávolítása nélkül.
-
 Edénysorral szitáláskor a sor pozícióját a szegmens végéig növelve pontosan a szegmensben szitáló elemek kerülnek ki a sorból, a sor elejének lekérdezésére nincs szükség.
-Ha a szegmensek hossza egy szám, akkor a prímek azok a számok, amelyik sorpozíciókra lépve a pozíció növelése nem távolít el elemet.
+
+Ha a szegmensek hossza egy szám, akkor a prímek azok a számok, amelyik sorpozíciókra lépve a pozíció növelése nem távolít el elemet. A \texttt{buckets-simple} a felhasználó által megadott szegmensmérettől függetlenül így működik, a számokról sorban, egyetlen menetben dönti el, hogy melyik prím.
 
 \subsubsection{Funkcionális megvalósítás}
 
-Az edénysoron alapuló szitára tisztán funkcionális megoldás adható.
+Az edénysoron alapuló szitára tisztán funkcionális megvalósítás adható.
 Az edénysor műveleteit láncolt listákkal számjegyenként ábrázolt számok összeadására lehet visszavezetni.
+
 Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 A számok láncolt listával ábrázolásával az $x+y$ kiszámítása $\theta(h(x, x+y))$ műveletet igényel.
 
 Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy olyan számítási modellben is, ahol számok összeadása konstans idejű.
 Ha $r$ a $q$ sor eleme, akkor az elem a sorból kikerüléséig még $h(p(q), p(r))$ edényt bejárhat.
+
 Az edénysort szitálásra használva az új elemek pozíciója mindig $p(q)+b$, ahol $b$ prím.
-Ekkor a számjegyenkénti összeadás miatt $h(p(q), p(q)+b)$ legalább akkora, mint $b$ számjegyeinek száma, $\log_{a}{b}$.
+Ekkor a számjegyenkénti összeadás miatt $h(p(q), p(q)+b)$ legalább akkora, mint $b$ legnagyobb nem $0$ helyiértéke, $\lfloor \log_{a}{b} \rfloor$.
 
 A CD mellékleten megtalálható az edénysor szita egy Haskell megvalósítása a \texttt{hs} könyvtárban.
 A program kettes számrendszerű edénysort használ, és a szitálás minden műveletét bit-listák feldolgozására vezeti vissza.
@@ -311,7 +312,7 @@ d(p(q), p(r)) = i < d' = d(p(q), p(q)+1)
 \end{align*}
 Ha $k' \not = k$, akkor $k' < k$, de \ref{kisebb} és \ref{szamjegy} ellentmondáshoz vezet:
 \begin{align*}
-p(q)_{k'} = a-1 < p(r)_{k'} = 0
+a-1 = p(q)_{k'} < p(r)_{k'} = 0
 \end{align*}
 Ha $k' = k$, akkor $i < d'$ és \ref{ddef} miatt $p(r)_k < (p(q)+1)_k$. Ekkor \ref{kisebb} és \ref{eggyel} ellentmond egymásnak:
 \begin{align*}

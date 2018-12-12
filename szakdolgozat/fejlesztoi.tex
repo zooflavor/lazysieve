@@ -62,7 +62,7 @@ A program komponenseinek ábrája az \pageref{komponensek} oldalon található.
 A program adatbázisa egy egyszerű könyvtár, amin keresztül a különböző programrészek kommunikálnak.
 Ezek az adatok mindig egy-egy teljes bináris fájlt jelentenek.
 Az adatbázis két fajta fájlt tárol, a szitált szegmenseket, azaz a szitatábla bitvektorait, és a szegmensek összesítéseit.
-Mindkettő a szegmens első számával van azonosítva, a szegmens hossza mindig $2^{30}$ szám, és az $n \in \mathbb{N}$ megengedett kezdő szám, ha $n < 2^{64}-2^{34}$ és $n \equiv 1 \pmod{2^{30}}$.
+Mindkettő a szegmens első számával van azonosítva, a szegmens hossza mindig $2^{30}$ szám, és az $n \in \mathbb{N}_0$ megengedett kezdő szám, ha $n < 2^{64}-2^{34}$ és $n \equiv 1 \pmod{2^{30}}$.
 Minden szegmens egy külön fájl az adatbázis könyvtárában.
 Az összes szegmensstatisztika egy fájlban van.
 
@@ -70,7 +70,7 @@ Az \texttt{init} program az első 4 szegmensfájlt írja.
 A \texttt{generator} az első 4 szegmensfájlt olvassa, és az összes többi szegmensfájlt írja.
 A \texttt{gui} az összes szegmensfájlt olvassa, és egyiket se írja, és szegmensstatisztika fájlt csak a \texttt{gui} használja.
 
-Egy szegmensfájlok neve \texttt{primes.} előtaggal kell kezdődjön, és a pontosan 16 hexadecimális számjegy kell kövesse, ami a szegmens által leírt első szám.
+Egy szegmensfájlok neve \texttt{primes.} előtaggal kell kezdődjön, és pontosan 16 hexadecimális számjegy kell kövesse, ami a szegmens által leírt első szám.
 A fájl bináris, a legkisebb helyiértékű bájt elöl, azaz little endian sorrendben.
 A tartalma:
 \begin{itemize}
@@ -78,14 +78,14 @@ A tartalma:
 	
 Ez $2^{26}$ byte, legkisebb helyiértékű byte elöl sorrendben, minden bit egy páratlan szám összetettségét írja le.
 Ha a bit $1$, akkor a szám összetett, ha $0$, akkor a szám prím.
-Ha $s$ a szegmens intervallumának kezdete, akkor az $0.$ bájt $0.$ bitje $s$-t írja le, a $0.$ bájt $1.$ bitje $s+2$-t, a $k.$ bájt $l.$ bitje $s+16k+2l$-t.
+Ha $s$ a szegmens intervallumának kezdete, akkor az $0.$ bájt $0.$ bitje $s$-t írja le, a $0.$ bájt $1.$ bitje $s+2$-t, a $i.$ bájt $j.$ bitje $s+16i+2j$-t.
 	
 \item a szegmens kezdete, 8 bájt, egész
 \item a szegmens szitálására való felkészülés ideje, 8 bájt, egész, nanoszekundumokban
 \item a szegmens szitálásának ideje, 8 bájt, egész, nanoszekundumokban
 \end{itemize}
 
-Ahhoz, hogy az \texttt{init} és a \texttt{generator} program bármikor leállítható legyen szegmensfájl írása közben, a szegmenst először egy ideiglenes fájlba írja, és ha ez hiba nélkül megtörtént, akkor az ideglenes fájlt átnevezi a megfelelő névre.
+Ahhoz, hogy az \texttt{init} és a \texttt{generator} program bármikor leállítható legyen, a szegmenst először egy ideiglenes fájlba írja, és ha ez hiba nélkül megtörtént, akkor az ideglenes fájlt átnevezi a megfelelő névre.
 Mivel az ideiglenes fájl ugyanabba a könyvtárba kerül, mint ahova a szegmensfájl is, így feltételezhető, hogy helyi meghajtón az átnevezés már atomi művelet.
 
 Ez az eljárás az átnevezés előtt nem győződik meg arról, hogy az ideiglenes fájl minden része
@@ -130,7 +130,7 @@ Az ideiglenes fájl kiírásának megvárásával a statisztikafájl váratlan s
 
 A fájl formátuma és az új fájl kiírásának algoritmusa lehetővé teszi, hogy a statisztikafájlt egyszerre lehessen sorban felolvasni, és az új eredményt sorban kiírni, úgy, hogy egyszerre csak egy statisztikát kelljen a memóriában tartani.
 
-Az adatbázis nincs védve a párhuzamos írásoktól, és az összesítőfájl egyszerű sorban feldolgozhatósága feltételezi, hogy egy fájl kevés szegmensstatisztikát fog tartalmazni, legfeljebb. kb. $10^6$ szegmensét.
+Az adatbázis nincs védve a párhuzamos írásoktól, és az összesítőfájl egyszerű sorban feldolgozhatósága feltételezi, hogy egy fájl kevés szegmensstatisztikát fog tartalmazni, legfeljebb kb. $10^6$ szegmensét.
 
 \section{A megvalósítás}
 
@@ -163,7 +163,7 @@ A szegmensfájlok olvasására és írásara a \texttt{readSegment()} és \textt
 \subsubsection{Init}
 
 Az \texttt{init} program előállítja az első 4 szegmens fájlt, azaz $2^{32}$-ig az összes prímet megkeresi.
-Ezzel a többi részprogram már a $2^{32} - 2^{64}$ tartomány tetszőleges részén tud szitálni, anélkül, hogy a szitált szegmenseket a szitálás után végig kéne nézze új prímekért.
+Ezzel a többi részprogram már a $[2^{32}, 2^{64}[$ tartomány tetszőleges részén tud szitálni, anélkül, hogy a szitált szegmenseket a szitálás után végig kéne nézze új prímekért.
 
 A szita egy egyszerű szegmentált eratoszthenészi szita.
 A $2^{30}$ hosszú szegmenseket több kisebb, egyenlő szegmensre osztja, és ezeket a kis szegmenseket
@@ -193,7 +193,7 @@ A prímek, és a hozzájuk tartozó következő szitálandó pozíciót tároló
 A prímek listájának inicializálása után a nagy szegmenseket az \texttt{init}-hez hasonlóan kisebbekre osztja, és ezeket sorban szitálja a prímek listája alapján.
 
 A prímek listája a \texttt{generator}-ban több külön adatszerkezet összessége.
-A prímeket a szita inicializálásánál 3 részre osztja a nagyságuk szerint.
+A prímeket az inicializálásakor 3 részre osztja a nagyságuk szerint.
 A $64$-nél kisebb prímeket $64$-bit széles bitmintákban tárolja, és ezekkel a mintákkal $64$-bitesével szitálja végig a kis szegmenseket a bitenkénti vagy művelettel.
 A 3 és a 11, valamint az 5 és a 7 szorzata kisebb, mint 64, ezeket a párokat egyetlen $64$ bites mintába fejti ki, ezeknek a mintáknak a periódusa 33, és 35.
 A többi prím mintájának periódusa a legnagyobb olyan szám, ami 64-nél kisebb, és a prím osztja.
@@ -218,7 +218,7 @@ Ha az elem szitál az aktuális szegmensben, akkor elvégzi a szitálást, és a
 
 A 2, 3, és 5 többszöröseinek hatékony kihagyásához a prioritásos sor elemeiben a pozíció mellett el van tárolva, hogy az a pozíció melyik modulo $30$ maradékosztály eleme.
 A nyolc szóba jöhető lehetőség közül a \texttt{PrimePosition.prime} mező felső 3 bitje választ.
-Ezt a 3 bit információt biztonsággal lehet itt tárolni, a 64 bit széles változóból a feladat határai miatt mindig csak az alsó 32 tartalmaz értékes számjegyet.
+Ezt a 3 bit információt biztonsággal lehet itt tárolni, a 64 bit széles változóban a feladat határai miatt mindig csak az alsó 32 tartalmaz értékes számjegyet.
 Ez a 2-3-5 kerék alapú gyorsítás csak a prioritásos sorban tárolt prímekre van alkalmazva.
 
 \subsection{Gui}
@@ -229,7 +229,8 @@ Ezeknek a funkcióknak a többsége nem interaktív, a felhasználó a paraméte
 A forráskód ennek megfelelően három egymástól jól elkülöníthető részre osztható.
 A legalsó szint a program adatszerkezeteit, algoritmusait, és fájlformátumait írja le. 
 Erre építenek a felhasználói műveletek megvalósításai.
-Mindegyik művelethez tartozik egy eljárásként megvalósított belépési pont, a programkód legfelső szintje ezeket teszi a felhasználó számára meghívhatóvá, parancssorból és grafikusan is.
+Mindegyik művelethez tartozik egy eljárásként megvalósított belépési pont.
+A programkód legfelső szintje ezeket teszi a felhasználó számára meghívhatóvá, parancssorból és grafikusan is.
 
 A grafikonmegjelenítés az egyetlen ténylegesen interaktív feladat, ennek megoldása a modell-nézet-vezérlő felosztást alkalmazza.
 
@@ -237,10 +238,11 @@ A grafikonmegjelenítés az egyetlen ténylegesen interaktív feladat, ennek meg
 
 A csomag néhány közismert algoritmust és adatszerkezetet tartalmaz, valamint az ezekhez szükséges funkcionális interfészek definícióit.
 A legtöbbnek létezik könnyen használható sztenderd könyvtári megvalósítása, de ezek referenciatípusokat használnak.
+
 A primitív és referencia típusú értékek közötti rengeteg konverzió három problémát okoz.
 Feleslegesen növeli a futási időt, miközben egyetlen számítógépen eleve reménytelenül hosszú feladat $2^{64}$-ig szitálni.
 Ezen túl megnöveli a program memóriaigényét.
-$2^{32}$-ig kb. $2\cdot10^8$ darab prím van, ha egy szita csak a prím-pozíció párokat egy egyszerű tömbben tárolná, prímenként 4 bájton, pozíciónként 8 bájton, akkor ez a tömb kb. $2,4$Gb memóriát foglalna el.
+$2^{32}$-ig kb. $\num{2e8}$ prím van, ha egy szita csak a prím-pozíció párokat egy egyszerű tömbben tárolná, prímenként 4 bájton, pozíciónként 8 bájton, akkor ez a tömb kb. $2,4$Gb memóriát foglalna el.
 A program a primitív típusokon alapuló konténerekkel képes $3,5$Gb memória használatával futni.
 A harmadik probléma az, hogy primitív érték objektummá alakítása szinte mindig új objektum létrehozásával jár, ami legtöbbször egy objektum elérhetetlenségéhez is vezet.
 A szemétgyűjtő ezzel járó folyamatos háttérmunkája nem csak feleslegesen növeli a futási időt, hanem kiszámíthatatlanságával megnöveli a sziták mért futási idejének zaját is.
@@ -258,6 +260,7 @@ A kupac egy elsőbbségi sor, a sor eleje az absztrakt rendezés szerinti legkis
 
 Az \texttt{UnsignedLong} osztály a Java \texttt{long} típus előjel nélküli műveleteit valósítja meg.
 A Java a 8-as verziótól támogatja a primitív egész típusok előjel nélküli összehasonlítását és osztását, ez az osztály ezekre építve ad néhány segédeljárást.
+
 A pszeudoprím-teszthez a maradékos hatványozás, Java támogatás hiányában, a kitevő bitjei alapján az ismételt szorzást és négyzetre emelést használja, míg a szorzás ehhez hasonlóan összeadást és kétszerezést.
 Ezeknek az algoritmusoknak a futási ideje egy-egy szám esetén elfogadható, de intervallumok szitálására nem alkalmas.
 
@@ -270,6 +273,7 @@ A \texttt{double} véges pontosságának következménye, hogy nem minden szám 
 
 A \texttt{Sum} három stratégiát ad az összeadások sorrendjéből származó hiba minimalizálására.
 A program használata közben a felhasználó ezek közül nem tud választani, a tesztek alapján legstabilabbnak ítélt elsőbbségi soron alapuló összegzést használja a közelítés.
+
 A legegyszerűbb \texttt{Sum.Simple} egyetlen változót használva a tagokat felsorolásuk sorrendjében adja össze.
 
 A bináris kupacot használó \texttt{Sum.Priority} a tagokat az elsőbbségi sorban gyűjti, majd a végső összeg kiszámításához a sorból, amíg lehet, ismételten kiveszi a két legkisebb abszolút értékű elemet, azokat összeadja, és az eredményt a sorba visszahelyezi.
@@ -289,7 +293,7 @@ A \texttt{LinearCombinationFunction} már létező függvények lineáris kombin
 A \texttt{Matrix} osztályban vannak megadva a valós mátrixok műveletei, mindegyik kétdimenziós \texttt{double} tömbökre.
 Az implementált műveletek a legkisebb négyzetek módszeréhez szükségesekre korlátozódnak, ezek a mátrixszorzás, a transzponálás, és mátrix formában megadott lineáris egyenletrendszerek megoldása.
 
-Lineáris egyenletrendszert meg lehet oldani Gauss-eliminációval, vagy Householder-féle QR felbontással.
+Lineáris egyenletrendszerek megoldhatóak a Householder-féle QR felbontással, vagy Gauss-eliminációval.
 A Gauss-eliminációnál kiválasztható, hogy részleges sorcserére, vagy teljes sor és oszlopcserére kerüljön sor.
 A \texttt{Solver} interfész a választott módszer részleteinek elfedésére szolgál.
 A közelítések tesztjei alapján a legkisebb hibát eredményező választás a Gauss-elimináció teljes sor és oszlop cserével, a felhasználó nem tudja megválasztani a lineáris egyenletrendszerek megoldási módszerét.
@@ -303,10 +307,11 @@ A közelítés hibáját is ki lehet ezzel az osztállyal számolni.
 A \texttt{gui.io} csomagban az adatbázis kezelését leíró osztályok vannak.
 Az adatbázis funkciók a \texttt{Database} egy objektumán keresztül érhetőek el, ez a \texttt{common.h}-val párhuzamosan definiálja a szegmensfájlok neveit, és formátumát.
 A felhasználói műveletek közül az adatbázis információk lekérését, a szegmensfájlok összesítését, és összesítés importálását a \texttt{Database} osztály \texttt{info()}, \texttt{reaggregate()}, és \texttt{importAggreagtes()} metódusai valósítják meg.
+
 A sziták az inicializálásukkor a \texttt{Database.largePrimes()} metódust használva olvassák be az első 4 szegmensfájlból a prímeket.
 
 A \texttt{Segment} osztály példányai a $2^{30}$ hosszú szitatáblák.
-Ezek tényleges fájlból olvasott adatokat is tartalmazhatnak, vagy szegmensek és sziták ellenőrzésekor a Java program is generálja.
+Ezek fájlból olvasott adatokat is tartalmazhatnak, vagy szegmensek és sziták ellenőrzésekor a Java program is generálhatja.
 Ezzel az osztállyal szegmensfájlt csak olvasni lehet, írni nem.
 
 Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a \texttt{CSVReader} és \texttt{CSVWriter} osztályokat.
@@ -324,7 +329,9 @@ A írás és az olvasás \texttt{AggregateBlock} példányokkal dolgozik, ezek a
 A megjelenítésre szánt mintákat az \texttt{Aggregates} osztály készíti el a szegmensenkénti statisztikák alapján közvetlenül a megjelenítés előtt.
 A szegmenseket az összesítésfájl sorrendjében dolgozza fel, az első hiányzó szegmensig.
 A megjelenített statisztikák legtöbbje egyszerűen összesíthető a szegmensenkénti adatokból.
+
 Az összes páratlan prím számát a $4Z+1$ és a $4Z+3$ alakú prímek számának összege adja, az összes prímet ezek mellett az egyetlen páros prím, a $2$, alkotja.
+
 Az egymás utáni szegmenseken átívelő prímhézagok egyik hézagokra vonatkozó statisztikában sem szerepelnek, ezeket a szegmensenként eltárolt legkisebb és legnagyobb szegmensbe eső prím alapján külön meg kell határozni.
 
 \subsubsection{gui.sieve}
@@ -422,8 +429,8 @@ Az implementációk főbb jellemzői:
 \item \texttt{SieveOfEratosthenes}: a prímeket egy tömbben tárolja, és minden szegmens szitálásához minden prímmel próbál szitálni a szegmensben
 \item \texttt{QueueSieve}: a prímeket bináris kupacban tárolja, szitáláskor a kupac elejét dolgozza fel, amíg az a szegmensbe esik.
 \item \texttt{CacheOptimizedLinearSieve}: a prímeket kétszintű edényrendszerben tárolja, szitáláskor a szegmensbe eső elemek már edényekbe vannak válogatva, azokat csak be kell járni
-\item \texttt{SimpleBucketSieve}: a prímeket a \texttt{QueueSieve}-hez hasonlóan egy elsőbbségi sorban tartja nyilván, az elsőbbségi sor egyre nagyobb intervallumokat lefedő edények listája
-\item \texttt{Bucket1Sieve}: az edénysoron alapuló szita felgyorsítása a COLS 0. ''körével'', a szegmensek méreténél kisebb prímeket a sortól külön, egy tömbben tárolja. Ezek a kis prímek minden szegmensben szitálnak, felesleges lenne a sorból minden szegmensnél kivenni, majd visszahelyezni.
+\item \texttt{SimpleBucketSieve}: a prímeket a \texttt{QueueSieve}-hez hasonlóan egy elsőbbségi sorban tartja nyilván, az elsőbbségi sor egyre nagyobb intervallumokat lefedő edények listája. Ez a szita a szegmensmérettől függetlenül minden számon sorban halad végig a szitatáblában, és arról egyetlen menetben dönti el, hogy többszöröse-e valamelyik prímnek.
+\item \texttt{Bucket1Sieve}: az edénysoron alapuló szita felgyorsítása a COLS 0. ''körével'', a szegmensek méreténél kisebb prímeket a sortól külön, egy tömbben tárolja. Ezek a kis prímek minden szegmensben szitálnak, felesleges lenne a sorból minden szegmensnél kivenni, majd visszahelyezni ezeket.
 \item \texttt{BucketNSieve}: a \texttt{Bucket1Sieve} további gyorsítása, az edénysor számrendszerének alapját megnövelve a prímek részleges rendezését finomítja.
 \end{itemize}
 \end{itemize}
@@ -455,7 +462,7 @@ Ez az objektum számon tartja a nyitott ablakok számát, és az utolsó becsuk�
 \subsubsection{Parancssor}
 
 A \texttt{gui} program legtöbb művelete parancssorból is indítható.
-A parancssori műveletek írják le a \texttt{gui.Command.Descriptor} osztály példányai. A \texttt{gui.Main.main()} a program indítási paramétereit ezekkel a leírókkal összevetve választja ki a futtatandó parancsot.
+A parancssori műveleteket írják le a \texttt{gui.Command.Descriptor} osztály példányai. A \texttt{gui.Main.main()} a program indítási paramétereit ezekkel a leírókkal összevetve választja ki a futtatandó parancsot.
 A leíró a parancs belépési pontja mellett a megengedett argumentumok listáját tartalmazza.
 A parancs kiválasztásához a tényleges és elvárt argumentumok meg kell egyezzenek.
 Az argumentum leírásában található reguláris kifejezéssel a \texttt{main()} szintaktikailag ellenőrzi a tényleges argumentumokat, a szemantikai helyesség ellenőrzése minden parancs saját feladata.
@@ -468,10 +475,10 @@ Ez a két művelet a szegmens és összesítőfájl segédosztályait használja
 Egyik művelet sem interaktív, a paraméterek megadása és az eredmény visszajelzése is a legegyszerűbb megoldásokat használja grafikusan és parancssorban is.
 Ezek megvalósítása a \texttt{gui.io.command} csomagban található.
 
-\subsubsection{Szegmensfájlok és sziták ellenőrzése}
+\subsubsection{A sziták eredményeinek ellenőrzése}
 
 A szegmensfájlok és a sziták ellenőrzése a \texttt{gui.check} csomagban van megvalósítva.
-Mindkettő parancssorból és grafikusan is indítható, az adatbázis műveletekhez hasonlóan a paraméterek bekérése és az eredmény megjelenítése egyszerű.
+Mindkettő parancssorból és grafikusan is indítható, az adatbázis műveletekhez hasonlóan a paraméterek bekérése és az eredmény megjelenítése a legegyszerűbb eszközöket használja.
 
 Mindkét művelet az ellenőrzéseket szegmensenként végzi.
 Az összehasonlításhoz a \texttt{ReferenceSegment} osztály állítja elő a referenciának vett szitatáblát.
@@ -490,7 +497,7 @@ A modell a megjelenítendő minták és függvények, valamint a grafikon megjel
 A nézet a sztenderd Swing komponenseket használja.
 A vezérlő a \texttt{gui} segédosztályaira épít.
 
-A modell alapján a megjelenítéshez szükséges grafikus utasítások előállítása időigényes, a mintákat és a függvényeket pixel széles intervallumokon mintavételezve határozza meg a képernyő egy oszlopához tartozó minimum és maximum értékeket.
+A modell alapján a megjelenítéshez szükséges grafikus utasítások előállítása időigényes. A mintákat és a függvényeket pixel széles intervallumokon mintavételezve határozza meg a képernyő egy oszlopához tartozó minimum és maximum értékeket.
 Az interaktivitás érzésének fenntartásához az oszlopokra bontást a program egy háttérszálban végzi, és közben a részeredményeket rendszeresen átadja a nézetnek megjelenítésre.
 A felhasználó a háttérszámítások közben a modellt módosítva az addigi előszámításokat elveszíti, és egy új háttérszál indul.
 
@@ -555,7 +562,7 @@ Ahhoz, hogy a megjelenítés szélein túlra is be legyen húzva ez az egyenes, 
 Függvények előkészítésénél az eljárás ehhez nagyon hasonló.
 Az oszlop minimum és maximum értékét pontos módszer helyett mintavételezéssel határozza meg. Az oszlop intervallumában több, egyenletes távolságra lévő ponton kiértékeli a függvényt, és ezekből határozza meg az értékeket.
 A függvény oszlopmintájában az intervallumok összefüggőek, a függvény az intervallum legelső oszlopának bal szélétől a legutolsó oszlop jobb széléig értelmezve van.
-A nézet ennek megfelelően az intervallumok közötti szakaszokon semmit nem rajzol ki.
+A nézet ennek megfelelően az értelmezett intervallumok közötti szakaszokon semmit nem rajzol ki.
 
 A \texttt{GraphRenderer} a nézettel a \texttt{CheckAndPost} interfészen keresztül kommunikál a pontos nézetimplementáció ismerete nélkül.
 A \texttt{check()} metódussal le tudja ellenőrizni, hogy a legújabb modell az-e, amit éppen feldolgoz, a \texttt{checkAndPost()} metódussal az előbbi ellenőrzés után az addig elkészült részeredményt tovább is adja megjelenítésre.
@@ -571,30 +578,28 @@ A modellen végezhető műveletek:
 \item mintát hozzáadása
 \item minta törlése
 \item mintát közelítése
-\item minta törlése
+\item közelítő függvény törlése
 \end{itemize}
 Ezek megvalósítására a program a Swing sztenderd komponenseit használja.
 
 A mintát a modellhez adni három forrásból lehet.
-Az adatbázis összesített statisztikáiból.
-Ezek előállítása az \texttt{Aggregates} osztály feladata.
+Az adatbázis összesített statisztikáiból, ezek előállítása az \texttt{Aggregates} osztály feladata.
 Be lehet tölteni mintát CSV fájlból, ezt a LoadSampleProcess oldja meg.
 Vagy meg lehet mérni egy minta futási idejét.
 A futási idő mérése a parancssorból indítható mérést használja, a \texttt{MeasureSieve} ablak a mérés paramétereinek megadására szolgál.
 
 A minta közelítésének számítási részét a \texttt{gui.math} csomag végzi.
 Az elemi függvények kiválasztása a \texttt{FunctionSelector} ablakban lehetséges.
-Elemi függvényt JavaScript nyelven a \texttt{CustomFunctionDialog} ablakban lehet megadni .
+Elemi függvényt JavaScript nyelven a \texttt{CustomFunctionDialog} ablakban lehet megadni.
 
-A \texttt{GraphPlotter} komponens a grafikon egérrel történő mozgatásáról és nagyításáról eseményeket küld a vezérlésnek.
-A nézet osztály is csak a vezérlésen keresztül módosítja a modellt, ha az ablak mérete változik.
+A \texttt{GraphPlotter} komponens a grafikon egérrel történő mozgatásáról, nagyításáról, vagy az ablak méretének változásáról eseményeket küld a vezérlésnek, így a nézet csak a vezérlésen keresztül módosítja a modellt.
 
 \subsubsection{Nézet}
 
 A nézetet a \texttt{GraphPlotter} osztály reprezentálja.
 A két részből álló előkészített modell megjelenítése a grafikus vezérlőutasítások kiadásából áll.
 
-Ennek a komponensnek a \texttt{graph} adattagja tartalmazza a legújabb modell értéket, a vezérlés, az előkészítés, és a megjelenítés ezen keresztül szinkronizálva kommunikál.
+Ennek a komponensnek a \texttt{graph} adattagja tartalmazza a legújabb modell értéket, a vezérlés, az előkészítés, és a megjelenítés ezen keresztül kommunikál.
 A modell módosításakor a \texttt{GraphPlotter} objektum a \texttt{graph} adattag cseréjével biztosítja, hogy a régi modellre vonatkozó háttérszálak leállnak, és elindítja az új modell oszlopra bontását.
 Az előkészített modellről a \texttt{CheckAndPost} eseménykezelőjén keresztül értesül, aminek hatására ütemezi az új grafikon kirajzolását.
 A tényleges kirajzolásnál még egyszer ellenőrzi, hogy a grafikon a komponens tényleges méretére készült el, majd a már elkészült grafikon-részeket kirajzolja.

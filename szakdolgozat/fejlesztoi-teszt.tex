@@ -1,13 +1,13 @@
 \pagebreak
 \section{A program ellenőrzése}
 
-Az megoldás szitáinak ellenőrzése a \texttt{gui} program feladata.
+A megoldás szitáinak ellenőrzése a \texttt{gui} program feladata.
 Az \texttt{init} és \texttt{generator} program szegmensfájlai, és a \texttt{gui} szitáinak kimenetei is a \texttt{ReferenceSegment} osztály szitájával összehasonlíthatóak.
 Ezen keresztül a sziták kimenetének egyenlősége szúrópróbaszerűen ellenőrizhető.
 Ezeket az időigényes ellenőrzéséket végzi el a \texttt{test-sieves} szkript minden szitával több intervallumon.
 A teszt ellenőrzéséhez a szkript egy szándékosan hibás szegmens, és egy hibás szita ellenőrzését is elvégzi.
 
-A \texttt{gui} program \texttt{gui.math} és \texttt{gui.util} csomagjaira a program összes többi része épít, az adatbázis műveletek, a sziták, és a megjelenítés is. Erre a két csomagra a JUnit keretrendszerrel és a JaCoCo lefedettségmérővel teljes lefedettségű egységtesztek készültek.
+A \texttt{gui} program \texttt{gui.math} és \texttt{gui.util} csomagjaira a program összes többi része épít, az adatbázis műveletek, a sziták, és a megjelenítés is. Erre a két csomagra a \mbox{JUnit} keretrendszerrel és a JaCoCo lefedettségmérővel teljes lefedettségű egységtesztek készültek.
 
 Az összesített statisztikák ellenőrzésére a \texttt{test-prime-counts} szkript a prímek számát a \texttt{samples/test/prime-counts.csv} fájlba írja az adatbázis alapján kettő hatványai helyeken, míg a \texttt{test-max-prime-gaps} szkript a maximális prímhézagokat a \texttt{samples/test/max-prime-gaps.csv} fájlba menti.
 Ezek a publikált értékekkel\cite{gaps}\cite{pi} összevethetőek.
@@ -37,10 +37,10 @@ A minták generálásához használt elemi függvények a \texttt{MeasureSums} o
 
 A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
 \begin{itemize}
-\item legjobb, és leglassabb választás a kupac összegzés teljes cserét végrehajtó Gauss-eliminációval
+\item a legkisebb hibát okozó választás a kupac összegzés teljes cserét végrehajtó Gauss-eliminációval
 \item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két összegzés
 \item az egy változóban összegzés hibája több nagyságrenddel nagyobb, mint a másik két összegzés hibája
-\item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
+\item a sor és oszlop csere nem számít egy változóban összegezve, a teljes csere tömbben összegezve valamivel pontosabb, és a kupac összegzésnél a teljes csere lényegesen pontosabb eredmény ad
 \item a QR felbontás általában nagyobb hibát eredményez, mint a Gauss-elimináció
 \item a kupac összegzés a minta rendezettségére nem érzékeny
 \item a rendezetlen minta összegzése a változóval és tömbbel pontosabb, mint a rendezett.

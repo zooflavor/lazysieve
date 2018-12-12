@@ -95,9 +95,11 @@ Ehhez szükség van a prímek listájára, legalább az intervallum végének n�
 
 A legegyszerűbb szegmentált szita egy szegmens szitáláshoz minden prímet sorban vesz az intervallum végének négyzetgyökéig, osztással meghatározza, hogy melyik a legkisebb többszöröse a szegmensben, és ha van ilyen szám, akkor onnantól összeadással szitál a prímmel a szegmens végéig, ahogy Eratoszthenész szitája is teszi.
 
-Több, egymás utáni szegmens szitálásával az osztás költsége több szegmensre szétosztható, ha a szita a minden prímről minden szegmens szitálása után megjegyzi, hogy melyik számot szitálna, ami már nagyobb, mint a szegmens vége.
+Több, egymás utáni szegmens szitálásával az osztás költsége több szegmensre szétosztható.
+Ehhez a prímek listájában minden prímhez el kell tárolni a következő szitálandó többszörösét.
+Egy szegmens szitálása után ezt a számot frissítve a következő szegmensben osztás nélkül folytatható a prímmel a szitálás.
 A következő szegmens feldolgozásakor a prímmel innen lehet folytatni a szitálást.
-A módszer hátránya, hogy ehhez el kell tárolni ezeket a prím-pozíció párokat, ennek tárigénye nagyságrendileg $\mathcal{O}(\sqrt{n})$ bit, ha legnagyobb szitált szám $n$.
+A módszer hátránya, hogy a prím-pozíció párok tárolásához nagyságrendileg $\mathcal{O}(\sqrt{n})$ bit szükséges, ha a legnagyobb szitált szám $n$.
 A hatékony eratoszthenészi sziták ennek a prím-pozíció listának csak azon elemeit veszik figyelembe egy szegmens szitálásakor, amik ténylegesen szitálnak is a szegmensben.
 
 \subsection{Init és generator program}
@@ -111,7 +113,7 @@ Minden iterációban a szitatábla egy $2^{30}$ hosszú darabját szitálja ki,
 
 Ez a generátor önmaga is két részből áll.
 Az egyszerűbb implementációjú \texttt{init} a prímek listáját $2^{32}$-ig állítja elő.
-Ezekre a prímekre nem csak a statisztikák előállítása miatt van szükséges, hanem a \texttt{generator}, és a \texttt{gui} program szitái is használják, amikor a szitálás intervalluma 3-nál nagyobb számtól kezdődik.
+Ezekre a prímekre nem csak a statisztikák előállítása miatt van szükség, hanem a \texttt{generator}, és a \texttt{gui} program szitái ez alapján állítják elő a belső prímlistájukat.
 
 A gyorsabb, de összetettebb \texttt{generator} $2^{32}$-től $2^{64}-2^{34}$-ig szitál,
 és a futásához szükséges a prímek listája $2^{32}$-ig.
@@ -124,9 +126,6 @@ A program többi része a Java környezethez készült, ez a \texttt{gui} progra
 Ez végzi a \texttt{generator} által előállított szegmensfájlok összesítését, és az elkészült statisztikák megjelenítését.
 
 A \texttt{generator} a szegmensfájlokat az adatbázis könyvtáron keresztül adja át a \texttt{gui} programnak, és az összesítések is ebbe a könyvtárba kerülnek.
-A szegmensfájlokra az ellenőrzés és összesítés után már nincs szükség, ezek eltávolíthatóak.
-Az adatbázisában hosszabb távon egyedül a prímek szegmensenkénti statisztikáit kell tárolni.
-A \texttt{gui} program a statisztikákat csak sorban dolgozza fel, és a statisztikák összmérete sem indokol egy egyszerű bináris fájlnál bonyolultabb megoldást.
 
 \subsubsection{Megjelenítés}
 
@@ -143,9 +142,9 @@ A közelítő függvény és a minta grafikonját a program együtt jeleníti me
 A \texttt{gui} program tartalmaz több prímszita implementációt is. Ezeknek az algoritmikus bonyolultsága különböző, de a futási idejük összehasonlíthatóságához a közös részek közös implementációt kaptak, és az eltérő részek hasonló szinten optimalizáltak.
 A sziták helyességének ellenőrzéséhez a sziták eredménye egymással összehasonlítható.
 
-Elkészült Eratoszthenész szitájának több variációja, mindegyik szegmentáltan működik, a különbség a prímek listájának kezelésében van.
+Elkészült Eratoszthenész szitájának több változata, mindegyik szegmentáltan működik, a különbség a prímek listájának kezelésében van.
 A legegyszerűbben implementált eratoszthenészi szita a prímek listáját minden szegmensben végig bejárja.
-A prioritásos soron alapuló sziták a prímeket részlegesen rendezik az alapján, hogy hány szegmensnyire van az éppen szitált szegmenstől a prím következő többszöröse.
+A prioritásos soron alapuló sziták a prímeket részlegesen rendezik az alapján, hogy a prím melyik szegmensben szitál legközelebb.
 Ilyen a bináris kupacot, és az edénysort használó szita.
 
 A Cache Optimalizált Lineáris Szita\cite{cols} a prímeket teljesen rendezi az alapján, hogy legközelebb melyik szegmensben fognak szitálni, és a prímek nagyság szerinti csoportosításával a rendezés fenntartásához az elemek memóriabeli mozgatását is kerüli.
@@ -190,7 +189,7 @@ scripts$ ./recompile
 A prímek keresését két program végzi, az \texttt{init} program $2^{32}$-ig keresi meg és tárolja el a prímeket, a \texttt{generator} $2^{32}$-től $2^{64}-2^{34}$-ig.
 Az \texttt{init} készítette szitattáblák a \texttt{generator} futásához szükségesek.
 
-Mindkét program a számokat $2^{30}$ hosszú táblánkként szitálja, minden tábla első száma $k \cdot 2^{30}+1$ alakú.
+Mindkét program a számokat $2^{30}$ hosszú táblánkként szitálja, minden tábla első száma $k \cdot 2^{30}+1$ alakú, ahol $k \in \mathbb{N}_0$ és $k < 2^{34}-2^{4}$.
 A szitatáblában csak a páratlan számok vannak nyilvántartva.
 A szitatáblákat a programok a fájlrendszerben bitvektorként tárolják, egy tábla kb. $64$Mb.
 
@@ -203,13 +202,10 @@ szegmens 2 - kezdet 2 147 483 649 - felkészülés   2 344 515 ns - szitálás 1
 szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1 199 900 603 ns
 \end{lstlisting}
 Ennek eredmény 4 bitvektort tartalmazó bináris fájl, amit a \texttt{db} mappába ment.
-Ez a négy fájl rövid idő alatt újragenerálható, de ezeket érdemes a futások között megtartani.
-
-A \texttt{generator} program minden olyan paraméterét, ami szám, meg lehet adni decimálisan, és hexadecimálisan is \texttt{0x} előtaggal.
-A számok hexadecimális megadásának lehetősége a \text{gui} programot hívó szkripteknél is megvan.
+Ez a négy fájl rövid idő alatt újragenerálható, de ezeket érdemes megtartani, a \texttt{generator} és a \texttt{gui} programnak is szüksége van rá.
 
 A \texttt{generator} programot többféleképpen is lehet indítani.
-Mindegyik esetben két paramétert kell megadni az indításhoz, a számot, ahol szitálást kezdje, és a szegmensek számát, amit ebben a futásban végig kell szitálni.
+Mindegyik esetben két paramétert kell megadni az indításhoz, a számot, ahol a szitálást kezdje, és a szegmensek számát, amit ebben a futásban végig kell szitálni.
 A szegmensek számát kétféleképpen lehet szabályozni.
 Az egyik lehetőség fix számú szegmens megadása.
 
@@ -232,7 +228,7 @@ szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás
 
 A másik mód a háttértáron fenntartandó szabad hely átadása, ezt bájtokban kell megadni.
 Ekkor minden szegmens szitálása előtt megvizsgálja, hogy van-e még annyi szabad hely az adatbáziskönyvtárban, mint amennyi meg van adva, ha igen, akkor szitálja a szegmenst,
-és lép a következőre, és ha nincs már elég szabad hely, akkor a program leáll.
+és lép a következőre szegmensre. Ha nincs már elég szabad hely, akkor a program leáll.
 
 \begin{lstlisting}[language=bash]
 generator$ ./generator.bin ../db start 0x100000001 reserve-space 1000000000
@@ -255,6 +251,9 @@ Mindkét program kimenetében a ''start'' a szegmens kezdőszáma, a ''szegmens'
 $start=szegmens \cdot 2^{30}+1$, a ''felkészülés'' a szita inicializálási ideje a szitálás előtt,
 és a 'szitálás' a szegmens szitálásának ideje.
 Ezek az információk az elmentett szegmensfájlokból is kiolvashatóak.
+
+A \texttt{generator} program minden olyan paraméterét, ami szám, meg lehet adni decimálisan, és hexadecimálisan is \texttt{0x} előtaggal.
+A számok kétféle megadásának lehetősége a \text{gui} programot hívó szkripteknél is megvan.
 
 \section{Az adatbázis karbantartása}
 
@@ -374,7 +373,7 @@ A \texttt{crunch-numbers} szkript ezt a feladatot kísérli meg elvégezni.
 
 A \texttt{database info} megjeleníti az új szegmensfájlok számát is, ezek azok, amikhez vagy nem tartozik összesített adat, vagy tartozik, de az régebbi szegmensfájl alapján készült, mint ami éppen az adatbáziskönyvtárban található.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \caption{Adatbázis információk}
 \centering
 \includegraphics[scale=1]{info.png}
@@ -404,9 +403,9 @@ scripts$ ./database import aggregates /valahol/egy/masik/aggregates
 100.0%
 \end{lstlisting}
 
-\section{Szitatáblák ellenőrzése}
+\section{Az \texttt{init} és a \texttt{gui} eredményeinek ellenőrzése}
 
-A \texttt{generator} program teszteléséhez a grafikus program képes a szegmensfájlok ellenőrzésére.
+Az \texttt{init} és a \texttt{generator} program teszteléséhez a \texttt{gui} program képes a szegmensfájlok ellenőrzésére.
 Ehhez a \texttt{gui} újra előállítja az ellenőrzött szegmensfájlokat, és azokat összeveti.
 Az ellenőrzőszegmensek előállításához az egyszerű szegmentált eratoszthenészi szitát, vagy ez erős pszeudoprím tesztet lehet választani.
 
@@ -434,15 +433,11 @@ scripts$ ./check-segments test 0x1
 Az ellenőrzőszegmens szitával történő előállításához szükséges, hogy az \texttt{init} program által előállított négy darab szegmensfájlt tartalmazza az adatbáziskönyvtár.
 Az $1$-től kezdődő szegmens kivételével az ellenőrző szegmens előállításához a szita az inicializálásához a prímszámokat innen olvassa fel.
 
-\section{Sziták ellenőrzése}
+\section{A \texttt{gui} szitáinak ellenőrzése}
 \label{sec:szitak-ellenorzese}
-%%% EMIL: az előző fejezet szatatáblák ellenőrzése volt... ami nagyon hasonlít ehhez a fejezethez... mi a különbség?
-%%% P: 1-2 olvasáskörig megfontolom, hogy a "sziták"-at át lehetne nevezve, "a versenyló sziták"- szerű kifejezésre
-%%% EMIL: lehet hogy nem nem kell. Ha eszunkbe jut valami akkor majd jelezzuk egymasnak... de igy is maradhat. nem olyan veszes.
-%%% EMIL: mar van is otletem! Az init es generator eredmenyeinek ellenorzese, es a gui szita megvalositasainak ellenorzese.  Mit szolsz?
-
 
 A sziták futási idejének összehasonlításához írt szitákat is lehet ellenőrizni, az általuk előállított szitatáblák ellenőrzésével.
+Ezek a szitatáblák csak a \texttt{gui} memóriájában vannak, az adatbázis könyvtárba nem kerülnek be.
 Az összehasonlításhoz a szegmensek ellenőrzésénél használt egyszerű szegmentált szita a referencia.
 
 A program grafikus felületén a ''Sziták ellenőrzése'' lehetőséget választva ki kell választani az ellenőrizendő szitát, és az ellenőrizni kívánt intervallum kezdő és végző számát.
@@ -459,8 +454,8 @@ Az ellenőrizhető sziták nevei:
 	a \texttt{bin-heap-inplace} a kupac javítását helyben végzi
 \item \texttt{buckets}, \texttt{buckets-}$n$, \texttt{buckets-simple}: Eratoszthenész szitája, edénysorral
 	A \texttt{buckets-simple} nem szegmentált, a \texttt{buckets}, és a \texttt{buckets-}$n$ szegmentált.
-	A \texttt{buckets-}$n$-ben az $n$ helyére 1-től 8-ig a számrendszer bitjeit lehet megadni,
-	pl. \texttt{buckets-3} 8-as számrendszerben számol
+	A \texttt{buckets-}$n$-ben az $n$ helyére 1-től 8-ig a számrendszer bitjeinek számát lehet megadni,
+	például a \texttt{buckets-3} 8-as számrendszerben számol
 \item \texttt{trial-division}: próbaosztás
 \end{itemize}
 
@@ -475,7 +470,7 @@ scripts$ ./check-sieve buckets-3 3000000000001 3010000000001
 
 Ha a kezdőszám nagyobb, mint 1, az ellenőrzéshez ilyenkor is szükséges, hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \caption{Szita ellenőrzése}
 \centering
 \includegraphics[scale=1]{check-sieve.png}
@@ -499,7 +494,7 @@ Az ablak jobb oldala a betöltött minták kezelésére szolgál.
 A felső harmada az összes betöltött mintát mutatja.
 Az ablak jobb oldalának alsó két harmadában az itt kiválasztott minta részletei látszódnak.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \caption{Minta megjelenítése}
 \centering
 \includegraphics[scale=0.5]{graph.png}
@@ -536,10 +531,10 @@ Ehhez meg kell adni a szitát, a szitált intervallum elejét és végét, a szi
 \includegraphics[scale=1.0]{measure.png}
 \end{figure}
 
-A sziták listája ugyanaz, mint a sziták ellenőrzősénél.
-A mintákat a program a szitált intervallumon egyenletesen osztja el a megadott méretű szegmensek határainál.
+A sziták listája megegyezik a \pageref{sec:szitak-ellenorzese} oldalon található ''A \texttt{gui} szitáinak ellenőrzése'' szakasz szitáival.
+A mintavételezés pontjait a program a szitált intervallumon egyenletesen osztja el a megadott méretű szegmensek határainál.
 A teljes szitálást annyiszor végzi el, amennyi a mérések számában meg volt adva, és az eredményt átlagolja.
-Összesítést kiválasztva a mintaelemek értéke a szitált intervallum elejétől az adott számig szitálás teljes ideje, különben az előző minta helyétől.
+Összesítést kiválasztva a mintaelemek értéke a szitált intervallum elejétől az adott számig szitálás teljes ideje, különben az előző mintavétel helyétől.
 A mérték szabályozza, hogy a tényleges eltelt időt mérje a program nanoszekundumokban, vagy az elvégzett műveletek számát.
 
 \subsection{Minta közelítése}
@@ -561,7 +556,7 @@ A közelítéshez csak olyan függvények használhatóak, amik a minta minden p
 
 JavaScript függvényhez meg kell adni a függvény nevét és forráskódját.
 A forráskódban a függvény argumentumára az $x$ változóval lehet hivatkozni, és a szkript utolsó kifejezésének értéke lesz a függvény értéke $x$-ben.
-Pl. az $x \mapsto \frac{\ln{x}}{x}$ hozzárendelés forráskódja:
+Például az $x \mapsto \frac{\ln{x}}{x}$ hozzárendelés forráskódja:
 
 \begin{lstlisting}[basicstyle=\small\ttfamily, language=Java]
 Math.log(x)/x
@@ -598,13 +593,13 @@ négyzetes eltérés összeg szerint.
 
 A program ezt az eltérés összeget jeleníti meg a közelítés hibájaként, valamint a $c_i$ skalárokat a közelítés elemi függvényeinek együtthatóiként.
 
-\section{Sziták mérése szkriptekkel}
+\subsection{Sziták futási idejének mérése szkriptekkel}
 
 A sziták futási idejének mintáit parancssorból is elő lehet állítani.
-Ilyenkor az eredményt, megjelenítés helyett, a megadott fájlba írja a \texttt{gui} program, ami később a grafikus felületen betölthető.
+Ilyenkor az eredményt, megjelenítés helyett, a megadott CSV fájlba írja a \texttt{gui} program, ami később a grafikus felületen betölthető.
 A méréseket a \texttt{measure-sieve} szkripttel lehet elvégezni, paraméterként meg kell adni ebben a sorrendben:
 \begin{itemize}
-\item a szita nevét, ezek ugyan azok lehetnek, mint a \pageref{sec:szitak-ellenorzese} oldalon a ''Sziták ellenőrzése'' szakaszban
+\item a szita nevét, ezek ugyanazok lehetnek, mint a \pageref{sec:szitak-ellenorzese} oldalon a ''A \texttt{gui} szitáinak ellenőrzése'' szakaszban
 \item a számot, ahol a szitálás kezdődik, ez páratlan szám kell legyen
 \item a szitálás végét, ez páratlan szám kell legyen
 \item a szegmensek méretét
@@ -612,12 +607,12 @@ A méréseket a \texttt{measure-sieve} szkripttel lehet elvégezni, paraméterk�
 \item a minták számát
 \item hogy időt (\texttt{nanosecs}), vagy műveleteket (\texttt{operations}) mérjen
 \item összesítse az időket (\texttt{sum}), vagy szegmensenként külön számolja (\texttt{segment})
-\item a fájlt, ahova az eredményt mentse CSV-ben
+\item a fájlt, ahova az eredményt mentse
 \end{itemize}
 
 Ha a kezdőszám nagyobb, mint 1, akkor az adatbáziskönyvtárnak tartalmaznia kell az \texttt{init} program generálta első négy szegmenst.
 
-Lehetőség van a mérték és az összesítés mind a négy kombinációját egy méréssel előállítani, ehhez mind a négy kimeneti fájl meg kell adni külön.
+Lehetőség van a mérték és az összesítés mind a négy kombinációját egy méréssel előállítani, ehhez mind a négy kimeneti fájlt meg kell adni.
 
 \begin{lstlisting}[language=bash]
 scripts$ ./measure-sieve buckets-3 1 0x10000001 0x10000 3 1000 nanosecs sum out1.csv
@@ -637,12 +632,14 @@ Azokban könyvtárakban, amiknek a neve \texttt{speed}-del kezdődik, az összes
 A könyvtárak nevében a szám a szitálás kezdetét adja meg, a \texttt{speed}$n$ nevű könyvtárban a mérések $2^n+1$-től kezdődnek.
 A lassabb szitákat csak kisebb nagyságrendekre méri meg a szkript, ezek futási ideje hamar túl naggyá válik.
 
+\section{A \texttt{generator} futási idejének mérése}
+
 A \texttt{measure-generator} szkript a \texttt{generator} program sebességét méri meg.
 A mérés 3 paramétert variál, a szitálás kezdetének nagyságrendjét, a szegmensméretet, és az edénysor számrendszerét.
 Az eredményt a \texttt{samples/measure-generator.csv} fájlba menti.
 Ez nem használható a program mintamegjelenítésével, mert az egy változós mintákkal dolgozik.
 Ennek a mérésnek a célja az, hogy a \texttt{generator} program paramétereit egy konkrét számítógéphez lehessen igazítani.
-A szkript 16 egymás utáni szegmensfájlt szitál,
+A szkript 16 egymás utáni szegmensfájlt szitál, és
 \begin{itemize}
 \item a szitálás kezdetét $2^{33}$-től $2^{63}$-ig változtatja, a kitevőt hármasával növelve
 \item a szegmensek méretét $2^{16}$-tól $2^{24}$-ig, a kitevőt egyesével növelve
