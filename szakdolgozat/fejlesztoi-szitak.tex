@@ -4,7 +4,7 @@
 A \texttt{gui} program tartalmazza Eratoszthenész szitájának több megvalósítását.
 Ezek az implementációk mind szegmentáltak, azaz csak egy rövidebb intervallumon szitálnak,
 és annak befejezéséig nem kezdenek bele új intervallumba.
-Egy intervallum szitáláshoz szükséges az intervallum négyzetgyökének végéig a prímek listája.
+Egy intervallum szitáláshoz szükséges az intervallum végének négyzetgyökéig a prímek listája.
 A prímeket ismerve maradékos osztással meghatározható, hogy melyik a legkisebb többszörösük, ami legalább akkora, mint az intervallum kezdete, és onnantól összeadással az intervallum végéig meghatározható a többi többszörösük.
 A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 
@@ -30,7 +30,7 @@ A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 Ha több egymás utáni intervallumot kell szitálni, akkor minden prímhez eltárolható, hogy melyik pozícióban fog legközelebb szitálni.
 Ezzel az osztások időbeli költsége tárhely költségre váltható.
 A legegyszerűbb megoldás a prím-pozíció párok tárolása egy tömbben.
-A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálását írja le, ahol $v=u+kd$, és $d$ hosszú részintervallumonként szitál.
+A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálását írja le, ahol $v=u+kd$. Az algoritmus $k$ darab $d$ hosszú részintervallumot szitál.
 
 \begin{algorithm}
 \floatname{algorithm}{Algoritmus}
@@ -71,7 +71,7 @@ A prioritásos soron alapuló szita algoritmusa nagyon hasonló a \ref{alg:erato
 Az elemek sorban feldolgozása helyett a sor elejét addig veszi ki, amíg az az éppen szitált szegmensbe esik.
 Ezekkel az elemekkel a szitálást elvégzi a szegmensben, majd a sorba visszahelyezi, már az új, mostani szegmensnél nagyobb pozícióval.
 Az elemek sorrendjét a legközelebbi szitált pozíció határozza meg, a sor eleje az éppen szitált szegmenshez legközelebbi elem.
-Az elemek sorrendjénél a szegmensen belüli sorrend vizsgálata felesleges.
+Az elemek sorrendjénél a szegmenseken belüli sorrend vizsgálata felesleges.
 A prioritásos soron alapuló szitálás algoritmusát a \ref{alg:eratosthenes-queue} adja meg, a sor adatszerkezet meghatározása nélkül.
 A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a helyben módosítást és a struktúra invariánsának visszaállítását is választhatja.
 
@@ -102,7 +102,7 @@ A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a h
 \end{algorithmic}
 \end{algorithm}
 
-A \texttt{gui} program szitái közül ezt az algoritmust követi az edénysor szita, a bináris kupac szita, és a COLS körkörös listája is. A bináris kupac szitánál az eltávolítás-hozzáadás és a helyben megjavítás között a felhasználó választhat.
+A \texttt{gui} program szitái közül ezt az algoritmust követi az edénysor szita, a bináris kupac szita, és a COLS körkörös listája is. A bináris kupac szitánál az eltávolítás-hozzáadás és a helyben javítás között a felhasználó választhat.
 
 \subsection{Edénysor}
 
@@ -116,7 +116,7 @@ Két szám távolságát egy számrendszerben két érték határozza meg, a leg
 Legyen $a \in \mathbb{N}, a > 1$ a sor számrendszerének alapszáma.
 $x$ $i$-edik számjegyét $a$ alapú számrendszerben jelölje $x_i$, ahol $x \in \mathbb{N}_0$.
 Legyen $h(x, y)$ a legnagyobb helyiérték, ahol $x$ és $y$ eltér.
-A sor által használt $d(x, y)$ távolságfüggvény az eltérés diszkrét logaritmusát követi.
+A sor által használt $d(x, y)$ távolságfüggvény az $y-x$ eltérés nagyságrendjének közelítése.
 \begin{equation}
 x = \sum_{i=0}^{\infty} x_i a^i\ (i \in \mathbb{N}_0, x_i \in \mathbb{N}_0, x_i < a)
 \end{equation}
@@ -182,16 +182,19 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 \end{algorithmic}
 \end{algorithm}
 
+Az edénysor elejét ezzel az adatstruktúrával nem lehet hatékonyan lekérni az elemek eltávolítása nélkül.
+
+Edénysorral szitáláskor a sor pozícióját a szegmens végéig növelve pontosan a szegmensben szitáló elemek kerülnek ki a sorból, a sor elejének lekérdezésére nincs szükség.
+Ha a szegmensek hossza egy szám, akkor a prímek azok a számok, amelyik sorpozíciókra lépve a pozíció növelése nem távolít el elemet.
+
 \subsubsection{Funkcionális megvalósítás}
 
 Az edénysoron alapuló szitára tisztán funkcionális megoldás adható.
-Az edénysor műveleteit láncolt listákkal ábrázolt számok összeadására lehet visszavezetni,
-ezzel a műveletigény akkor is a számjegyenkénti összeadást követi, ha a számítási modellben az összeadás konstans idejű.
-
+Az edénysor műveleteit láncolt listákkal számjegyenként ábrázolt számok összeadására lehet visszavezetni.
 Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 A számok láncolt listával ábrázolásával az $x+y$ kiszámítása $\theta(h(x, x+y))$ műveletet igényel.
 
-Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy gyors modellben is.
+Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy olyan számítási modellben is, ahol számok összeadása konstans idejű.
 Ha $r$ a $q$ sor eleme, akkor az elem a sorból kikerüléséig még $h(p(q), p(r))$ edényt bejárhat.
 Az edénysort szitálásra használva az új elemek pozíciója mindig $p(q)+b$, ahol $b$ prím.
 Ekkor a számjegyenkénti összeadás miatt $h(p(q), p(q)+b)$ legalább akkora, mint $b$ számjegyeinek száma, $\log_{a}{b}$.
@@ -306,9 +309,9 @@ Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
 \begin{align*}
 d(p(q), p(r)) = i < d' = d(p(q), p(q)+1)
 \end{align*}
-Ha $k' \not = k$, \ref{kisebb} és \ref{szamjegy} ellentmondáshoz vezet:
+Ha $k' \not = k$, akkor $k' < k$, de \ref{kisebb} és \ref{szamjegy} ellentmondáshoz vezet:
 \begin{align*}
-p(q)_{k'} = a-1 < p(r)_{k'} < a
+p(q)_{k'} = a-1 < p(r)_{k'} = 0
 \end{align*}
 Ha $k' = k$, akkor $i < d'$ és \ref{ddef} miatt $p(r)_k < (p(q)+1)_k$. Ekkor \ref{kisebb} és \ref{eggyel} ellentmond egymásnak:
 \begin{align*}
@@ -316,7 +319,8 @@ p(q)_k < p(r)_k < (p(q)+1)_k = p(q)_k + 1
 \end{align*}
 Tehát az indirekt feltevés ellentmondáshoz vezet, azaz \ref{ures} igaz, a $d'$-nél kisebb indexű edények üresek.
 
-Legyen $i \in \mathbb{N}_0, i>d', r \in b(q, i), k'=h(p(q), p(r))$. Ha $k' = k$, akkor
+Legyen $i \in \mathbb{N}_0, i>d', r \in b(q, i), k'=h(p(q), p(r))$.
+Ha $k' = k$, akkor
 \begin{align*}
 d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
 \end{align*}

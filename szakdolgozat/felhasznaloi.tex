@@ -30,6 +30,7 @@ Ide kerülnek az elkészült szitatáblák, és a prímek statisztikái.
 
 \begin{figure}[H]
 \centering
+\label{komponensek}
 \caption{A program komponensei és adatáramlás diagramja}
 \begin{tikzpicture}[framed]
 \draw (0, 0) node[rectangle,draw](db) {Adatbázis};
@@ -101,22 +102,21 @@ A hatékony eratoszthenészi sziták ennek a prím-pozíció listának csak azon
 
 \subsection{Init és generator program}
 
-A prímszámok listájának generátora C nyelven készült el.
-A program csak parancssorból futtatható, és a sztenderd könyvtári függvényekből
-is csak néhányat használ a memóriájában előállított eredmények fájlba írásához.
-A C nyelv választását a hatékony végrehajtás és memóriafelhasználás, valamint a hordozhatóság indokolja. A generátor elkülönítését a \texttt{gui} programtól az automatizálhatóság indokolja.
+A prímszámok listájának generátora elkülönül a \texttt{gui} programtól.
+A hatékonyabb erőforrás kihasználáshoz C nyelven készült el, és csak parancssorból futtatható.
 
-A prímlisták generátora Eratoszthenész szitájának szegmentált változata,
-a szitatábla egy $2^{30}$ hosszú darabját szitálja ki minden iterációban.
+A prímlisták generátora Eratoszthenész szitájának szegmentált változata.
+Minden iterációban a szitatábla egy $2^{30}$ hosszú darabját szitálja ki,
+és az eredményt az adatbázis könyvtárba menti, ezek a szegmensfájlok.
+
 Ez a generátor önmaga is két részből áll.
 Az egyszerűbb implementációjú \texttt{init} a prímek listáját $2^{32}$-ig állítja elő.
 Ezekre a prímekre nem csak a statisztikák előállítása miatt van szükséges, hanem a \texttt{generator}, és a \texttt{gui} program szitái is használják, amikor a szitálás intervalluma 3-nál nagyobb számtól kezdődik.
 
 A gyorsabb, de összetettebb \texttt{generator} $2^{32}$-től $2^{64}-2^{34}$-ig szitál,
 és a futásához szükséges a prímek listája $2^{32}$-ig.
-A szitatáblát a memóriában a gyorsítótár hatékonyabb a kihasználásához kisebb
-részszegmensekre osztja, és a prímeket a nagyságuk és a következő szitálási pozíciójuk szerint csoportosítja.
-Továbbá nagyobb prímeknek csak harminccal relatív prím többszöröseit veszi figyelembe.
+A szitálást tetszőleges szegmenstől lehet kezdeni a megengedett tartományon belül, nem szükséges sorban végigmenni a számokon.
+A \texttt{generator} által előállított szegmensfájlokra összesítés és ellenőrzés után többet nincs már szükség.
 
 \subsection{Gui}
 
@@ -195,7 +195,6 @@ A szitatáblában csak a páratlan számok vannak nyilvántartva.
 A szitatáblákat a programok a fájlrendszerben bitvektorként tárolják, egy tábla kb. $64$Mb.
 
 Az első négymilliárd szám szitálása a következőképpen indítható el:
-
 \begin{lstlisting}[language=bash]
 generator$ ./init.bin ../db
 szegmens 0 - kezdet             1 - felkészülés 159 906 063 ns - szitálás 1 122 878 403 ns
@@ -204,6 +203,7 @@ szegmens 2 - kezdet 2 147 483 649 - felkészülés   2 344 515 ns - szitálás 1
 szegmens 3 - kezdet 3 221 225 473 - felkészülés   2 391 660 ns - szitálás 1 199 900 603 ns
 \end{lstlisting}
 Ennek eredmény 4 bitvektort tartalmazó bináris fájl, amit a \texttt{db} mappába ment.
+Ez a négy fájl rövid idő alatt újragenerálható, de ezeket érdemes a futások között megtartani.
 
 A \texttt{generator} program minden olyan paraméterét, ami szám, meg lehet adni decimálisan, és hexadecimálisan is \texttt{0x} előtaggal.
 A számok hexadecimális megadásának lehetősége a \text{gui} programot hívó szkripteknél is megvan.
@@ -285,9 +285,10 @@ A szegmens összesítése azt tartalmazná, hogy
 \item a szegmensben
 \begin{itemize}
   %%% EMIL: pelda elozo verzioja szerintem jobb volt. az hogy 5 (tetszoleges alaku) prim van, azt is tarolod ugye? de ide nem irtad le. Az elozo verzio ugy ment hogy 5 prim van ezekbol...
+  %%% P: nem... az előzőt elrontottam. és 1+4Z1+4Z3-mal csinálom az összes prím száma statisztikát
 \item 2db $4\mathbb{Z}+1$
 \item 3db $4\mathbb{Z}+3$
-\item 2db $6\mathbb{Z}+1$
+\item 2db $6\mathbb{Z}+1$ és		
 \item 1db $12\mathbb{Z}+11$ alakú prím van
 \end{itemize}
 \item a szegmensben előforduló prímhézagok
@@ -510,7 +511,8 @@ A ''Minta hozzáadásánál'' három adatforrásból lehet választani.
 A ''Fájl betöltésével'' CSV fájl olvasható be. A fájl formátuma megengedő, az első oszlopot $x$, a második oszlopot $y$ értékeknek próbálja értelmezni, a fel nem ismert sorokat eldobja.
 Ha az első sor első oszlopában \texttt{BARS} szerepel, akkor a program a mintát vonaldiagram helyett oszlopdiagramként fogja ábrázolni.
 
-A ''Prímstatisztikák'' a \texttt{generator} kimeneteléből összesített statisztikák. Ezeket a \texttt{gui} program az adatbáziskönyvtárban keresi.
+A ''Prímstatisztikák'' a \texttt{generator} kimeneteléből összesített statisztikák.
+Ezeket a \texttt{gui} program az adatbáziskönyvtárban keresi.
 A program a szegmensstatisztikák hiánytalan kezdőszeletét veszi csak figyelembe.
 A statisztikáknak három csoportja van.
 \begin{itemize}
@@ -561,14 +563,13 @@ JavaScript függvényhez meg kell adni a függvény nevét és forráskódját.
 A forráskódban a függvény argumentumára az $x$ változóval lehet hivatkozni, és a szkript utolsó kifejezésének értéke lesz a függvény értéke $x$-ben.
 Pl. az $x \mapsto \frac{\ln{x}}{x}$ hozzárendelés forráskódja:
 
-%%% EMIL: A JS kod nem nezne ki jobban courier betukkel mint a bash kod?
-\begin{lstlisting}[basicstyle=\small, language=Java]
+\begin{lstlisting}[basicstyle=\small\ttfamily, language=Java]
 Math.log(x)/x
 \end{lstlisting}
 
 A szkriptben használható változó, és a szokásos vezérlőutasítások.
-Pl. az iterált logaritmus egy megadása:  %%% EMIL: ne hasznalj Pl. es hasonlo roviditeseket ha nem muszaj
-\begin{lstlisting}[basicstyle=\small, language=Java,morekeywords=var]
+Például az iterált logaritmus egy megadása:
+\begin{lstlisting}[basicstyle=\small\ttfamily, language=Java, morekeywords=var]
 var y=0;
 while (1<x) {
   x=Math.log(x);
@@ -584,32 +585,18 @@ Egy kiválasztott közelítés részletei az ablak jobb alsó sarkában látszó
 A táblázat a közelítéshez kiválasztott függvények együtthatóit mutatja a lineáris kombinációban.
 
 A legkisebb négyzetek módszerének feladata röviden leírható.
-Ha az $n$ elemű minta
-%%% EMIL: megint egy kis apróság. Én csak az utolsó két képletet tenném equation* (és nem align*) környezetbe, az első háromat meg sima inline math-be tenném ($(x_1, y_1), stb$... és a végén nem jól néz ki az $(x_i \in \mathbb{N}$ mert nem hagy helyet a zárójel előtt. Én talán így csinálnám: $(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)$ (ahol $x_i \in \mathbb{N}, y_i \in \mathbb{R}$)... és a második és harmadik felsorolást hasonlóan...
+Ha az $n$ elemű minta $(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n)$ (ahol $x_i \in \mathbb{N}, y_i \in \mathbb{R}$) és a közelítéshez kiválasztott $m$ függvény $f_1, f_2, \ldots, f_m$ ($f_i:\mathbb{R} \mapsto \mathbb{R}$), akkor a legkisebb négyzetek módszere keresi azokat a $c_1, c_2, \ldots, c_m$ ($c_i \in \mathbb{R}$) skalárokat, hogy az
 
-\begin{align*}
-(x_1, y_1), (x_2, y_2), \ldots, (x_n, y_n) (x_i \in \mathbb{N}, y_i \in \mathbb{R})
-\end{align*}
-és a közelítéshez kiválasztott $m$ függvény
-\begin{align*}
-f_1, f_2, ..., f_m (f_i:\mathbb{R} \mapsto \mathbb{R})
-\end{align*}
-akkor a legkisebb négyzetek módszere keresi azokat a
-\begin{align*}
-c_1, c_2, ..., c_m (c_i \in \mathbb{R})
-\end{align*}
-skalárokat, hogy az
-\begin{align*}
-f(x)=\sum_{i=1}^m c_i f_i(x) (x \in \mathbb{R})
-\end{align*}
-közelítő függvény és a minta eltérése minimális
-legyen a
-\begin{align*}
+\begin{equation*}
+f(x)=\sum_{i=1}^m c_i f_i(x)\ (x \in \mathbb{R})
+\end{equation*}
+közelítő függvény és a minta eltérése minimális legyen a
+\begin{equation*}
 \sum_{i=1}^{n} (f(x_i)-y_i)^2
-\end{align*}
+\end{equation*}
 négyzetes eltérés összeg szerint.
 
-A program ezt az eltérés összeget jeleníti meg a közelítés hibájaként, valamint a $c_i$ skalárok a közelítés elemi függvényeinek együtthatói.
+A program ezt az eltérés összeget jeleníti meg a közelítés hibájaként, valamint a $c_i$ skalárokat a közelítés elemi függvényeinek együtthatóiként.
 
 \section{Sziták mérése szkriptekkel}
 

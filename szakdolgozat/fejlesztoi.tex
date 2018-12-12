@@ -47,91 +47,15 @@ A prímek számát, és a szitálás idejét az intervallum belsejében több po
 A sziták sebességének mérését, és a statisztikák előállítását parancssorból is el tudja végezni, hogy szkriptekkel ez automatizálható legyen.
 A statisztikák előállításának folyamata bármikor adatvesztés nélkül leállítható, és később folytatható.
 %%% EMIL: Csak nekem van itt dejavu-m vagy tenyleg ujra olvastam a dolgozat elejet, pepitaban, kicsit hatarozatlanabbul?  Az elv pofon egyszeru: ha a program hasznalatarol/feladatarol/mukodeserol van szo, akkor felhasznaloi dokumentacio; ha a program implementalasarol/belso mukodeserol/tervezoi donteseirol van szo, akkor fejlesztoi dokumentacio.
+%%% P: ezt lehet, hogy teljesen meg lehetne itt szüntetni. Ez volt az a rész, amibe egy csomó "ez kell, az kell" dolgot írtam.
 
 \pagebreak
 \section{A program komponensei}
 
-\begin{figure}[h]
-\centering
-\caption{A program adatáramlás diagramja}
-\begin{tikzpicture}[framed]
-\draw (0, 0) node[rectangle,draw](db) {Adatbázis};
-
-\draw (-1, 1) node[rectangle,rounded corners,,draw](init) {\texttt{init}};
-\draw (1, 1) node[rectangle,rounded corners,,draw](generator) {\texttt{generator}};
-\draw (4, 1) node[rectangle,rounded corners,,draw](aggregate) {Összesítés};
-\draw (4, 0) node[rectangle,draw](info) {Info};
-
-\draw (-4, 1) node[rectangle,rounded corners,draw](check-segment) {Szegmens ellenőrzése};
-\draw (-4, 0) node[rectangle,rounded corners,,draw](reference-sieve) {Referencia szita};
-\draw (-4, -1) node[rectangle,rounded corners,,draw](check-sieve) {Szita ellenőrzése};
-\draw (0, -1) node[rectangle,rounded corners,,draw](sieves) {Sziták};
-
-\draw (4, -1) node[rectangle,draw](view) {Megjelenítés};
-\draw (4, -2) node[rectangle,rounded corners,,draw](approximate) {Minta közelítése};
-
-\draw[<->, thick] (db) -- (aggregate);
-\draw[->, thick] (db) -- (check-segment);
-\draw[<->, thick] (db) -- (generator);
-\draw[->, thick] (db) -- (info);
-\draw[->, thick] (db) -- (reference-sieve);
-\draw[->, thick] (db) -- (sieves);
-\draw[->, thick] (db) -- (view);
-\draw[->, thick] (init) -- (db);
-\draw[->, thick] (reference-sieve) -- (check-segment);
-\draw[->, thick] (reference-sieve) -- (check-sieve);
-\draw[->, thick] (sieves) -- (check-sieve);
-\draw[->, thick] (sieves) -- (view);
-\draw[<->, thick] (view) -- (approximate);
-
-\draw[dashed, rounded corners] (-6.2, 0) -- (-6.2, 1.5) -- (-1.7, 1.5) -- (-1.7, -0.5) -- (2.7, -0.5) -- (2.7, 1.5) -- (5.8, 1.5) -- (5.8, -2.5) -- (-6.2, -2.5) -- (-6.2, 0);
-\draw (-5.7, -2.2) node[]{\texttt{gui}};
-\draw[dashed, rounded corners] (-6.2, -1.8) -- (-5.1, -1.8) -- (-5.1, -2.5);
-\end{tikzpicture}
-\end{figure}
-%%% EMIL: Az abra ne szerepeljen 2x, hivatkozz ra.
-%%% EMIL: Szoval nem baj ha a fejlesztoi dokumnetacio strukturaja ugyan az mint a felhasznaloie (sot nagyon is szimpatikus az otlet), de a tartalom az ne legyen az..
-
-A program az adatbáziskönyvtárban tárolja a szitált szegmensek tábláit, és az ezekből készült statisztikákat.
-A szegmensfájlokban egy $2^{30}$ hosszú intervallum minden páratlan számához hozzá van rendelve, hogy az a szám összetett vagy prím, és minden szegmens kezdő száma kongruens $1 \pmod{2^{30}}$.
-
-Az első négy szegmenst az \texttt{init} program készíti el, így ezek $2^{32}$-ig tartalmazzák a prímszámokat.
-A program többi szitája ezek alapján inicializálja magát, ha $3$-nál nagyobb számtól kell a szitálást elkezdeni.
-Ez a négy fájl rövid idő alatt újragenerálható, de ezeket érdemes a futások között megtartani.
-
-A \texttt{generator} egy optimalizált szita, $2^{32}$-től $2^{64}-2^{34}$-ig képes szitálni, mindig egész szegmenseket, és az eredményt az adatbáziskönyvtárba menti.
-Ezekre a szegmensfájlokra összesítés és ellenőrzés után többet nincs már szükség.
-A szitálást tetszőleges szegmenstől lehet kezdeni a megengedett tartományon belül, nem szükséges sorban végigmenni a számokon.
-Az utolsó $2^{34}$ szám kihagyása egyszerű optimalizáció, így a programban az éppen szitált szám változója sosem csordul túl.
-
-%%% EMIL: Ezt (kovi bekezdes) olvasd at, szerintem kicsit kusza.
-Az \texttt{init} és a \texttt{generator} csak konzol módban futtatható.
-A program többi része a \texttt{gui} nevű Java program része, de az automatizáláshoz az adatbázissal kapcsolatos műveletei parancssorból is elérhetőek, ezek az adatbázis információ lekérése, az új szegmensfájlok ellenőrzése, és összesítése, és az összesítőfájlok összefésülése.
-Az időigényessége miatt a futási idő összehasonlításához implementált sziták ellenőrzése is futtatható grafikus felületen, és parancssorból is.
-
-Az adatbázis információ kilistázza a szegmensfájlok számát, az összesített szegmensfájlok számát, ezen szegmensek intervallumának kezdetét és végét, a még nem összesített szegmensfájlok számát.
-Ezek alapján eldönthető, hogy a szitálást és az összesítést hogyan kell folytatni, hogy a teljes $[1, 2^{64}-2^{34}[$ intervallum statisztikái elkészüljenek.
-
-A szegmensfájlok ellenőrizhetőek, ehhez egy, a \texttt{generator}-tól különböző eratoszthenészi szita, vagy az Miller-Rabin pszeudoprímteszt\cite{miller} előállítja a szegmens ellenőrzött részét, és a program a kettőt összehasonlítja.
-A szita lényegesen lassabb, mint a \texttt{generator}.
-A pszeudoprímteszt időigényessége miatt intervallumok szitálásra nem alkalmas.
-A szegmensfájlok ellenőrzése alapvetően a \texttt{generator} helyességének tesztelésére való, minden összesített szegmens ellenőrzése megtöbbszörözné a szitáláshoz szükséges időt.
-
-Az összesítő az adatbáziskönyvtárban található szegmensfájlok statisztikáit készíti el, és ezeket a szegmensstatisztikákat szintén az adatbázisban tárolja.
-A szegmensstatisztikák alapján a végső statisztikákat közvetlenül a megjelenítés előtt készíti el az összesítő.
-Az összesítéshez sem szükséges, hogy a szegmensek sorban kerüljenek összesítésre, így akár több gépen párhuzamosan is lehetne szitálni, összesíteni, majd az eredményt összefésülni.
-
-A program része több, különböző szita algoritmus megvalósítása.
-Ezeknek az eredménye ellenőrizhető a szegmensfájlok ellenőrzéséhez használt szitával, szintén a sziták helyességének teszteléséhez.
-A feladat része, hogy ezeknek a szitáknak a futási idejét össze lehessen hasonlítani, ezért mindegyik szita néhány jól meghatározott ötlet egyszerű megvalósítása optimalizálások nélkül.
-Mindegyik szita szegmentált, a szitálást fix hosszúságú intervallumokon végzi.
-A sziták bármelyik szegmenstől képesek kezdeni a szitálást, és egy szegmens szitálása után további előkészület nélkül képesek a következő szegmenssel folytatni a szitálást.
-
-A minták közelítése alapfüggvények lineáris kombinációjával történik, a legkisebb négyzetek módszerét használva.
-
-A program a mintákat és közelítő függvényeket Descartes-féle koordináta rendszerben jeleníti meg, ehhez a mintákat és a függvényeket mintavételezi az $x$ tengely kiválasztott szakaszának pixelenkénti felosztása szerint.
+A program komponenseinek ábrája az \pageref{komponensek} oldalon található.
 %%% EMIL: vegig olvastam ezt a reszt... kicsit kondba vagyok mirol szol... marmint kicsit mindenrol, de valahogy ugy erzem szukebb kellene hogy legyen... mintha jobban a felhasznaloi reszhez tartozna (de nem teljesen)... nem katasztrofa, maradhat... ki is vaghatod
 %%% EMIL: +2 megjegyzes ami hirtelen eszembe jutott es el fogom felejteni: 1. nem artana tobb kod is a dolgozatba. 2. a mintak itt megint kicsit megleptek. "A" mintakrol beszelsz, de a "kozelmultban" nem nagyon emlegetted oket... nem kellene az "A" hatarozot elhagyni... es esetleg zarojelbe odairni hogy "mitakat (meresi adatokat) kirajzolni bla bla"
+%%% P: addig faragtam, hogy minden eltűnt, mert megvan máshol is. A hasznosabb mondatok átkerültek ide-oda. Kicsit szédszedtem a gui.math section-t, de még jobban szét kéne, és már subsubsection.
 
 \section{Az adatbázis}
 
@@ -215,6 +139,10 @@ A megoldás 3 programból áll, az \texttt{init} és a \texttt{generator} C nyel
 \subsection{Init és generator}
 
 Az \texttt{init} és a \texttt{generator} forráskódja a tarball \texttt{generator} könyvtárában van.
+
+A \texttt{generator} egy optimalizált szita, $2^{32}$-től $2^{64}-2^{34}$-ig képes szitálni.
+Az utolsó $2^{34}$ szám kihagyása egyszerű optimalizáció, így a programban az éppen szitált szám változója sosem csordul túl.
+
 A két program egymáshoz nagyon hasonló feladatot lát el, hasonló megoldásokkal.
 Mindkettő $2^{30}$ hosszú intervallumokat szitál, és az eredményt szegmensfájlokba írja.
 Mindkettő Eratoszthenész szitáját használja.
@@ -328,13 +256,15 @@ A kupac egy elsőbbségi sor, a sor eleje az absztrakt rendezés szerinti legkis
 
 \subsubsection{gui.math}
 
-Ebben a csomagban az osztályok két részre oszthatóak.
-Az \texttt{UnsignedLong} a Java \texttt{long} típus előjel nélküli műveleteit valósítja meg.
+Az \texttt{UnsignedLong} osztály a Java \texttt{long} típus előjel nélküli műveleteit valósítja meg.
 A Java a 8-as verziótól támogatja a primitív egész típusok előjel nélküli összehasonlítását és osztását, ez az osztály ezekre építve ad néhány segédeljárást.
 A pszeudoprím-teszthez a maradékos hatványozás, Java támogatás hiányában, a kitevő bitjei alapján az ismételt szorzást és négyzetre emelést használja, míg a szorzás ehhez hasonlóan összeadást és kétszerezést.
 Ezeknek az algoritmusoknak a futási ideje egy-egy szám esetén elfogadható, de intervallumok szitálására nem alkalmas.
 
-A csomag többi osztálya a legkisebb négyzetek módszerének implementációja, és annak segédosztályai.
+\subsubsection{Közelítés}
+
+A \texttt{gui.math} csomag a legkisebb négyzetek módszerének implementációját, és annak segédosztályait is tartalmazza.
+
 A \texttt{Sum} \texttt{double} típusú értékek véges összegeit számolja ki.
 A \texttt{double} véges pontosságának következménye, hogy nem minden szám reprezentálható \texttt{double} értékként, és többtagú összeg eredménye függhet a tagok összeadásának sorrendjétől, azaz az összeadások sorrendje befolyásolhatja az eredmény hibáját.
 
@@ -348,18 +278,20 @@ A végeredmény a sorban maradó érték lesz.
 A \texttt{Sum.Array} nagyságrend szerinti részösszegeket tart nyilván, új tagot a nagyságrendjéhez tartozó részösszeghez adja hozzá.
 A nagyságrend a double érték IEEE 754 szabvány szerinti reprezentációjának kitevője. Ebben a reprezentációban a kitevő $11$ bit hosszú, a\texttt{ Sum.Array} így mindig $2048$ részösszeget tárol.
 
-A \texttt{RealFunction} interfész valóshoz valóst rendelő függvények reprezentációi.
+A \texttt{RealFunction} interfész valóshoz valóst rendelő függvények reprezentációi, ezek lehetnek a közelítés elemi függvényei.
 Egy függvény a helyettesítési értékein kívül az értelmezési tartományáról is információt kell adjon.
 A grafikonmegjelenítő az $x$-tengely egy pixel által lefedett intervallumán akkor jelenít meg értéket, ha az intervallum egésze az értelmezési tartomány része.
+
 A \texttt{Functions} osztály a beépített elemi függvényeket tartalmazza.
 JavaScript-ben függvény a \texttt{CustomFunction}-nel adható meg.
-A \texttt{LinearCombinationFunction} már létező függvények lineáris kombinációja.
-A mintaközelítés eredménye ilyen típusú.
+A \texttt{LinearCombinationFunction} már létező függvények lineáris kombinációja, a mintaközelítés eredménye ilyen típusú.
 
 A \texttt{Matrix} osztályban vannak megadva a valós mátrixok műveletei, mindegyik kétdimenziós \texttt{double} tömbökre.
-Az implementált műveletek a legkisebb négyzetek módszeréhez szükségesekre korlátozódnak.
+Az implementált műveletek a legkisebb négyzetek módszeréhez szükségesekre korlátozódnak, ezek a mátrixszorzás, a transzponálás, és mátrix formában megadott lineáris egyenletrendszerek megoldása.
+
+Lineáris egyenletrendszert meg lehet oldani Gauss-eliminációval, vagy Householder-féle QR felbontással.
 A Gauss-eliminációnál kiválasztható, hogy részleges sorcserére, vagy teljes sor és oszlopcserére kerüljön sor.
-A \texttt{Matrix} osztály egy mátrix Householder-féle QR-felbontását is el tudja készíteni.
+A \texttt{Solver} interfész a választott módszer részleteinek elfedésére szolgál.
 A közelítések tesztjei alapján a legkisebb hibát eredményező választás a Gauss-elimináció teljes sor és oszlop cserével, a felhasználó nem tudja megválasztani a lineáris egyenletrendszerek megoldási módszerét.
 
 A \texttt{LeastSquares} osztályban lett megvalósítva a legkisebb négyzetek módszere.
@@ -377,18 +309,23 @@ A \texttt{Segment} osztály példányai a $2^{30}$ hosszú szitatáblák.
 Ezek tényleges fájlból olvasott adatokat is tartalmazhatnak, vagy szegmensek és sziták ellenőrzésekor a Java program is generálja.
 Ezzel az osztállyal szegmensfájlt csak olvasni lehet, írni nem.
 
+Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a \texttt{CSVReader} és \texttt{CSVWriter} osztályokat.
+Mindkettő adatfolyamként teszi lehetővé a szöveges cellák soronkénti feldolgozását.
+
+\subsubsection{Összesítő}
+
+Az összesítés megvalósítása a \texttt{gui.io} csomag része.
+
 Egy szegmens összesítését a \texttt{Segment.aggregate()} függvény végzi.
 Az eredményül kapott \texttt{Aggregate} példány az adatbázis formátumánál leírt szegmensstatisztika tükre.
 Az összesítőfájlt az \texttt{AggregatesReader} és \texttt{AggregatesWriter} osztállyal lehet olvasni és írni, mindkét esetben a szegmensek szigorúan növekedő kezdőszámú sorrendben dolgozhatóak fel.
 A írás és az olvasás \texttt{AggregateBlock} példányokkal dolgozik, ezek az objektumok a statisztikához való hozzáférés mellett a betömörített bináris adatot jegyzik meg, hogy a statisztika változatlan kiírása esetén ki lehessen hagyni az időigényes betömörítést.
 
-A megjelenítésre szánt mintákat az \texttt{Aggregates} osztály készíti el a szegmensenkénti statisztikák alapján.
+A megjelenítésre szánt mintákat az \texttt{Aggregates} osztály készíti el a szegmensenkénti statisztikák alapján közvetlenül a megjelenítés előtt.
 A szegmenseket az összesítésfájl sorrendjében dolgozza fel, az első hiányzó szegmensig.
 A megjelenített statisztikák legtöbbje egyszerűen összesíthető a szegmensenkénti adatokból.
-A prímhézagok esetében a szegmenseken átívelő hézagok külön odafigyelést igényelnek.
-
-Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a \texttt{CSVReader} és \texttt{CSVWriter} osztályokat.
-Mindkettő adatfolyamként teszi lehetővé a szöveges cellák soronkénti feldolgozását.
+Az összes páratlan prím számát a $4Z+1$ és a $4Z+3$ alakú prímek számának összege adja, az összes prímet ezek mellett az egyetlen páros prím, a $2$, alkotja.
+Az egymás utáni szegmenseken átívelő prímhézagok egyik hézagokra vonatkozó statisztikában sem szerepelnek, ezeket a szegmensenként eltárolt legkisebb és legnagyobb szegmensbe eső prím alapján külön meg kell határozni.
 
 \subsubsection{gui.sieve}
 
@@ -541,7 +478,7 @@ Az összehasonlításhoz a \texttt{ReferenceSegment} osztály állítja elő a r
 A szitatáblát a \texttt{ReferenceSegment.SIEVE} példány Eratoszthenész szitával készíti el, a \texttt{ReferenceSegment.TEST} az erős pszeudoprím teszttel.
 
 A pszeudoprím teszt a referenciaként használt szegmens előállításához a szegmens minden számára végrehajtja a Miller-Rabin pszeudoprímtesztet.
-Ehhez szükséges a módszer teljességét $2^{64}$-ig garantáló alapra\cite{pseudoprimebase}.
+Ehhez szükséges a módszer teljességét $2^{64}$-ig garantáló alapot választani\cite{pseudoprimebase}.
 
 A \texttt{CheckSegments.checkSegments()} metódus végzi a szegmensek ellenőrzését, a kiválasztott szegmensek beolvasását, a referencia generálását, és az kettő összehasonlítását.
 A \texttt{CheckSieve.checkSieve()} metódus ehhez hasonlóan működik, az ellenőrizni kívánt szegmenseket nem fájlból olvassa be, hanem a kiválasztott szitával állítja elő, és referenciának mindig a szitát választja.
