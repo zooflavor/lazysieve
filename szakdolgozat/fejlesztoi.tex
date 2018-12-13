@@ -547,6 +547,7 @@ A vezérlő ennek az ablaknak az eseménykezelői, amik a modell módosításán
 A modellen végezhető műveletek:
 \begin{itemize}
 \item a grafikon megjelenített részének mozgatása, nagyítása, kicsinyítése
+  %%% E: minak -> minta
 \item mintát hozzáadása
 \item minta törlése
 \item mintát közelítése
@@ -557,12 +558,14 @@ Ezek megvalósítására a program a Swing sztenderd komponenseit használja.
 A mintát a modellhez adni három forrásból lehet.
 Az adatbázis összesített statisztikáiból, ezek előállítása az \texttt{Aggregates} osztály feladata.
 Be lehet tölteni mintát CSV fájlból, ezt a LoadSampleProcess oldja meg.
+%%% E: Minta futasi ideje? Minta tud futni? ket labon?
 Vagy meg lehet mérni egy minta futási idejét.
 A futási idő mérése a parancssorból indítható mérést használja, a \texttt{MeasureSieve} ablak a mérés paramétereinek megadására szolgál.
 
 A minta közelítésének számítási részét a \texttt{gui.math} csomag végzi.
 Az elemi függvények kiválasztása a \texttt{FunctionSelector} ablakban lehetséges.
 Elemi függvényt JavaScript nyelven a \texttt{CustomFunctionDialog} ablakban lehet megadni.
+%%% E: Ezt a JavaScript dolgot hogy csinaltad? valami libraryt hasznlatal? Ha igen, ird le! Fontos reszlet! (nem kell nagyon reszletezni, egy mondat eleg.
 
 A \texttt{GraphPlotter} komponens a grafikon egérrel történő mozgatásáról, nagyításáról, vagy az ablak méretének változásáról eseményeket küld a vezérlésnek, így a nézet csak a vezérlésen keresztül módosítja a modellt.
 
