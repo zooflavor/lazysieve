@@ -48,6 +48,7 @@ A sziták sebességének mérését, és a statisztikák előállítását paran
 A statisztikák előállításának folyamata bármikor adatvesztés nélkül leállítható, és később folytatható.
 %%% EMIL: Csak nekem van itt dejavu-m vagy tenyleg ujra olvastam a dolgozat elejet, pepitaban, kicsit hatarozatlanabbul?  Az elv pofon egyszeru: ha a program hasznalatarol/feladatarol/mukodeserol van szo, akkor felhasznaloi dokumentacio; ha a program implementalasarol/belso mukodeserol/tervezoi donteseirol van szo, akkor fejlesztoi dokumentacio.
 %%% P: ezt lehet, hogy teljesen meg lehetne itt szüntetni. Ez volt az a rész, amibe egy csomó "ez kell, az kell" dolgot írtam.
+%%% E: Igen. Vagy legalabb is nagyon le lehet roviditeni. Ide irj roviden arrol hogy a fejlesztoi reszben mirol fogsz irni... lehet kicsit hivatkozni a felhasznaloi reszre, pl leirod hogy a mintakhoz az elemi fuggvenyek linearis kombinacioanak illesztese a legkisebb negyzetek modszerevel van megoldva.
 
 \pagebreak
 \section{A program komponensei}
@@ -56,10 +57,12 @@ A program komponenseinek ábrája az \pageref{komponensek} oldalon található.
 %%% EMIL: vegig olvastam ezt a reszt... kicsit kondba vagyok mirol szol... marmint kicsit mindenrol, de valahogy ugy erzem szukebb kellene hogy legyen... mintha jobban a felhasznaloi reszhez tartozna (de nem teljesen)... nem katasztrofa, maradhat... ki is vaghatod
 %%% EMIL: +2 megjegyzes ami hirtelen eszembe jutott es el fogom felejteni: 1. nem artana tobb kod is a dolgozatba. 2. a mintak itt megint kicsit megleptek. "A" mintakrol beszelsz, de a "kozelmultban" nem nagyon emlegetted oket... nem kellene az "A" hatarozot elhagyni... es esetleg zarojelbe odairni hogy "mitakat (meresi adatokat) kirajzolni bla bla"
 %%% P: addig faragtam, hogy minden eltűnt, mert megvan máshol is. A hasznosabb mondatok átkerültek ide-oda. Kicsit szédszedtem a gui.math section-t, de még jobban szét kéne, és már subsubsection.
+%%% E: Akkor ez a beszelgetes is mehet mostmar a kukaba? 
 
 \section{Az adatbázis}
 
 A program adatbázisa egy egyszerű könyvtár, amin keresztül a különböző programrészek kommunikálnak.
+%%% E: Van nem "teljes" binaris fajl is? Vagy arra gondoltal hogy szoveget nem tarolsz benne... a siman "binaris" szerintem eleg lesz..
 Ezek az adatok mindig egy-egy teljes bináris fájlt jelentenek.
 Az adatbázis két fajta fájlt tárol, a szitált szegmenseket, azaz a szitatábla bitvektorait, és a szegmensek összesítéseit.
 Mindkettő a szegmens első számával van azonosítva, a szegmens hossza mindig $2^{30}$ szám, és az $n \in \mathbb{N}_0$ megengedett kezdő szám, ha $n < 2^{64}-2^{34}$ és $n \equiv 1 \pmod{2^{30}}$.
@@ -87,9 +90,11 @@ Ha $s$ a szegmens intervallumának kezdete, akkor az $0.$ bájt $0.$ bitje $s$-t
 
 Ahhoz, hogy az \texttt{init} és a \texttt{generator} program bármikor leállítható legyen, a szegmenst először egy ideiglenes fájlba írja, és ha ez hiba nélkül megtörtént, akkor az ideglenes fájlt átnevezi a megfelelő névre.
 Mivel az ideiglenes fájl ugyanabba a könyvtárba kerül, mint ahova a szegmensfájl is, így feltételezhető, hogy helyi meghajtón az átnevezés már atomi művelet.
+%%% E: mi az ideiglenes fajl neve. ugye nem eznagyonfontosnetoroldle.pdf?
 
 Ez az eljárás az átnevezés előtt nem győződik meg arról, hogy az ideiglenes fájl minden része
 kiíródott a háttértárra, így ez csak a program leállíthatóságát garantálja, a számítógép váratlan leállása esetén érdemes azokat a szegmensfájlokat letörölni, amikről feltételezhető, hogy nem volt ideje a számítógépnek minden részét kiírnia a tényleges tárolóra.
+%%% E: Szerintem ez mar kicsit felsesleges magyarazkodas (az elozo mondat) es bele lehet kotni... szoban elmondhatod a vedesnel
 
 A szegmensstatisztikák az \texttt{aggregates} fájlban vannak.
 A szegmensek a fájlban a kezdőszámok sorrendjében követik egymást, egy szegmensnek legfeljebb egy statisztikája lehet.
@@ -102,6 +107,7 @@ Ezután minden statisztika egy változó méretű blokkban van tárolva, a fájl
 Minden block két részből áll, az első 4 bájt a második rész mérete bájtokban.
 Ez a második rész a szegmensstatisztika.
 A statisztika gzip-pel tömörített, kitömörítve bináris adat, a legnagyobb helyiértékű bájt elöl, aminek a formátuma:
+%%% E: a gzip-pelest a programon belul csinalod? vagy meghivod a gzip programot? erdemes ezt tomoriteni? kicsit konkretizalhatnad ezt hogy itt mi tortenik... es a little endian dolgot ne ird le 3x. Ha tobbszor fordul elo, akkor egyszer ird le az elejen hogy ez a default.
 \begin{itemize}
 \item a szegmens összesítésére fordított idő, 8 bájt, nanoszekundumokban
 \item a szita inicializálásának ideje a szegmens szitálása előtt, 8 bájt, nanoszekundumokban
@@ -141,6 +147,7 @@ A megoldás 3 programból áll, az \texttt{init} és a \texttt{generator} C nyel
 Az \texttt{init} és a \texttt{generator} forráskódja a tarball \texttt{generator} könyvtárában van.
 
 A \texttt{generator} egy optimalizált szita, $2^{32}$-től $2^{64}-2^{34}$-ig képes szitálni.
+%%% E: Kovi mondat, nem optimalizacio, hanem konnyites.
 Az utolsó $2^{34}$ szám kihagyása egyszerű optimalizáció, így a programban az éppen szitált szám változója sosem csordul túl.
 
 A két program egymáshoz nagyon hasonló feladatot lát el, hasonló megoldásokkal.
@@ -163,6 +170,7 @@ A szegmensfájlok olvasására és írásara a \texttt{readSegment()} és \textt
 \subsubsection{Init}
 
 Az \texttt{init} program előállítja az első 4 szegmens fájlt, azaz $2^{32}$-ig az összes prímet megkeresi.
+%%% E: kéne?
 Ezzel a többi részprogram már a $[2^{32}, 2^{64}[$ tartomány tetszőleges részén tud szitálni, anélkül, hogy a szitált szegmenseket a szitálás után végig kéne nézze új prímekért.
 
 A szita egy egyszerű szegmentált eratoszthenészi szita.
@@ -173,9 +181,9 @@ A prímek mellett a következő szitálás helyét is eltárolja, így nem kell 
 Ez az algoritmus visszatérő minta a szegmentált szitákban.
 
 \begin{algorithmic}[1]
-\State $p$: \text{a prím}
-\State $q$: \text{a következő szám, amit p oszt}
-\State $e$: \text{a szegmens vége}
+\State $p$: a prím
+\State $q$: a következő szám, amit $p$ oszt
+\State $e$: a szegmens vége
 \While{$q$ < $e$}
 	\State \Call{Megjelöl}{$q$}
 	\State $q \gets q + 2p$
@@ -187,6 +195,7 @@ Az \texttt{init} szitájának inicializálásához a prímek listáját elő kel
 \subsubsection{Generator}
 
 A \texttt{generator} fő részei hasonlóak az \texttt{init}-hez.
+%%% E: miutan FELOLVASSA, be is takar es joeszjakat is kivan?
 Indulása után felolvassa az összes prímet az első 4 szegmensfájlból, és mindegyik prímhez osztással meghatározza, hogy melyik a legkisebb szám, amit oszt, és legalább akkora, mint a szitálandó szegmens kezdete.
 A prímek, és a hozzájuk tartozó következő szitálandó pozíciót tároló adatstruktúra szitálás közben nem érzékeny azokra az elemekre, amik az éppen szitált szegmensnél nagyobb helyeken szitálnak, így a \texttt{generator} az összes prímet eltárolja $2^{32}$-ig, nem csak a szitálandó tartomány végének négyzetgyökéig, és a prímek első többszörösét is a prím négyzetétől szitálja.
 
@@ -208,6 +217,7 @@ Ezeket a többszörösöket a bitmintával szitáló kis prímek jelölik meg.
 
 Az edénysor algoritmusának részletes leírására a \pageref{sec:szitak} oldalon a ''Sziták'' szakaszban kerül sor.
 Az ott leírt távolság függvényt implementálja a \texttt{bucketIndex()} függvény a forráskódban.
+%%% E: milyen szamrendszert? kiderul az tetszolegesen kicsi szovegkornyezetbol?
 A számrendszert a \texttt{BUCKET\_BITS} konstans szabályozza.
 A sorhoz tartozó edények listája a \texttt{buckets} tömb, ennek minden eleme egy láncolt lista, ahol a listaelemek fix méretű edények.
 
@@ -220,13 +230,15 @@ A 2, 3, és 5 többszöröseinek hatékony kihagyásához a prioritásos sor ele
 A nyolc szóba jöhető lehetőség közül a \texttt{PrimePosition.prime} mező felső 3 bitje választ.
 Ezt a 3 bit információt biztonsággal lehet itt tárolni, a 64 bit széles változóban a feladat határai miatt mindig csak az alsó 32 tartalmaz értékes számjegyet.
 Ez a 2-3-5 kerék alapú gyorsítás csak a prioritásos sorban tárolt prímekre van alkalmazva.
+%%% E: mar korabban akartam mondani, hogy programkodokat is rakhatsz be a dolgozatba. A fuggveny neveket amiket emlegetsz es erdekesnek gonolsz, vagy esetleg a PrimePosition adatszerkezet. 
 
 \subsection{Gui}
 
-A program Java-ban írt része tartalmazza az összes többi funkció megvalósítását, a szegmensfájlok feldolgozását, a különböző szitákat, és a minták megjelenítését.
+A program Java-ban írt része tartalmazza az összes többi funkció megvalósítását: a szegmensfájlok feldolgozását, a különböző szitákat, és a minták megjelenítését.
 Ezeknek a funkcióknak a többsége nem interaktív, a felhasználó a paraméterek megadása után a végrehajtást már nem tudja befolyásolni.
 
 A forráskód ennek megfelelően három egymástól jól elkülöníthető részre osztható.
+%%% E: mi ez a harom resz?
 A legalsó szint a program adatszerkezeteit, algoritmusait, és fájlformátumait írja le. 
 Erre építenek a felhasználói műveletek megvalósításai.
 Mindegyik művelethez tartozik egy eljárásként megvalósított belépési pont.
@@ -317,12 +329,13 @@ Ezzel az osztállyal szegmensfájlt csak olvasni lehet, írni nem.
 Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a \texttt{CSVReader} és \texttt{CSVWriter} osztályokat.
 Mindkettő adatfolyamként teszi lehetővé a szöveges cellák soronkénti feldolgozását.
 
-\subsubsection{Összesítő}
+\subsubsection{Összesítő} %%% E: A felbontast nem teljesen ertem, 3.4.2.4 gui.io, es 3.4.2.5 Osszesito, ami viszont a gui.io resze... most akkor hogy van ez? nem kellene a 2 szntet likvidalni, marmint hogy 3.2.4 legye a "gui.io", es azon belul a 3.2.4.1 legyen az Osszesito. A gui.math-nel is hasonlo problemat veltem felfedezni. 
 
 Az összesítés megvalósítása a \texttt{gui.io} csomag része.
 
 Egy szegmens összesítését a \texttt{Segment.aggregate()} függvény végzi.
 Az eredményül kapott \texttt{Aggregate} példány az adatbázis formátumánál leírt szegmensstatisztika tükre.
+%%% E: nem ket mondat ez a kovetkezo egy mondat?
 Az összesítőfájlt az \texttt{AggregatesReader} és \texttt{AggregatesWriter} osztállyal lehet olvasni és írni, mindkét esetben a szegmensek szigorúan növekedő kezdőszámú sorrendben dolgozhatóak fel.
 A írás és az olvasás \texttt{AggregateBlock} példányokkal dolgozik, ezek az objektumok a statisztikához való hozzáférés mellett a betömörített bináris adatot jegyzik meg, hogy a statisztika változatlan kiírása esetén ki lehessen hagyni az időigényes betömörítést.
 
@@ -349,6 +362,7 @@ A példányaitól elvárás, hogy
 \item legfeljebb $2^{32}-1$-ig olvassa vissza a szitálás eredményét
 \end{itemize}
 \item a szegmens mérete szabályozható, a lehetséges értékek a kettő hatványai $2^8$-tól $2^{30}$-ig 
+  %%% E: a lehhesen (felteteles?) a kovetkezo pontban es a lehetseges (kijelento) stilus mintha nem lenne egy hanga: lehessen -> lehet 
 \item bármikor újra lehessen inicializálni a szitát egy szegmens kezdetéhez úgy, hogy onnantól már további felkészülési idő nélkül több egymás utáni szegmenst lehessen szitálni
 \item az \texttt{OperationCounter} osztály segítségével számon tartja a szitálás műveletigényét.
 \end{itemize}
@@ -405,17 +419,21 @@ A példányaitól elvárás, hogy
 \end{figure}
 
 A \texttt{SieveTable} osztály \texttt{Segment} implementációja az adatbázisnál is használt szegmensfájl, szita ellenőrzésekor ez a szitatábla tárolja a bitvektort, és az ellenőrzés a végeredményt hasonlítja össze a referenciaszita eredményével.
+%%% E: na jo, ezt a longtable dolgot nem ertem. ki/mi hasznalja (rejtett alany)?, milyen/melyik eredmenyt tart nyilvan?, minnel nagyobb szamoknal?, milyen muveletet vegez el a memoriaban?, milyen kulonbozo szamok?, milyen ugyan azt a bittet?, milyen eredmeny nem olvasható vissza? lehet hogy en vagyok, hulye, de ezek a kerdesek legalabb fele nem derul ki a szovegkornyezetbol.
 A \texttt{LongTable} megvalósítást a program a futási idő mérésénél használja, ez a szitatábla mindig $2^{32}$-ig tartja nyilván az eredményt, annál nagyobb számoknál a műveletet elvégzi a memóriában, de különböző számok ugyanazt a bitet módosíthatják, így egy számra vonatkozó eredmény nem olvasható vissza.
 
 Mindegyik szita megvalósítása valamilyen formában eltárolja a már megtalált prímeket, de csak a szitált szegmens végének négyzetgyökéig veszik azokat figyelembe.
+%%% E: milyen poziciokrol van itt szo? melyik kivetelevel? egy vagy ketto? milyen elemek? milyen/mi szerinti csoportositasat?
 A sziták a prímek és pozíciójuk tárolását, egy kivételével, egy vagy két \texttt{PrimitiveList} használatával oldják meg, az elemek csoportosítását a listán belüli helyük adja.
 Az edénysoron alapuló sziták belső edényeinek pillanatnyi mérete tág határok között mozog, azért a memóriaveszteség csökkentésére ezek ez edények kisebb, fix méretű edények láncolt listái.
 Az edénysor ezeket a listaelemeket feldolgozás után újrahasznosítja a szemétgyűjtés elkerüléséhez.
 
 A \texttt{CacheOptimizedLinearSieve} futás közben nehezebben bővíthető új prímmel, mint a listás vagy elsőbbségi soros sziták.
 Ezért a COLS szita $2^{32}$-ig egy egyszerű listás eratoszthenészi szitaként viselkedik, és az azutáni első szegmens szitálásakor alakítja ki a prímek csoportosítását.
+%%% E: mert bovitheto nehezebben primekkel... mintha ujra ugralnal nagyokat, es innen onnan kis reszleteket irkalnal ossze... vagy csak en nem tudo kovetni?
 
 A sziták egyszerű hierarchiát alkotnak.
+%%% E: mi az hogy foglalkoznak?
 A \texttt{SegmentedSieve} leszármazottai minden prímmel csak egyszer foglalkoznak egy szegmensben, bár lehet, hogy az több helyen szitál.
 Az \texttt{EratosthenesianSieve} típusú sziták a prímekkel úgy szitálnak, hogy a prím eltárolt utolsó többszörösét a prím kétszeresével növelik, amíg a többszörös a szegmensbe esik.
 
@@ -424,6 +442,7 @@ Az implementációk főbb jellemzői:
 \begin{itemize}
 \item \texttt{TrialDivision}: próbaosztás
 \item \texttt{SieveOfAtkin}: Atkin szitája
+  %%% E: kovetkezo mondat. WTF? Vagy egy ketospontot tegyel az implementacioi utan a vesszo helyett, vagy fogalmazd at a mondatod. Eratoszthenész sztata minden implementacioja a prim-pozicio
 \item Eratoszthenész szitájának implementációi, mindegyik a prím-pozíció párok eltárolásával próbálja gyorsítani a futását
 \begin{itemize}
 \item \texttt{SieveOfEratosthenes}: a prímeket egy tömbben tárolja, és minden szegmens szitálásához minden prímmel próbál szitálni a szegmensben
@@ -456,6 +475,7 @@ A \texttt{GuiProcess} a \texttt{background()} futásához egy \texttt{GuiProgres
 \subsubsection{Grafikus megjelenítés}
 
 A grafikus program fő ablakát a \texttt{gui.Gui} osztály írja le.
+%%% E: fenntartanak -> tartanak fenn.
 A program ablakai egy közös \texttt{Session} objektumon keresztül fenntartanak szálakat a háttérfolyamatok futtatására.
 Ez az objektum számon tartja a nyitott ablakok számát, és az utolsó becsukásával a háttérszálakat szabályosan leállítja.
 
@@ -486,8 +506,10 @@ A szitatáblát a \texttt{ReferenceSegment.SIEVE} példány Eratoszthenész szit
 
 A pszeudoprím teszt a referenciaként használt szegmens előállításához a szegmens minden számára végrehajtja a Miller-Rabin pszeudoprímtesztet.
 Ehhez szükséges a módszer teljességét $2^{64}$-ig garantáló alapot választani\cite{pseudoprimebase}.
+%%% E: Ezt hogyan csinalod.  Ha ugy ahogy a pseudoprimebase hivatkozasban, akkor ird oda hogy "ez ugy csinalom ahogy [7]-ben csinaljak".
 
 A \texttt{CheckSegments.checkSegments()} metódus végzi a szegmensek ellenőrzését, a kiválasztott szegmensek beolvasását, a referencia generálását, és az kettő összehasonlítását.
+%%% E: Kovi mondat, a kivalasztott szita a referencia... nem tom, ezek a mondatok is kicsit funky-nak tunnek.  De lehet hogy csak faradt vagyok.
 A \texttt{CheckSieve.checkSieve()} metódus ehhez hasonlóan működik, az ellenőrizni kívánt szegmenseket nem fájlból olvassa be, hanem a kiválasztott szitával állítja elő, és referenciának mindig a szitát választja.
 
 \subsubsection{Grafikon ábrázolása}
@@ -550,6 +572,7 @@ A \texttt{RenderedGraph} tartalmazza a hozzá tartozó \texttt{Graph} referenci�
 A \texttt{RenderedSample} osztály írja le az oszlopok mintavételezésének eredményét.
 Függvényből származó oszlopminták egybefüggő, diszjunkt intervallumonként csoportosítva vannak a \texttt{RenderedInterval} osztály segítségével.
 Ha az oszlopminta mintából származik, akkor egyetlen intervallumban lesz az összes oszlopa, mert a minták értelmezési tartománya véges, összefüggő intervallum sehol nincs rajta.
+%%% E: Elozo sor: mi nincs rajta?
 
 Ezeknek az osztályoknak a módosíthatatlansága megkönnyíti a helyes többszálú feldolgozást.
 Egy kész objektumot egy szál sem fog megváltozni látni, és a referenciák megjegyzésével könnyen követhető, hogy melyik a legújabb modell.
@@ -567,6 +590,7 @@ A nézet ennek megfelelően az értelmezett intervallumok közötti szakaszokon 
 A \texttt{GraphRenderer} a nézettel a \texttt{CheckAndPost} interfészen keresztül kommunikál a pontos nézetimplementáció ismerete nélkül.
 A \texttt{check()} metódussal le tudja ellenőrizni, hogy a legújabb modell az-e, amit éppen feldolgoz, a \texttt{checkAndPost()} metódussal az előbbi ellenőrzés után az addig elkészült részeredményt tovább is adja megjelenítésre.
 Ha a modell már elavult, mindkét \texttt{check...()} metódus egy \texttt{RendererDeathException}-t dob, és a \texttt{GraphRenderer} hibajelzés nélkül leáll. Ilyenkor egy másik szálon már dolgozik egy új \texttt{GraphRenderer} az új modellen.
+%%% E: Ez az elozo mondat nem lenne ugy szebb, hogy "ez csak akkor fordulhat elo ha egy masik szalon mar dolgozik egy uj GraphRenderer, es ami helyes viselkedest eredmenyez".
 
 \subsubsection{Vezérlő}
 
