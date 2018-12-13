@@ -275,6 +275,9 @@ Ez a fájl az eddig összesített szegmensekről a következő információkat t
 \item a szegmensbe eső $4\mathbb{Z}+1$, $4\mathbb{Z}+3$, $6\mathbb{Z}+1$ és $12\mathbb{Z}+11$ alakú prímek számát külön-külön
 \item a szegmensben előforduló prímhézagok első előfordulásának helyét, és az előfordulások számát.
 \end{itemize}
+A szegmensbe eső összes prím számát nem tárolja a szegmensstatisztika.
+Az összes páratlan prím számát megadja a $4Z+1$ és a $4Z+3$ alakú prímek számának összege.
+Az összes prím számához az $1$-től kezdődő szegmensnél még az egyetlen páros prímet, a $2$-t, hozzá kell számolni.
 
 Példaként ha a szegmensek mérete 16 szám lenne, és 17-től szitálnánk egy szegmensnyit, akkor a szegmensfájl leírná, hogy a prímek a 17, 19, 23, 29, 31, és az összetett számok a 15, 21, 25, 27.
 A szegmens összesítése azt tartalmazná, hogy
@@ -283,9 +286,6 @@ A szegmens összesítése azt tartalmazná, hogy
 \item a legkisebb prím 17, a legnagyobb 31
 \item a szegmensben
 \begin{itemize}
-  %%% EMIL: pelda elozo verzioja szerintem jobb volt. az hogy 5 (tetszoleges alaku) prim van, azt is tarolod ugye? de ide nem irtad le. Az elozo verzio ugy ment hogy 5 prim van ezekbol...
-  %%% P: nem... az előzőt elrontottam. és 1+4Z1+4Z3-mal csinálom az összes prím száma statisztikát
-  %%% E: de... sima primeket nem szamolsz? Vegulis 4Z+1 es 4Z+3bol kijon... az lehet hogy ide irhatnad... es akkor ez a beszelgetes is mehet a kukaba - issue resolved.
 \item 2db $4\mathbb{Z}+1$
 \item 3db $4\mathbb{Z}+3$
 \item 2db $6\mathbb{Z}+1$ és		
@@ -469,13 +469,13 @@ scripts$ ./check-sieve buckets-3 3000000000001 3010000000001
 100.0%: A szita helyes.
 \end{lstlisting}
 
-Ha a kezdőszám nagyobb, mint 1, az ellenőrzéshez ilyenkor is szükséges, hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
-
 \begin{figure}[H]
 \caption{Szita ellenőrzése}
 \centering
 \includegraphics[scale=1]{check-sieve.png}
 \end{figure}
+
+Ha a kezdőszám nagyobb, mint 1, az ellenőrzéshez ilyenkor is szükséges, hogy a négy darab kezdő szegmensfájlt tartalmazza az adatbáziskönyvtár.
 
 \section{Minta megjelenítése}
 
