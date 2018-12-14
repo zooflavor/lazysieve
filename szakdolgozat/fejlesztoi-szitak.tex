@@ -201,6 +201,7 @@ Az edénysor műveleteit láncolt listákkal számjegyenként ábrázolt számok
 Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 A számok láncolt listával ábrázolásával az $x+y$ kiszámítása $\theta(h(x, x+y))$ műveletet igényel.
 
+%%% E: Noveleseert felelos algoritmus
 Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy olyan számítási modellben is, ahol számok összeadása konstans idejű.
 Ha $r$ a $q$ sor eleme, akkor az elem a sorból kikerüléséig még $h(p(q), p(r))$ edényt bejárhat.
 
@@ -303,6 +304,7 @@ x_k+1=y_k
 \end{equation}
 
 A sor elejének eltávolítása algoritmus helyessége következik abból, hogy a $d'$-nél kisebb indexű edények üresek, a $d'$-nél nagyobb indexű edények elemeinek távolsága nem változik a sor pozíciójának növelésével, és a $d'$ edény elemeit az algoritmus újrarendezi.
+%%% E: ide illene egy: "A helyesseg bizonyitasa a kovetkezo ket allitas bizonyitasabol all", nem?
 \begin{equation}
 \label{ures}
 \forall i \in \mathbb{N}_0, i<d': b(q, i) = \emptyset
@@ -312,6 +314,7 @@ A sor elejének eltávolítása algoritmus helyessége következik abból, hogy 
 \forall i \in \mathbb{N}_0, i>d': \forall r \in b(q, i) : i = d(p(q), p(r)) = d(p(q)+1, p(r))
 \end{equation}
 
+%%% E: nem \ref hanem \eqref
 \ref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in b(q, i)$.
 Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
 \begin{align*}
