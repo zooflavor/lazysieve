@@ -111,6 +111,7 @@ A \texttt{gui} program szitái közül ezt az algoritmust követi az edénysor s
 A edénysor egy monoton prioritásos sor.
 Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
 A sor pozíciójának megnövelése a sor elejének eltávolításával is együtt jár.
+%%% E: Mik az elmek (vagy ez itt meg nem fontos... esetleg valami ilyesmi "az edenysor elemei prim-pozicio parok lesznek az edenysoros szitalo algoritmusaban")
 A sor edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
 Egy eltárolt elem helyét az edények között az elem pozíciójának és a sor aktuális pozíciójának távolsága határozza meg.
 Két szám távolságát egy számrendszerben két érték határozza meg, a legnagyobb helyiérték, amiben eltérnek a számjegyeik, és a nagyobbik szám számjegye ezen a helyiértéken.
@@ -134,6 +135,7 @@ Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-va
 d(x, y) = h(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
 \end{align*}
 
+%%% E: Nekem ez itt tovabbra is nagyon boki a csoromet, hogy a p() mert mukodik egy edenysorra es egy elemre is... bar mostmar asszem ertem a jeloles szepseget
 Legyen $q$ egy edénysor
 \begin{itemize}
 \item $a$ alapszámmal
@@ -161,6 +163,7 @@ A sor pozíciójának eggyel megnövelésével a sor invariánsa kétféleképpe
 \end{itemize}
 A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távolíthat el a sorból, és nem üres sor esetén is előfordulhat, hogy a sor elejének eltávolítása nem ad vissza elemeket.
 
+%%% E: erre nem hivatkozol sehol, pedig jo lenne.
 \begin{algorithm}[H]
 \floatname{algorithm}{Algoritmus}
 \caption{A $q$ edénysor elejének eltávolítása}
@@ -186,6 +189,8 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 Az edénysor elejét ezzel az adatstruktúrával nem lehet hatékonyan lekérni az elemek eltávolítása nélkül.
 Edénysorral szitáláskor a sor pozícióját a szegmens végéig növelve pontosan a szegmensben szitáló elemek kerülnek ki a sorból, a sor elejének lekérdezésére nincs szükség.
 
+%%% E: Az elozo mondat nem lenne jobb ide csatolni, ehhez a paragarafushoz.
+%%% E: Egy kicst atirni a kovi mondatot? szamok amik sorpoziciora lepnek? bakanccsal?... ne inkam primek azok a szamok, melyek megegyeznek a sorpozicioikkal amelyeknek novelese nem tavolit el elemeket az edenysorbol. Es ebben a paragrafusban kellene megmondani hogy akkor mik is valojaban az elemek. 
 Ha a szegmensek hossza egy szám, akkor a prímek azok a számok, amelyik sorpozíciókra lépve a pozíció növelése nem távolít el elemet. A \texttt{buckets-simple} a felhasználó által megadott szegmensmérettől függetlenül így működik, a számokról sorban, egyetlen menetben dönti el, hogy melyik prím.
 
 \subsubsection{Funkcionális megvalósítás}
