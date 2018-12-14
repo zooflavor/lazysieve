@@ -123,6 +123,7 @@ A sor által használt $d(x, y)$ távolságfüggvény az $y-x$ eltérés nagysá
 x = \sum_{i=0}^{\infty} x_i a^i\ (i \in \mathbb{N}_0, x_i \in \mathbb{N}_0, x_i < a)
 \end{equation}
 \begin{equation}
+\label{hdef}
 h(x, y) = \max \lbrace i \in \mathbb{N}_0 | x_i \not= y_i\rbrace \ (x, y \in \mathbb{N}_0, x<y)\\
 \end{equation}
 \begin{equation}
@@ -301,7 +302,7 @@ x_k+1=y_k
 \end{equation}
 
 A sor elejének eltávolítása algoritmus helyessége következik abból, hogy a $d'$-nél kisebb indexű edények üresek, a $d'$-nél nagyobb indexű edények elemeinek távolsága nem változik a sor pozíciójának növelésével, és a $d'$ edény elemeit az algoritmus újrarendezi.
-%%% E: ide illene egy: "A helyesseg bizonyitasa a kovetkezo ket allitas bizonyitasabol all", nem?
+A helyesség bizonyításához a következő két állítást kell bizonyítani:
 \begin{equation}
 \label{ures}
 \forall i \in \mathbb{N}_0, i<d': b(q, i) = \emptyset
@@ -311,33 +312,40 @@ A sor elejének eltávolítása algoritmus helyessége következik abból, hogy 
 \forall i \in \mathbb{N}_0, i>d': \forall r \in b(q, i) : i = d(p(q), p(r)) = d(p(q)+1, p(r))
 \end{equation}
 
-%%% E: nem \ref hanem \eqref
-\ref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in b(q, i)$.
+A \eqref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in b(q, i)$.
 Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
 \begin{align*}
 d(p(q), p(r)) = i < d' = d(p(q), p(q)+1)
 \end{align*}
-Ha $k' \not = k$, akkor $k' < k$, de \ref{kisebb} és \ref{szamjegy} ellentmondáshoz vezet:
+Ha $k' \not = k$, akkor $k' < k$, de \eqref{kisebb} és \eqref{szamjegy} ellentmondáshoz vezet, $p(r)_{k'} \in \mathbb{N}_0$ két egymás követő egész között lenne:
 \begin{align*}
-a-1 = p(q)_{k'} < p(r)_{k'} = 0
+a-1 = p(q)_{k'} < p(r)_{k'} < a
 \end{align*}
-Ha $k' = k$, akkor $i < d'$ és \ref{ddef} miatt $p(r)_k < (p(q)+1)_k$. Ekkor \ref{kisebb} és \ref{eggyel} ellentmond egymásnak:
-%%% E: ez igy miert is ellentmondas? mert egy a tavolsag kozbe meg ket < van? remelem ertheto mi a bajom, a vala < ... < valami + 1 nem tul ellentmondasoskinezetu
+Ha $k' = k$, akkor $i < d'$ és \eqref{ddef} miatt $p(r)_k < (p(q)+1)_k$. Ekkor \eqref{kisebb} és \eqref{eggyel} ellentmond egymásnak, $p(r)_k$ értéke ekkor is két egymást követő egész közé kéne essen:
 \begin{align*}
 p(q)_k < p(r)_k < (p(q)+1)_k = p(q)_k + 1
 \end{align*}
-Tehát az indirekt feltevés ellentmondáshoz vezet, azaz \ref{ures} igaz, a $d'$-nél kisebb indexű edények üresek.
+Tehát az indirekt feltevés ellentmondáshoz vezet, azaz \eqref{ures} igaz, a $d'$-nél kisebb indexű edények üresek.
 
 Legyen $i \in \mathbb{N}_0, i>d', r \in b(q, i), k'=h(p(q), p(r))$.
-Ha $k' = k$, akkor
-%%% E: ezt nem konnyu latni miert teljesul.
+Ha $k' = k$, akkor $i>d'$ és \eqref{ddef} miatt
 \begin{align*}
-d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
+i &= (a-1)k+p(r)_k-1 \\
+d' &= (a-1)k+(p(q)+1)_k-1 \\
+p(q)_k &< (p(q)+1)_k = p(q)_k+1 < p(r)_k
+\end{align*}
+amiből következik \eqref{hdef} és \eqref{valtozatlan} miatt, hogy
+\begin{align*}
+h(p(q), p(q)+1) = h(p(q), p(r)) = h(p(q)+1, p(r)) = k
+\end{align*}
+Ebből \eqref{ddef} alapján
+\begin{align*}
+d(p(q), p(r)) &= (a-1)k+p(r)_{k}-1 = d(p(q)+1, p(r))
 \end{align*}
 Ha $k \not = k'$, akkor \ref{ddef} szerint $k < k'$.
-\ref{valtozatlan} szerint
+\eqref{hdef} és \eqref{valtozatlan} szerint
 \begin{align*}
-p(q)_{k'} &= (p(q)+1)_{k'} \\
+p(q)_{k'} &= (p(q)+1)_{k'} \not= p(r)_{k'} \\
   %%% E: A kozepso egyenletet se nem feltetlenul ertem miert van. miert lesz h(p(q) + 1, p(r)) = k'???
 h(p(q), p(r)) &= k' = h(p(q)+1, p(r)) \\
 d(p(q), p(r)) &= (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
