@@ -73,10 +73,8 @@ Ezekkel az elemekkel a szitálást elvégzi a szegmensben, majd a sorba visszahe
 Az elemek sorrendjét a legközelebbi szitált pozíció határozza meg, a sor eleje az éppen szitált szegmenshez legközelebbi elem.
 Az elemek sorrendjénél a szegmenseken belüli sorrend vizsgálata felesleges.
 A prioritásos soron alapuló szitálás algoritmusát a \ref{alg:eratosthenes-queue} adja meg, a sor adatszerkezet meghatározása nélkül.
-%%% E: A kovi sort nem lenne jobb a utana jovo paragrafushoz hozzacsapni (azaz "A tenyleges megvalositas..." sor menjen az algoritmus ala' szerintem)
-A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a helyben módosítást és a struktúra invariánsának visszaállítását is választhatja.
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \floatname{algorithm}{Algoritmus}
 \caption{Az $[u, v=u+kd)$ intervallum szitálása, prioritásos sorral}
 \label{alg:eratosthenes-queue}
@@ -103,15 +101,16 @@ A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a h
 \end{algorithmic}
 \end{algorithm}
 
+A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a helyben módosítást és a struktúra invariánsának visszaállítását is választhatja.
+
 A \texttt{gui} program szitái közül ezt az algoritmust követi az edénysor szita, a bináris kupac szita, és a COLS körkörös listája is. A bináris kupac szitánál az eltávolítás-hozzáadás és a helyben javítás között a felhasználó választhat.
 
 \subsection{Edénysor}
 
-%%% E: MONOTON (prioritasos sor)? Is that a thing?
 A edénysor egy monoton prioritásos sor.
-Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
+Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat, és a sor pozíciója nem csökkenhet.
 A sor pozíciójának megnövelése a sor elejének eltávolításával is együtt jár.
-%%% E: Mik az elmek (vagy ez itt meg nem fontos... esetleg valami ilyesmi "az edenysor elemei prim-pozicio parok lesznek az edenysoros szitalo algoritmusaban")
+
 A sor edények egy végtelen sorozatát is tárolja, a sor elemei ezekbe az edényekbe kerülnek.
 Egy eltárolt elem helyét az edények között az elem pozíciójának és a sor aktuális pozíciójának távolsága határozza meg.
 Két szám távolságát egy számrendszerben két érték határozza meg, a legnagyobb helyiérték, amiben eltérnek a számjegyeik, és a nagyobbik szám számjegye ezen a helyiértéken.
@@ -135,7 +134,6 @@ Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-va
 d(x, y) = h(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
 \end{align*}
 
-%%% E: Nekem ez itt tovabbra is nagyon boki a csoromet, hogy a p() mert mukodik egy edenysorra es egy elemre is... bar mostmar asszem ertem a jeloles szepseget
 Legyen $q$ egy edénysor
 \begin{itemize}
 \item $a$ alapszámmal
@@ -152,21 +150,19 @@ Ekkor a $q$ sor invariánsa:
 \end{align*}
 
 Új sor létrehozásához az edények listáját kell létrehozni, a sor kezdő pozíciója bármi lehet.
-Új elemet a sorhoz a távolságfüggvény kiértékelése után az elem edénybe szúrásával lehet adni,
-az új $r$ elem az $b(q, d(p(q), p(r)))$ edénybe kell kerüljön.
+Új elemet a sorhoz a távolságfüggvény kiértékelése után az elem edénybe szúrásával lehet adni, az új $r$ elem az $b(q, d(p(q), p(r)))$ edénybe kell kerüljön.
 Ez a művelet az invariánst fenntartja.
 
-A sor pozíciójának eggyel megnövelésével a sor invariánsa kétféleképpen válhat hamissá:
+A sor pozíciójának eggyel megnövelésével (Algoritmus \ref{alg:buckets-remove-min}) a sor invariánsa kétféleképpen válhat hamissá:
 \begin{itemize}
 \item egy elem pozíciója és a sor pozíciója egyenlő lesz. A pozíció növelése művelet ezeket az elemeket a sorból eltávolítja, és a művelet eredményeként visszaadja.
 \item az elem és a sor pozíciójának távolsága csökken. Az invariáns visszaállításához a művelet ezeket az elemeket áthelyezi az új távolság szerinti edénybe.
 \end{itemize}
 A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távolíthat el a sorból, és nem üres sor esetén is előfordulhat, hogy a sor elejének eltávolítása nem ad vissza elemeket.
 
-%%% E: erre nem hivatkozol sehol, pedig jo lenne.
 \begin{algorithm}[H]
 \floatname{algorithm}{Algoritmus}
-\caption{A $q$ edénysor elejének eltávolítása}
+\caption{A $q$ edénysor pozíciójának növelése és az elejének eltávolítása}
 \label{alg:buckets-remove-min}
 \begin{algorithmic}[1]
 \Function{eltávolít-min}{$q$}
@@ -187,11 +183,12 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 \end{algorithm}
 
 Az edénysor elejét ezzel az adatstruktúrával nem lehet hatékonyan lekérni az elemek eltávolítása nélkül.
-Edénysorral szitáláskor a sor pozícióját a szegmens végéig növelve pontosan a szegmensben szitáló elemek kerülnek ki a sorból, a sor elejének lekérdezésére nincs szükség.
 
-%%% E: Az elozo mondat nem lenne jobb ide csatolni, ehhez a paragarafushoz.
-%%% E: Egy kicst atirni a kovi mondatot? szamok amik sorpoziciora lepnek? bakanccsal?... ne inkam primek azok a szamok, melyek megegyeznek a sorpozicioikkal amelyeknek novelese nem tavolit el elemeket az edenysorbol. Es ebben a paragrafusban kellene megmondani hogy akkor mik is valojaban az elemek. 
-Ha a szegmensek hossza egy szám, akkor a prímek azok a számok, amelyik sorpozíciókra lépve a pozíció növelése nem távolít el elemet. A \texttt{buckets-simple} a felhasználó által megadott szegmensmérettől függetlenül így működik, a számokról sorban, egyetlen menetben dönti el, hogy melyik prím.
+Az edénysort használó szita esetén a sor elemei a prím-pozíció párok.
+A sor pozícióját a szegmens végéig növelve pontosan a szegmensben szitáló prímek kerülnek ki a sorból, a sor elejének lekérdezésére nincs szükség.
+
+Ha a szegmensek hossza egy szám, akkor a prímek azok a sorpozíciók, amelyek elérésével a sor pozíciójának növelése nem távolít el elemet.
+A \texttt{buckets-simple} szita a felhasználó által megadott szegmensmérettől függetlenül így működik, a számokról sorban, egyetlen menetben dönti el, hogy melyik prím.
 
 \subsubsection{Funkcionális megvalósítás}
 

@@ -239,8 +239,9 @@ Egy függvény a helyettesítési értékein kívül az értelmezési tartomány
 A grafikonmegjelenítő az $x$-tengely egy pixel által lefedett intervallumán akkor jelenít meg értéket, ha az intervallum egésze az értelmezési tartomány része.
 
 A \texttt{Functions} osztály a beépített elemi függvényeket tartalmazza.
+Már létező függvények lineáris kombinációját a \texttt{LinearCombinationFunction} osztállyal lehet megadni, a mintaközelítés eredménye ilyen típusú.
 JavaScript-ben függvény a \texttt{CustomFunction}-nel adható meg.
-A \texttt{LinearCombinationFunction} már létező függvények lineáris kombinációja, a mintaközelítés eredménye ilyen típusú.
+Ez a sztenderd Java beépített Nashorn JavaScript motorját használja.
 
 A \texttt{Matrix} osztályban vannak megadva a valós mátrixok műveletei, mindegyik kétdimenziós \texttt{double} tömbökre.
 Az implementált műveletek a legkisebb négyzetek módszeréhez szükségesekre korlátozódnak, ezek a mátrixszorzás, a transzponálás, és mátrix formában megadott lineáris egyenletrendszerek megoldása.
@@ -547,10 +548,9 @@ A vezérlő ennek az ablaknak az eseménykezelői, amik a modell módosításán
 A modellen végezhető műveletek:
 \begin{itemize}
 \item a grafikon megjelenített részének mozgatása, nagyítása, kicsinyítése
-  %%% E: minak -> minta
-\item mintát hozzáadása
+\item minta hozzáadása
 \item minta törlése
-\item mintát közelítése
+\item minta közelítése
 \item közelítő függvény törlése
 \end{itemize}
 Ezek megvalósítására a program a Swing sztenderd komponenseit használja.
@@ -558,14 +558,12 @@ Ezek megvalósítására a program a Swing sztenderd komponenseit használja.
 A mintát a modellhez adni három forrásból lehet.
 Az adatbázis összesített statisztikáiból, ezek előállítása az \texttt{Aggregates} osztály feladata.
 Be lehet tölteni mintát CSV fájlból, ezt a LoadSampleProcess oldja meg.
-%%% E: Minta futasi ideje? Minta tud futni? ket labon?
-Vagy meg lehet mérni egy minta futási idejét.
+Vagy meg lehet mérni egy szita futási idejét.
 A futási idő mérése a parancssorból indítható mérést használja, a \texttt{MeasureSieve} ablak a mérés paramétereinek megadására szolgál.
 
 A minta közelítésének számítási részét a \texttt{gui.math} csomag végzi.
 Az elemi függvények kiválasztása a \texttt{FunctionSelector} ablakban lehetséges.
 Elemi függvényt JavaScript nyelven a \texttt{CustomFunctionDialog} ablakban lehet megadni.
-%%% E: Ezt a JavaScript dolgot hogy csinaltad? valami libraryt hasznlatal? Ha igen, ird le! Fontos reszlet! (nem kell nagyon reszletezni, egy mondat eleg.
 
 A \texttt{GraphPlotter} komponens a grafikon egérrel történő mozgatásáról, nagyításáról, vagy az ablak méretének változásáról eseményeket küld a vezérlésnek, így a nézet csak a vezérlésen keresztül módosítja a modellt.
 
