@@ -112,7 +112,7 @@ A szegmensfájlok olvasására és írásara a \texttt{readSegment()} és \textt
 \subsection{Init}
 
 Az \texttt{init} program előállítja az első 4 szegmens fájlt, azaz $2^{32}$-ig az összes prímet megkeresi.
-Ezekkel a prímekkel a többi részprogram már a $[2^{32}, 2^{64}[$ tartomány tetszőleges részén tud szitálni.
+Ezekkel a prímekkel a többi részprogram már a $[2^{32}, 2^{64})$ tartomány tetszőleges részén tud szitálni.
 
 A szita egy egyszerű szegmentált eratoszthenészi szita.
 A $2^{30}$ hosszú szegmenseket több kisebb, egyenlő szegmensre osztja, és ezeket a kis szegmenseket
@@ -572,7 +572,7 @@ A nézetet a \texttt{GraphPlotter} osztály reprezentálja.
 A két részből álló előkészített modell megjelenítése a grafikus vezérlőutasítások kiadásából áll.
 
 Ennek a komponensnek a \texttt{graph} adattagja tartalmazza a legújabb modell értéket, a vezérlés, az előkészítés, és a megjelenítés ezen keresztül kommunikál.
-A modell módosításakor a \texttt{GraphPlotter} objektum a \texttt{graph} adattag cseréjével biztosítja, hogy a régi modellre vonatkozó háttérszálak leállnak, és elindítja az új modell oszlopra bontását.
+A modell módosításakor a \texttt{GraphPlotter} objektum a \texttt{graph} adattag cseréjével biztosítja, hogy a régi modellre vonatkozó háttérszál leáll, és elindítja az új modell oszlopra bontását.
 Az előkészített modellről a \texttt{CheckAndPost} eseménykezelőjén keresztül értesül, aminek hatására ütemezi az új grafikon kirajzolását.
 A tényleges kirajzolásnál még egyszer ellenőrzi, hogy a grafikon a komponens tényleges méretére készült el, majd a már elkészült grafikon-részeket kirajzolja.
 

@@ -10,16 +10,16 @@ A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 
 \begin{algorithm}
 \floatname{algorithm}{Algoritmus}
-\caption{Az $[u, v[$ intervallum szitálása}
+\caption{Az $[u, v)$ intervallum szitálása}
 \label{alg:eratosthenes-segment}
 \begin{algorithmic}[1]
-\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
+\State legyenek a számok az $[u, v)$ intervallumban megjelöletlenek
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
 	\For{$f \gets \max \lbrace p^2, p \left \lceil{\frac{u}{p}}\right \rceil \rbrace ; v > f; f \gets f+p$}
 		\State legyen $f$ megjelölve
 	\EndFor
 \EndFor
-\For{$f \in [u, v[$}
+\For{$f \in [u, v)$}
 	\If{$f$ nincs megjelölve}
 		\State $f$ prím
 	\EndIf
@@ -30,11 +30,11 @@ A \ref{alg:eratosthenes-segment} algoritmus ezt írja le.
 Ha több egymás utáni intervallumot kell szitálni, akkor minden prímhez eltárolható, hogy melyik pozícióban fog legközelebb szitálni.
 Ezzel az osztások időbeli költsége tárhely költségre váltható.
 A legegyszerűbb megoldás a prím-pozíció párok tárolása egy tömbben.
-A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálását írja le, ahol $v=u+kd$. Az algoritmus $k$ darab $d$ hosszú részintervallumot szitál.
+A \ref{alg:eratosthenes-segments} algoritmus az $[u, v)$ intervallum szitálását írja le, ahol $v=u+kd$. Az algoritmus $k$ darab $d$ hosszú részintervallumot szitál.
 
 \begin{algorithm}
 \floatname{algorithm}{Algoritmus}
-\caption{Az $[u, v[$ intervallum szitálása, $v=u+kd$}
+\caption{Az $[u, v)$ intervallum szitálása, $v=u+kd$}
 \label{alg:eratosthenes-segments}
 \begin{algorithmic}[1]
 \State legyen $t$ egy tömb
@@ -43,14 +43,14 @@ A \ref{alg:eratosthenes-segments} algoritmus az $[u, v[$ intervallum szitálás�
 	\State $t[s] \gets (p: p, f: \max \lbrace p^2, p \left \lceil{\frac{u}{p}}\right \rceil \rbrace )$
 	\State $s \gets s+1$
 \EndFor
-\For{$\ell \gets 1, v \gets u+d; k \ge \ell; \ell \gets \ell+1, u \gets u+d, v \gets v+d$}
-	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
+\For{$\ell \gets 1, u' \gets u, v' \gets u+d; k \ge \ell; \ell \gets \ell+1, u' \gets u'+d, v' \gets v'+d$}
+	\State legyenek a számok az $[u', v')$ intervallumban megjelöletlenek
 	\For{$i \in [1, s]$}
-		\For{$; v > t[i].f; t[i].f \gets t[i].f+t[i].p$}
+		\For{$; v' > t[i].f; t[i].f \gets t[i].f+t[i].p$}
 			\State legyen $t[i].f$ megjelölve
 		\EndFor
 	\EndFor
-	\For{$f \in [u, v[$}
+	\For{$f \in [u', v')$}
 		\If{$f$ nincs megjelölve}
 			\State $f$ prím
 		\EndIf
@@ -77,23 +77,23 @@ A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a h
 
 \begin{algorithm}
 \floatname{algorithm}{Algoritmus}
-\caption{Az $[u, v=u+kd[$ intervallum szitálása, prioritásos sorral}
+\caption{Az $[u, v=u+kd)$ intervallum szitálása, prioritásos sorral}
 \label{alg:eratosthenes-queue}
 \begin{algorithmic}[1]
 \State legyen $q$ egy üres sor
 \For{$p \in \{\textrm{prímek}\sqrt{v-1}\textrm{-ig}\}$}
 	\State hozzáad$(q, (p: p, f: \max \lbrace p^2, p \left \lceil{\frac{u}{p}}\right \rceil \rbrace ))$
 \EndFor
-\For{$\ell \gets 1, v \gets u+d; k \ge \ell; \ell \gets \ell+1, u \gets u+d, v \gets v+d$}
-	\State legyenek a számok az $[u, v[$ intervallumban megjelöletlenek
-	\While{$v > \min(q).f$}
+\For{$\ell \gets 1, u' \gets u, v' \gets u+d; k \ge \ell; \ell \gets \ell+1, u' \gets u'+d, v' \gets v'+d$}
+	\State legyenek a számok az $[u', v')$ intervallumban megjelöletlenek
+	\While{$v' > \min(q).f$}
 		\State $(p, f) \gets \textrm{eltávolít-min}(q)$
-		\For{$; v > f; f \gets f+p$}
+		\For{$; v' > f; f \gets f+p$}
 			\State legyen $f$ megjelölve
 		\EndFor
 		\State hozzáad$(q, (p, f))$
 	\EndWhile
-	\For{$f \in [u, v[$}
+	\For{$f \in [u', v')$}
 		\If{$f$ nincs megjelölve}
 			\State $f$ prím
 		\EndIf
@@ -129,7 +129,7 @@ d(x, y) = (a-1) h(x, y) + y_{h(x, y)} - 1
 \end{equation}
 Kettes számrendszerben a távolság logaritmussal és a bitenkénti kizáró-vagy művelettel is megadható.
 \begin{align*}
-d(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
+d(x, y) = h(x, y) = \lfloor log_2{(x \oplus y)} \rfloor
 \end{align*}
 
 Legyen $q$ egy edénysor
@@ -213,7 +213,7 @@ Mindkét paramétert 2 hatványainak választja, a szegmensméretet $2^{16}$-tó
 \begin{table}[H]
 \renewcommand\arraystretch{1.2}
 \centering
-\caption{A generator futási ideje (ns), szitatábla $[2^{63}$, $2^{63}+2^{34}[$}
+\caption{A \texttt{generator} futási ideje (ns), szitált intervallum $[2^{63}$, $2^{63}+2^{34})$}
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 \bf{szegmens / alap} & \bf{$2^1$} & \bf{$2^2$} & \bf{$2^4$} & \bf{$2^8$} \\ \cline{1-5}
@@ -233,7 +233,7 @@ $2^{24}$ & \num{1,67e11} & \num{1,52e11} & \num{1,25e11} & \num{1,15e11} \\ \cli
 \begin{figure}[H]
 \renewcommand\arraystretch{1.2}
 \centering
-\caption{A generator futási ideje (ns), szitatábla $[2^{63}$, $2^{63}+2^{34}[$}
+\caption{A \texttt{generator} futási ideje (ns), szitált intervallum $[2^{63}$, $2^{63}+2^{34})$}
 \begin{tikzpicture}
 
 \begin{axis}[%
