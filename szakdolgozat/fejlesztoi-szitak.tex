@@ -73,6 +73,7 @@ Ezekkel az elemekkel a szitálást elvégzi a szegmensben, majd a sorba visszahe
 Az elemek sorrendjét a legközelebbi szitált pozíció határozza meg, a sor eleje az éppen szitált szegmenshez legközelebbi elem.
 Az elemek sorrendjénél a szegmenseken belüli sorrend vizsgálata felesleges.
 A prioritásos soron alapuló szitálás algoritmusát a \ref{alg:eratosthenes-queue} adja meg, a sor adatszerkezet meghatározása nélkül.
+%%% E: A kovi sort nem lenne jobb a utana jovo paragrafushoz hozzacsapni (azaz "A tenyleges megvalositas..." sor menjen az algoritmus ala' szerintem)
 A tényleges megvalósítás az eltávolít-hozzáad sorműveletpár helyett a helyben módosítást és a struktúra invariánsának visszaállítását is választhatja.
 
 \begin{algorithm}
@@ -106,6 +107,7 @@ A \texttt{gui} program szitái közül ezt az algoritmust követi az edénysor s
 
 \subsection{Edénysor}
 
+%%% E: MONOTON (prioritasos sor)? Is that a thing?
 A edénysor egy monoton prioritásos sor.
 Minden állapotához tartozik egy érték, a sor aktuális pozíciója, aminél kisebb vagy egyenlő pozíciójú értéket a sor nem tartalmazhat.
 A sor pozíciójának megnövelése a sor elejének eltávolításával is együtt jár.
