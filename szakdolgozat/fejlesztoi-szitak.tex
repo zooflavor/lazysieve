@@ -198,6 +198,7 @@ Az edénysor műveleteit láncolt listákkal számjegyenként ábrázolt számok
 Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 A számok láncolt listával ábrázolásával az $x+y$ kiszámítása $\theta(h(x, x+y))$ műveletet igényel.
 
+%%% E: Noveleseert felelos algoritmus
 Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy olyan számítási modellben is, ahol számok összeadása konstans idejű.
 Ha $r$ a $q$ sor eleme, akkor az elem a sorból kikerüléséig még $h(p(q), p(r))$ edényt bejárhat.
 
@@ -300,6 +301,7 @@ x_k+1=y_k
 \end{equation}
 
 A sor elejének eltávolítása algoritmus helyessége következik abból, hogy a $d'$-nél kisebb indexű edények üresek, a $d'$-nél nagyobb indexű edények elemeinek távolsága nem változik a sor pozíciójának növelésével, és a $d'$ edény elemeit az algoritmus újrarendezi.
+%%% E: ide illene egy: "A helyesseg bizonyitasa a kovetkezo ket allitas bizonyitasabol all", nem?
 \begin{equation}
 \label{ures}
 \forall i \in \mathbb{N}_0, i<d': b(q, i) = \emptyset
@@ -309,6 +311,7 @@ A sor elejének eltávolítása algoritmus helyessége következik abból, hogy 
 \forall i \in \mathbb{N}_0, i>d': \forall r \in b(q, i) : i = d(p(q), p(r)) = d(p(q)+1, p(r))
 \end{equation}
 
+%%% E: nem \ref hanem \eqref
 \ref{ures} bizonyításához tegyük fel indirekt, hogy $\exists i < d': \exists r \in b(q, i)$.
 Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
 \begin{align*}
@@ -319,6 +322,7 @@ Ha $k' \not = k$, akkor $k' < k$, de \ref{kisebb} és \ref{szamjegy} ellentmond�
 a-1 = p(q)_{k'} < p(r)_{k'} = 0
 \end{align*}
 Ha $k' = k$, akkor $i < d'$ és \ref{ddef} miatt $p(r)_k < (p(q)+1)_k$. Ekkor \ref{kisebb} és \ref{eggyel} ellentmond egymásnak:
+%%% E: ez igy miert is ellentmondas? mert egy a tavolsag kozbe meg ket < van? remelem ertheto mi a bajom, a vala < ... < valami + 1 nem tul ellentmondasoskinezetu
 \begin{align*}
 p(q)_k < p(r)_k < (p(q)+1)_k = p(q)_k + 1
 \end{align*}
@@ -326,6 +330,7 @@ Tehát az indirekt feltevés ellentmondáshoz vezet, azaz \ref{ures} igaz, a $d'
 
 Legyen $i \in \mathbb{N}_0, i>d', r \in b(q, i), k'=h(p(q), p(r))$.
 Ha $k' = k$, akkor
+%%% E: ezt nem konnyu latni miert teljesul.
 \begin{align*}
 d(p(q), p(r)) = (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
 \end{align*}
@@ -333,6 +338,7 @@ Ha $k \not = k'$, akkor \ref{ddef} szerint $k < k'$.
 \ref{valtozatlan} szerint
 \begin{align*}
 p(q)_{k'} &= (p(q)+1)_{k'} \\
+  %%% E: A kozepso egyenletet se nem feltetlenul ertem miert van. miert lesz h(p(q) + 1, p(r)) = k'???
 h(p(q), p(r)) &= k' = h(p(q)+1, p(r)) \\
 d(p(q), p(r)) &= (a-1)k'+p(r)_k-1=d(p(q)+1, p(r))
 \end{align*}

@@ -19,6 +19,7 @@ Táblázatkezelő programokkal, mint például a LibreOffice, formula alapján g
 A formulákkal véletlenszerű zaj is hozzáadható a mintához.
 A \texttt{samples/test/graph} könyvtárban megtalálható néhány táblázatminta a teszteléshez.
 
+%%% E: ezt a cimet kicsrelnem valami "legkisebb nyerzetek"re (Numerikus pontossag a program egy mellekfunkciojanak tulajdonsaga - fura ha cimkent szerepel)
 \subsection{Numerikus pontosság}
 
 A legkisebb négyzetek módszerének megvalósítása a mátrixműveletek pontosságát két paraméterrel tudja szabályozni, a mátrixszorzás összegzéseit három különböző algoritmussal lehet végezni, és a lineáris egyenletrendszereket meg lehet oldani QR felbontással, és Gauss-eliminációval részleges sorcserével és teljes sor és oszlop cserével.
@@ -47,6 +48,7 @@ A mérés eredményéből látszik, hogy a kiválasztott minták közelítésén
 \end{itemize}
 Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a lineáris egyenletrendszerek megoldására Gauss-eliminációt használ teljes sor és oszlopcserével, ezt a felhasználó nem tudja megváltoztatni.
 
+%%% E: Erre is lehetne hivatkozni a szovegbol.
 \begin{table}[H]
 \renewcommand\arraystretch{1.2}
 \centering
@@ -79,6 +81,9 @@ Ezek alapján a program a közelítésekre a kupac alapú összegzést használj
 \hline
 \end{tabular}
 \end{table}
+
+
+%%% E: alapvetoen jo minden. Esetleg meg egy kis "Future work" befejezest nem akarsz irni? :)
 
 %%% Local Variables:
 %%% mode: latex
