@@ -98,7 +98,6 @@ A legegyszerűbb szegmentált szita egy szegmens szitáláshoz minden prímet so
 Több, egymás utáni szegmens szitálásával az osztás költsége több szegmensre szétosztható.
 Ehhez a prímek listájában minden prímhez el kell tárolni a következő szitálandó többszörösét.
 Egy szegmens szitálása után ezt a számot frissítve a következő szegmensben osztás nélkül folytatható a prímmel a szitálás.
-A következő szegmens feldolgozásakor a prímmel innen lehet folytatni a szitálást.
 A módszer hátránya, hogy a prím-pozíció párok tárolásához nagyságrendileg $\mathcal{O}(\sqrt{n})$ bit szükséges, ha a legnagyobb szitált szám $n$.
 A hatékony eratoszthenészi sziták ennek a prím-pozíció listának csak azon elemeit veszik figyelembe egy szegmens szitálásakor, amik ténylegesen szitálnak is a szegmensben.
 
@@ -249,7 +248,7 @@ szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás
 
 Mindkét program kimenetében a ''start'' a szegmens kezdőszáma, a ''szegmens'' az indexe,
 $start=szegmens \cdot 2^{30}+1$, a ''felkészülés'' a szita inicializálási ideje a szitálás előtt,
-és a 'szitálás' a szegmens szitálásának ideje.
+és a ''szitálás'' a szegmens szitálásának ideje.
 Ezek az információk az elmentett szegmensfájlokból is kiolvashatóak.
 
 A \texttt{generator} program minden olyan paraméterét, ami szám, meg lehet adni decimálisan, és hexadecimálisan is \texttt{0x} előtaggal.
@@ -279,7 +278,7 @@ A szegmensbe eső összes prím számát nem tárolja a szegmensstatisztika.
 Az összes páratlan prím számát megadja a $4Z+1$ és a $4Z+3$ alakú prímek számának összege.
 Az összes prím számához az $1$-től kezdődő szegmensnél még az egyetlen páros prímet, a $2$-t, hozzá kell számolni.
 
-Példaként ha a szegmensek mérete 16 szám lenne, és 17-től szitálnánk egy szegmensnyit, akkor a szegmensfájl leírná, hogy a prímek a 17, 19, 23, 29, 31, és az összetett számok a 15, 21, 25, 27.
+Példaként ha a szegmensek mérete 16 szám lenne, és 17-től szitálnánk egy szegmensnyit, akkor a szegmensfájl leírná, hogy a prímek a 17, 19, 23, 29, 31, és az összetett számok a 21, 25, 27.
 A szegmens összesítése azt tartalmazná, hogy
 \begin{itemize}
 \item a szegmens 17-tel kezdődik
@@ -543,7 +542,7 @@ A mérték szabályozza, hogy a tényleges eltelt időt mérje a program nanosze
 Az ablak jobb oldalának középső harmadában a kiválasztott minta részletei látszódnak.
 Itt változtatható meg a minta ábrázolásához használt szín, távolítható el a minta, vagy menthető CSV fájlba.
 
-A táblázat a minta közelítéseit mutatja, itt olvashatóak le a közelítés komponensfüggvényei, és a közelítés hibája.
+A táblázat a minta közelítéseit mutatja, itt olvashatóak le a közelítés elemi függvényei, és a közelítés hibája.
 A ''Közelítés'' gombbal lehet új közelítést hozzáadni az ábrázoláshoz.
 A közelítéshez a lineáris legkisebb négyzetek módszerét használja a program, ehhez a lineáris kombináció elemi függvényeit meg kell adni.
 A függvények kiválaszthatóak az előre megadott listából, vagy JavaScript nyelven is megadhatóak.
@@ -556,7 +555,7 @@ A közelítéshez csak olyan függvények használhatóak, amik a minta minden p
 \end{figure}
 
 JavaScript függvényhez meg kell adni a függvény nevét és forráskódját.
-A forráskódban a függvény argumentumára az $x$ változóval lehet hivatkozni, és a szkript utolsó kifejezésének értéke lesz a függvény értéke $x$-ben.
+A forráskódban a függvény argumentumára az $x$ változóval lehet hivatkozni, és a szkript utolsó kifejezésének értéke lesz a függvény helyettesítési értéke $x$-ben.
 Például az $x \mapsto \frac{\ln{x}}{x}$ hozzárendelés forráskódja:
 
 \begin{lstlisting}[basicstyle=\small\ttfamily, language=Java]
