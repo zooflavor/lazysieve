@@ -9,7 +9,7 @@ A \texttt{gui} program leírása tartalmazza a felhasznált adatszerkezeteket, a
 A megvalósított eratoszthenészi szitákat külön szakasz írja le.
 Ez a saját ötlet alapján készült edénysor részletes leírását is tartalmazza.
 
-A programok tesztelésénél külön feladat volt a numerikus algoritmusok kiválasztása.
+A programok tesztelésénél külön feladat volt a legkisebb négyzetek módszerénél használt numerikus algoritmusok kiválasztása.
 
 A program komponenseinek ábrája az \pageref{komponensek} oldalon látható.
 
@@ -136,8 +136,8 @@ Az \texttt{init} szitájának inicializálásához a prímek listáját elő kel
 \subsection{Generator}
 
 A \texttt{generator} fő részei hasonlóak az \texttt{init}-hez.
-Indulása az első 4 szegmensfájl alapján $2^{32}$-ig minden prímhez osztással meghatározza, hogy melyik a legkisebb szám, amit oszt, és legalább akkora, mint a szitálandó szegmens kezdete.
-A prímek tároló adatstruktúra szitálás közben nem érzékeny azokra az elemekre, amik az éppen szitált szegmensnél nagyobb helyeken szitálnak, így a \texttt{generator} az összes prímet eltárolja $2^{32}$-ig, nem csak a szitálandó tartomány végének négyzetgyökéig.
+Indulása után az első 4 szegmensfájl alapján $2^{32}$-ig minden prímhez osztással meghatározza, hogy melyik a legkisebb szám, amit oszt, és legalább akkora, mint a szitálandó szegmens kezdete.
+A prímeket tároló adatstruktúra szitálás közben nem érzékeny azokra az elemekre, amik az éppen szitált szegmensnél nagyobb helyeken szitálnak, így a \texttt{generator} az összes prímet eltárolja $2^{32}$-ig, nem csak a szitálandó tartomány végének négyzetgyökéig.
 
 A prímek listájának inicializálása után a nagy szegmenseket az \texttt{init}-hez hasonlóan kisebbekre osztja, és ezeket sorban szitálja a prímek listája alapján.
 
@@ -264,7 +264,7 @@ A felhasználói műveletek közül az adatbázis információk lekérését, a 
 A sziták az inicializálásukkor a \texttt{Database.largePrimes()} metódust használva olvassák be az első 4 szegmensfájlból a prímeket.
 
 A \texttt{Segment} osztály példányai a $2^{30}$ hosszú szitatáblák.
-Ezek fájlból olvasott adatokat is tartalmazhatnak, vagy szegmensek és sziták ellenőrzésekor a Java program is generálhatja.
+Ezek fájlból olvasott adatokat is tartalmazhatnak, vagy szegmensek és sziták ellenőrzésekor a \texttt{gui} program is generálhatja.
 Ezzel az osztállyal szegmensfájlt csak olvasni lehet, írni nem.
 
 Ez a csomag tartalmazza a CSV fájlok olvasásához és írásához a \texttt{CSVReader} és \texttt{CSVWriter} osztályokat.
@@ -295,7 +295,7 @@ Ebben a csomagban, és a \texttt{gui.sieve.eratosthenes} alcsomagjában, a futá
 A sziták a \texttt{Sieve} osztály leszármazottai.
 A példányaitól elvárás, hogy
 \begin{itemize}
-\item a szitálást szegmensenként végezzi
+\item a szitálást szegmensenként végzi
 \item a szitatábla bitvektorát csak korlátozottan éri el
 \begin{itemize}
 \item csak az éppen szitált szegmensbe eső számokat éri el
@@ -510,7 +510,7 @@ Ez egy nem módosítható konténerosztály, az ábrázoláshoz szükséges öss
 \item a mintákat, ezeket a \texttt{Sample} osztály írja le
 \item a függvényeket, ezeket a \texttt{Function} osztály írja le
 \item a grafikon ábrázolására használható képernyőrész szélességét és magasságát pixelekben
-\item a grafikon megjelenített részét, amit mintatér koordináta rendszerében lehet megadni egy téglalap sarkaival
+\item a grafikon megjelenített részét, amit a mintatér koordináta rendszerében lehet megadni egy téglalap sarkaival
 \item a megjelenítéshez használt színeket
 \end{itemize}
 
@@ -557,7 +557,7 @@ Ezek megvalósítására a program a Swing sztenderd komponenseit használja.
 
 A mintát a modellhez adni három forrásból lehet.
 Az adatbázis összesített statisztikáiból, ezek előállítása az \texttt{Aggregates} osztály feladata.
-Be lehet tölteni mintát CSV fájlból, ezt a LoadSampleProcess oldja meg.
+Be lehet tölteni mintát CSV fájlból, ezt a \texttt{LoadSampleProcess} oldja meg.
 Vagy meg lehet mérni egy szita futási idejét.
 A futási idő mérése a parancssorból indítható mérést használja, a \texttt{MeasureSieve} ablak a mérés paramétereinek megadására szolgál.
 

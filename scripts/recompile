@@ -39,6 +39,10 @@ pdflatex --interaction=batchmode -halt-on-error szakdolgozat.tex
 if [ "0" != "$?"  ]; then
 	exit 1
 fi
+pdflatex --interaction=batchmode -halt-on-error szakdolgozat.tex
+if [ "0" != "$?"  ]; then
+	exit 1
+fi
 rm -f *.aux
 rm -f *.dvi
 rm -f eltecimerszines*.pdf

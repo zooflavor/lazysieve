@@ -226,7 +226,7 @@ szegmens 6 - kezdet 6 442 450 945 - felkészülés           385 ns - szitálás
 \end{lstlisting}
 
 A másik mód a háttértáron fenntartandó szabad hely átadása, ezt bájtokban kell megadni.
-Ekkor minden szegmens szitálása előtt megvizsgálja, hogy van-e még annyi szabad hely az adatbáziskönyvtárban, mint amennyi meg van adva, ha igen, akkor szitálja a szegmenst,
+Ekkor a \texttt{generator} minden szegmens szitálása előtt megvizsgálja, hogy van-e még annyi szabad hely az adatbáziskönyvtárban, mint amennyi meg van adva, ha igen, akkor szitálja a szegmenst,
 és lép a következőre szegmensre. Ha nincs már elég szabad hely, akkor a program leáll.
 
 \begin{lstlisting}[language=bash]
@@ -403,10 +403,10 @@ scripts$ ./database import aggregates /valahol/egy/masik/aggregates
 100.0%
 \end{lstlisting}
 
-\section{Az \texttt{init} és a \texttt{gui} eredményeinek ellenőrzése}
+\section{Az \texttt{init} és a \texttt{generator} eredményeinek ellenőrzése}
 
 Az \texttt{init} és a \texttt{generator} program teszteléséhez a \texttt{gui} program képes a szegmensfájlok ellenőrzésére.
-Ehhez a \texttt{gui} újra előállítja az ellenőrzött szegmensfájlokat, és azokat összeveti.
+Ehhez a \texttt{gui} újra előállítja az ellenőrzött szegmensfájlokat, és azokat összeveti az adatbázis könyvtárban találhatóakkal.
 Az ellenőrzőszegmensek előállításához az egyszerű szegmentált eratoszthenészi szitát, vagy ez erős pszeudoprím tesztet lehet választani.
 
 A pszeudoprím teszt a szegmens minden számáról egyesével dönti el, hogy az prím-e.

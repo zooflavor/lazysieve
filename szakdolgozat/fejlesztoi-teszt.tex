@@ -19,8 +19,7 @@ Táblázatkezelő programokkal, mint például a LibreOffice, formula alapján g
 A formulákkal véletlenszerű zaj is hozzáadható a mintához.
 A \texttt{samples/test/graph} könyvtárban megtalálható néhány táblázatminta a teszteléshez.
 
-%%% E: ezt a cimet kicsrelnem valami "legkisebb nyerzetek"re (Numerikus pontossag a program egy mellekfunkciojanak tulajdonsaga - fura ha cimkent szerepel)
-\subsection{Numerikus pontosság}
+\subsection{Legkisebb négyzetek módszere}
 
 A legkisebb négyzetek módszerének megvalósítása a mátrixműveletek pontosságát két paraméterrel tudja szabályozni, a mátrixszorzás összegzéseit három különböző algoritmussal lehet végezni, és a lineáris egyenletrendszereket meg lehet oldani QR felbontással, és Gauss-eliminációval részleges sorcserével és teljes sor és oszlop cserével.
 Ezeknek a paramétereknek a megválasztása a tesztek alapján sem egyértelmű.
@@ -36,7 +35,7 @@ A három paraméter mindegyik lehetséges értékéhez a mérés elemi függvén
 Egy paraméter-kombinációhoz az összes közelítés négyzetes eltérését, és a közelítés idejét összesíti.
 A minták generálásához használt elemi függvények a \texttt{MeasureSums} osztályból kiolvashatóak.
 
-A mérés eredményéből látszik, hogy a kiválasztott minták közelítésénél:
+A mérés eredményéből (\ref{numerikus-pontossag} táblázat) látszik, hogy a kiválasztott minták közelítésénél:
 \begin{itemize}
 \item a legkisebb hibát okozó választás a kupac összegzés teljes cserét végrehajtó Gauss-eliminációval
 \item a kupac összegzés tízszer annyi időt vesz igénybe, mint a másik két összegzés
@@ -48,11 +47,11 @@ A mérés eredményéből látszik, hogy a kiválasztott minták közelítésén
 \end{itemize}
 Ezek alapján a program a közelítésekre a kupac alapú összegzést használja, és a lineáris egyenletrendszerek megoldására Gauss-eliminációt használ teljes sor és oszlopcserével, ezt a felhasználó nem tudja megváltoztatni.
 
-%%% E: Erre is lehetne hivatkozni a szovegbol.
 \begin{table}[H]
 \renewcommand\arraystretch{1.2}
 \centering
 \caption{Numerikus algoritmusok összehasonlítása}
+\label{numerikus-pontossag}
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 \bf{Összegzés} & \bf{LER-m.o.} & \bf{Rendezett} & \bf{$\sum{\textrm{hiba}^2}$} & \bf{Idő (ns)} \\ \cline{1-5}
@@ -81,9 +80,6 @@ Ezek alapján a program a közelítésekre a kupac alapú összegzést használj
 \hline
 \end{tabular}
 \end{table}
-
-
-%%% E: alapvetoen jo minden. Esetleg meg egy kis "Future work" befejezest nem akarsz irni? :)
 
 %%% Local Variables:
 %%% mode: latex

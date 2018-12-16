@@ -68,11 +68,11 @@ A bináris kupac és az edénysort használó szita mellett a Cache Optimalizál
 \subsection{Prioritásos sorok}
 
 A prioritásos soron alapuló szita algoritmusa nagyon hasonló a \ref{alg:eratosthenes-segments} algoritmushoz.
-Az elemek sorban feldolgozása helyett a sor elejét addig veszi ki, amíg az az éppen szitált szegmensbe esik.
+A tömbelemek sorban feldolgozása helyett a sor elejét addig veszi ki, amíg az az éppen szitált szegmensbe esik.
 Ezekkel az elemekkel a szitálást elvégzi a szegmensben, majd a sorba visszahelyezi, már az új, mostani szegmensnél nagyobb pozícióval.
 Az elemek sorrendjét a legközelebbi szitált pozíció határozza meg, a sor eleje az éppen szitált szegmenshez legközelebbi elem.
 Az elemek sorrendjénél a szegmenseken belüli sorrend vizsgálata felesleges.
-A prioritásos soron alapuló szitálás algoritmusát a \ref{alg:eratosthenes-queue} adja meg, a sor adatszerkezet meghatározása nélkül.
+A prioritásos soron alapuló szitálást a \ref{alg:eratosthenes-queue} algoritmus írja le, a sor adatszerkezet meghatározása nélkül.
 
 \begin{algorithm}[H]
 \floatname{algorithm}{Algoritmus}
@@ -175,7 +175,7 @@ A sor elejének eltávolítsa az edénysornál tetszőleges számú elemet távo
 		\If{$p(r) = p(q)$}
 			\State hozzáad$(\ell, r)$
 		\Else
-			\State hozzáad$(b(q, d(p(q), p(r)))$
+			\State hozzáad$(b(q, d(p(q), p(r))), r)$
 		\EndIf
 	\EndWhile
 	\State \Return $\ell$
@@ -199,8 +199,7 @@ Az edénysor műveleteit láncolt listákkal számjegyenként ábrázolt számok
 Az $x+y$ összeadás elvégzésével a $h(x, x+y)$ és a $d(x, x+y)$ is kiszámítható, $h(x, x+y)$ a helyiérték, ahol összeadás közben a kisebbik szám számjegyei és az átvitel is elfogy. A $d(x, x+y)$ meghatározásához az eredményből még a $h(x, x+y)$ helyiértéken lévő számjegyet is ki kell olvasni.
 A számok láncolt listával ábrázolásával az $x+y$ kiszámítása $\theta(h(x, x+y))$ műveletet igényel.
 
-%%% E: Noveleseert felelos algoritmus
-Az edénysor pozíciójának növelése algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy olyan számítási modellben is, ahol számok összeadása konstans idejű.
+Az edénysor pozíciójának növeléséért felelős algoritmus a kiválasztott edény újrarendezését számjegyenként végzi egy olyan számítási modellben is, ahol számok összeadása konstans idejű.
 Ha $r$ a $q$ sor eleme, akkor az elem a sorból kikerüléséig még $h(p(q), p(r))$ edényt bejárhat.
 
 Az edénysort szitálásra használva az új elemek pozíciója mindig $p(q)+b$, ahol $b$ prím.
@@ -281,7 +280,7 @@ solid
 \pagebreak
 \subsubsection{Az edénysor helyessége}
 
-Egy szám számjegyenkénti felírásából, és $h$ definíciójából következik, hogy
+Egy szám számjegyenkénti felírásából, és $h$ definíciójából\eqref{hdef} következik, hogy
 \begin{equation}
 \label{kisebb}
 x_{h(x, y)} < y_{h(x, y)}\ (x, y \in \mathbb{N}_0, x<y)
@@ -317,7 +316,7 @@ Legyen $k'=h(p(q), p(r))$. Az indirekt feltevés szerint
 \begin{align*}
 d(p(q), p(r)) = i < d' = d(p(q), p(q)+1)
 \end{align*}
-Ha $k' \not = k$, akkor $k' < k$, de \eqref{kisebb} és \eqref{szamjegy} ellentmondáshoz vezet, $p(r)_{k'} \in \mathbb{N}_0$ két egymás követő egész között lenne:
+Ha $k' \not = k$, akkor \eqref{ddef} miatt $k' < k$, de \eqref{kisebb} és \eqref{szamjegy} ellentmondáshoz vezet, $p(r)_{k'} \in \mathbb{N}_0$ két egymás követő egész között lenne:
 \begin{align*}
 a-1 = p(q)_{k'} < p(r)_{k'} < a
 \end{align*}
